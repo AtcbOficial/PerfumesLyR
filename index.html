@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Perfumes L&R — Réplicas 1.1</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+<style>
+:root{--bg:#0d0d0d;--card:#1a1a1a;--gold:#c9a227;--text:#f5f5f5;--muted:#aaa;--danger:#e74c3c;--success:#27ae60}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:70px;overscroll-behavior:none}
+header{background:linear-gradient(180deg,#1a1a1a,#0d0d0d);padding:12px 16px;text-align:center;border-bottom:1px solid #333;position:sticky;top:0;z-index:100}
+.logo{font-size:28px;font-weight:700;color:var(--gold);letter-spacing:2px}
+.logo span{color:var(--text);font-weight:300}
+.tagline{font-size:11px;color:var(--muted);margin-top:2px}
+nav{display:flex;justify-content:space-around;background:#111;position:fixed;bottom:0;left:0;right:0;border-top:1px solid #333;z-index:100;padding:8px 0 env(safe-area-inset-bottom)}
+nav button{background:none;border:none;color:var(--muted);font-size:11px;padding:6px 4px;flex:1;cursor:pointer}
+nav button.active{color:var(--gold)}
+nav button span{display:block;font-size:20px;margin-bottom:2px}
+.section{display:none;padding:16px}
+.section.active{display:block}
+h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #333;padding-bottom:6px}
+.search-bar{display:flex;gap:8px;margin-bottom:12px}
+.search-bar input{flex:1;background:var(--card);border:1px solid #333;color:var(--text);padding:10px 12px;border-radius:8px;font-size:15px}
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;-webkit-overflow-scrolling:touch}
+.filters button{background:var(--card);border:1px solid #333;color:var(--muted);padding:6px 12px;border-radius:20px;font-size:13px;white-space:nowrap;cursor:pointer}
+.filters button.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid #2a2a2a;display:flex;flex-direction:column}
+.card img{width:100%;height:220px;object-fit:contain;background:#111;padding:4px}
+.card-body{padding:10px;flex:1;display:flex;flex-direction:column}
+.card-title{font-size:12px;font-weight:600;line-height:1.3;margin-bottom:4px;min-height:32px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-bottom:4px;margin-right:4px}
+.badge.dama{background:#9b59b6}.badge.caballero{background:#2980b9}.badge.unisex{background:#16a085}.badge.promo{background:var(--danger)}.badge.replica{background:#8e44ad}
+.price{font-size:11px;color:var(--gold);margin-bottom:6px;line-height:1.4}
+.btns{display:flex;flex-direction:column;gap:4px;margin-top:auto}
+.btns button{flex:1;border:none;padding:8px 4px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-premium{background:var(--gold);color:#000}
+.hero{text-align:center;padding:0 0 20px}
+.banner-wrap{margin:0 -16px 16px;overflow:hidden}
+.banner-wrap img{width:100%;display:block;max-height:320px;object-fit:cover}
+.promo-banner{background:linear-gradient(135deg,#2a1a00,#1a1a1a);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center}
+.promo-banner h3{color:var(--gold);margin-bottom:6px}
+/* Carrusel horizontal de lo más pedido con fotos */
+.top-scroll{display:flex;gap:12px;overflow-x:auto;padding:8px 0 16px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+.top-card{flex:0 0 140px;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid #2a2a2a;scroll-snap-align:start}
+.top-card img{width:100%;height:160px;object-fit:contain;background:#111}
+.top-card .name{font-size:11px;padding:8px;text-align:center;line-height:1.3;height:48px;overflow:hidden}
+.cart-item{background:var(--card);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cart-item .info{flex:1}
+.cart-item .qty{display:flex;align-items:center;gap:8px}
+.cart-item button{background:#333;border:none;color:var(--text);width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer}
+.total{background:var(--card);padding:16px;border-radius:12px;text-align:center;margin:16px 0;border:1px solid var(--gold)}
+.total .amount{font-size:28px;color:var(--gold);font-weight:700}
+.btn-whatsapp{display:block;width:100%;background:#25d366;color:#fff;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.admin-login,.admin-panel{max-width:400px;margin:0 auto}
+input,select,textarea{width:100%;background:var(--card);border:1px solid #333;color:var(--text);padding:12px;border-radius:8px;margin-bottom:10px;font-size:15px}
+.admin-panel label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.btn{background:var(--gold);color:#000;border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px}
+.btn-secondary{background:#333;color:var(--text)}.btn-danger{background:var(--danger);color:#fff}
+.empty{text-align:center;color:var(--muted);padding:40px 20px}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--success);color:#fff;padding:10px 20px;border-radius:8px;z-index:200;display:none;font-size:14px;white-space:nowrap}
+.product-admin{background:var(--card);padding:10px;border-radius:8px;margin-bottom:8px;font-size:13px}
+.product-admin .actions{margin-top:6px;display:flex;gap:6px}
+.product-admin button{flex:1;padding:6px;font-size:12px}
+.loading{text-align:center;padding:40px;color:var(--muted)}
+.price-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.price-row input{margin-bottom:0}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:16px;padding:20px;max-width:340px;width:100%;border:1px solid #333}
+.modal h3{color:var(--gold);margin-bottom:12px;font-size:16px}
+.modal .size-btns,.modal .tipo-btns{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.modal button{flex:1;min-width:80px;padding:12px 8px;border-radius:8px;border:1px solid #333;background:#222;color:var(--text);font-size:13px;cursor:pointer}
+.modal button.selected{background:var(--gold);color:#000;border-color:var(--gold)}
+.modal .confirm{width:100%;margin-top:8px}
+.info-box{background:var(--card);border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">L&R <span>PERFUMES</span></div>
+  <div class="tagline">Réplicas 1.1 • Idénticas al original</div>
+</header>
+<div id="toast" class="toast"></div>
+
+<!-- ========== INICIO ========== -->
+<section id="inicio" class="section active">
+  <div class="hero">
+    <!-- Banner fundadores -->
+    <div class="banner-wrap">
+      <img src="images/banner_1.jpg" alt="Fundadores Perfumes L&R — Reaul Torres y Luis Bonilla" loading="eager">
+    </div>
+
+    <div class="promo-banner">
+      <h3>Réplicas 1.1</h3>
+      <p style="font-size:14px;color:var(--muted)">Idénticas en todo al original</p>
+      <p style="font-size:13px;margin-top:8px;color:var(--gold)">
+        Envases tipo ordinario: <strong>30 ml</strong> · <strong>60 ml</strong> · <strong>120 ml</strong>
+      </p>
+      <p id="priceSummary" style="font-size:12px;margin-top:8px;color:var(--muted)"></p>
+    </div>
+
+    <!-- Banner productos (botellas) -->
+    <div class="banner-wrap" style="margin-bottom:20px">
+      <img src="images/banner_2.jpg" alt="Presentaciones L&R — 30ml 60ml 120ml" loading="lazy">
+    </div>
+
+    <div class="promo-banner" style="border-color:#27ae60;text-align:left">
+      <h3 style="color:#27ae60;text-align:center">Lo más pedido</h3>
+      <div class="top-scroll" id="topSellers">
+        <div class="loading" style="padding:20px;width:100%">Cargando...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CATÁLOGO ========== -->
+<section id="catalogo" class="section">
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Buscar perfume..." oninput="renderCatalog()">
+  </div>
+  <div class="filters">
+    <button class="active" onclick="setFilter('all',this)">Todos</button>
+    <button onclick="setFilter('dama',this)">Dama</button>
+    <button onclick="setFilter('caballero',this)">Caballero</button>
+    <button onclick="setFilter('unisex',this)">Unisex</button>
+    <button onclick="setFilter('promo',this)">Promos</button>
+  </div>
+  <div class="grid" id="catalogGrid"><div class="loading">Cargando catálogo...</div></div>
+</section>
+
+<!-- ========== PROMOS ========== -->
+<section id="promos" class="section">
+  <h2>Promociones & Tendencias</h2>
+  <div id="promosList"><div class="loading">Cargando...</div></div>
+</section>
+
+<!-- ========== CARRITO ========== -->
+<section id="carrito" class="section">
+  <h2>Tu pedido</h2>
+  <div id="cartList"></div>
+  <div class="total" id="cartTotal" style="display:none">
+    <div>Total</div>
+    <div class="amount" id="totalAmount">$0</div>
+    <button class="btn-whatsapp" onclick="sendWhatsApp()">Enviar pedido por WhatsApp</button>
+  </div>
+  <div class="empty" id="cartEmpty">Carrito vacío</div>
+</section>
+
+<!-- ========== ADMIN ========== -->
+<section id="admin" class="section">
+  <div id="adminLogin" class="admin-login">
+    <h2>Admin</h2>
+    <input type="password" id="adminPass" placeholder="Contraseña">
+    <button class="btn" onclick="loginAdmin()">Entrar</button>
+  </div>
+  <div id="adminPanel" class="admin-panel" style="display:none">
+    <h2>Panel Admin</h2>
+
+    <label>Número WhatsApp (código país, sin +)</label>
+    <input type="text" id="waNumber" placeholder="58412XXXXXXX">
+    <button class="btn" onclick="saveConfig()">Guardar WhatsApp</button>
+
+    <hr style="border-color:#333;margin:16px 0">
+
+    <h3 style="color:var(--gold);margin-bottom:8px">Precios por presentación</h3>
+    <div class="info-box">
+      Las réplicas 1.1 se venden en envases ordinarios de 30 ml, 60 ml y 120 ml (como en el banner de botellas).
+      Aquí editas los precios globales de cada tamaño y calidad.
+    </div>
+    <label>30 ml — Normal / Premium</label>
+    <div class="price-row">
+      <input type="number" step="0.1" id="price30n" placeholder="Normal">
+      <input type="number" step="0.1" id="price30p" placeholder="Premium">
+    </div>
+    <label>60 ml — Normal / Premium</label>
+    <div class="price-row">
+      <input type="number" step="0.1" id="price60n" placeholder="Normal">
+      <input type="number" step="0.1" id="price60p" placeholder="Premium">
+    </div>
+    <label>120 ml — Normal / Premium</label>
+    <div class="price-row">
+      <input type="number" step="0.1" id="price120n" placeholder="Normal">
+      <input type="number" step="0.1" id="price120p" placeholder="Premium">
+    </div>
+    <button class="btn" onclick="savePrices()">Guardar precios</button>
+
+    <hr style="border-color:#333;margin:16px 0">
+
+    <h3 style="color:var(--gold);margin-bottom:10px">Agregar / Editar perfume</h3>
+    <input type="text" id="pName" placeholder="Nombre del perfume">
+    <select id="pGender">
+      <option value="dama">Dama</option>
+      <option value="caballero">Caballero</option>
+      <option value="unisex">Unisex</option>
+    </select>
+    <input type="text" id="pImg" placeholder="Nombre exacto del archivo de imagen">
+    <label><input type="checkbox" id="pPromo"> Es promoción / tendencia (aparece en lo más pedido)</label>
+    <button class="btn" onclick="saveProduct()">Guardar perfume</button>
+    <button class="btn btn-secondary" onclick="clearForm()">Limpiar</button>
+
+    <hr style="border-color:#333;margin:16px 0">
+    <h3 style="color:var(--gold);margin-bottom:10px">Catálogo actual</h3>
+    <div id="adminProducts"></div>
+    <button class="btn btn-danger" style="margin-top:20px" onclick="logoutAdmin()">Cerrar sesión</button>
+  </div>
+</section>
+
+<!-- Modal agregar -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3 id="modalTitle">Agregar al carrito</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Elige presentación y calidad</p>
+    <div class="size-btns">
+      <button type="button" data-size="30" onclick="selectSize(30)">30 ml</button>
+      <button type="button" data-size="60" onclick="selectSize(60)">60 ml</button>
+      <button type="button" data-size="120" onclick="selectSize(120)">120 ml</button>
+    </div>
+    <div class="tipo-btns">
+      <button type="button" data-tipo="Normal" onclick="selectTipo('Normal')">Normal</button>
+      <button type="button" data-tipo="Premium" onclick="selectTipo('Premium')">Premium</button>
+    </div>
+    <p id="modalPrice" style="color:var(--gold);font-size:14px;margin-bottom:10px;text-align:center"></p>
+    <button class="btn confirm" onclick="confirmAdd()">Agregar al carrito</button>
+    <button class="btn btn-secondary" style="margin-top:6px" onclick="closeModal()">Cancelar</button>
+  </div>
+</div>
+
+<nav>
+  <button class="active" onclick="showSection('inicio',this)"><span>🏠</span>Inicio</button>
+  <button onclick="showSection('catalogo',this)"><span>🧴</span>Catálogo</button>
+  <button onclick="showSection('promos',this)"><span>🔥</span>Promos</button>
+  <button onclick="showSection('carrito',this)"><span>🛒</span>Carrito</button>
+  <button onclick="showSection('admin',this)"><span>⚙️</span>Admin</button>
+</nav>
+
+<script>
+/*
+  ============================================================
+  PERFUMES L&R — Catálogo Réplicas 1.1
+  ============================================================
+  - Firebase: productos + config (WhatsApp + precios)
+  - Envases ordinarios: 30 ml / 60 ml / 120 ml (banner_2)
+  - Réplicas 1.1 idénticas al original
+  - Admin: editar precios globales por tamaño/calidad
+  - WhatsApp: mensaje codificado con encodeURIComponent
+  ============================================================
+*/
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDTeleRhf9AuogV_bzPC2aSETxgXF83foY",
+  authDomain: "perfumes-lyr.firebaseapp.com",
+  databaseURL: "https://perfumes-lyr-default-rtdb.firebaseio.com",
+  projectId: "perfumes-lyr",
+  storageBucket: "perfumes-lyr.firebasestorage.app",
+  messagingSenderId: "16857664886",
+  appId: "1:16857664886:web:52b48f779e22a9054b3e57",
+  measurementId: "G-S099V2J5NG"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* Precios por defecto (se pueden sobreescribir desde Admin y se guardan en Firebase) */
+let PRICES = {
+  30:  { Normal: 5,   Premium: 5.5 },
+  60:  { Normal: 9,   Premium: 10 },
+  120: { Normal: 16,  Premium: 18 }
+};
+
+const ADMIN_PASS = "lr2026";
+
+let products = [];
+let cart = JSON.parse(localStorage.getItem("lr_cart") || "[]");
+let currentFilter = "all";
+let editingId = null;
+let config = { wa: "584120000000" };
+
+let pendingProductId = null;
+let selectedSize = 30;
+let selectedTipo = "Normal";
+
+function loadFromFirebase() {
+  db.ref("products").on("value", snap => {
+    const val = snap.val();
+    products = val ? Object.values(val) : [];
+    if (products.length === 0) seedProducts();
+    renderCatalog();
+    renderPromos();
+    renderTop();
+    updatePriceSummary();
+    if (sessionStorage.getItem("lr_admin") === "1") renderAdminProducts();
+  });
+  db.ref("config").on("value", snap => {
+    const val = snap.val();
+    if (val) {
+      config = val;
+      if (val.prices) {
+        PRICES = val.prices;
+      }
+      updatePriceSummary();
+      // Si estamos en admin, rellenar campos
+      if (sessionStorage.getItem("lr_admin") === "1") fillPriceInputs();
+    }
+  });
+}
+
+function updatePriceSummary() {
+  const el = document.getElementById("priceSummary");
+  if (!el) return;
+  el.innerHTML =
+    "30 ml: Normal $" + PRICES[30].Normal + " · Premium $" + PRICES[30].Premium + "<br>" +
+    "60 ml: Normal $" + PRICES[60].Normal + " · Premium $" + PRICES[60].Premium + "<br>" +
+    "120 ml: Normal $" + PRICES[120].Normal + " · Premium $" + PRICES[120].Premium + "<br>" +
+    "<span style='font-size:11px'>Precios a tasa BCV</span>";
+}
+
+function seedProducts() {
+  const defaults = [
+    {id:1,name:"AFNAN 9 PM REBEL",gender:"unisex",img:"AFNAN 9 PM REBEL UNISEX.PNG",promo:false},
+    {id:2,name:"ANTONIO BANDERAS BLUE SEDUCTION",gender:"caballero",img:"ANTONIO BANDERAS BLUE SEDUCTION CABALLERO.PNG",promo:false},
+    {id:3,name:"ARIANA GRANDE CLOUD",gender:"dama",img:"ARIANA GRANDE CLOUD DAMA.PNG",promo:true},
+    {id:4,name:"ARIANA GRANDE THANK U NEXT",gender:"dama",img:"ARIANA GRANDE THANK U NEXT DAMA.PNG",promo:false},
+    {id:5,name:"ARMAF CLUB DE NUIT INTENSE MAN",gender:"caballero",img:"ARMAF CLUB DE NUIT INTENSE MAN (BESTIA NEGRA) CABALLERO.PNG",promo:true},
+    {id:6,name:"ARMAF ODYSSEY CANDEE",gender:"dama",img:"ARMAF ODYSSEY CANDEE DAMA.PNG",promo:false},
+    {id:7,name:"ARMAF ODYSSEY HOMME",gender:"caballero",img:"ARMAF ODYSSEY HOMME CABALLERO.PNG",promo:false},
+    {id:8,name:"ARMAF ODYSSEY MANDARIN SKY",gender:"caballero",img:"ARMAF ODYSSEY MANDARIN SKY CABALLERO.PNG",promo:false},
+    {id:9,name:"ARMAF YUM YUM",gender:"dama",img:"ARMAF YUM YUM DAMA.png",promo:false},
+    {id:10,name:"AZZARO THE MOST WANTED",gender:"caballero",img:"AZZARO THE MOST WANTED CABALLERO.PNG",promo:false},
+    {id:11,name:"BATH AND BODY WORKS PINK CHIFFON",gender:"dama",img:"BATH AND BODY WORKS PINK CHIFFON DAMA.PNG",promo:false},
+    {id:12,name:"BHARARA KING",gender:"caballero",img:"BHARARA BHARARA KING CABALLERO.PNG",promo:false},
+    {id:13,name:"BRITNEY SPEARS FANTASY",gender:"dama",img:"BRITNEY SPEARS FANTASY DAMA.PNG",promo:false},
+    {id:14,name:"CALVIN KLEIN EUPHORIA",gender:"dama",img:"CALVIN KLEIN EUPHORIA DAMA.PNG",promo:false},
+    {id:15,name:"CAROLINA HERRERA 212 VIP ROSE",gender:"dama",img:"CAROLINA HERRERA  212 VIP ROSE  DAMA.PNG",promo:true},
+    {id:16,name:"CAROLINA HERRERA 212 SEXY",gender:"dama",img:"CAROLINA HERRERA 212 SEXY DAMA.PNG",promo:false},
+    {id:17,name:"CAROLINA HERRERA 212 VIP MEN",gender:"caballero",img:"CAROLINA HERRERA 212 VIP MEN CABALLERO.PNG",promo:false},
+    {id:18,name:"CAROLINA HERRERA BAD BOY",gender:"caballero",img:"CAROLINA HERRERA BAD BOY CABALLERO.PNG",promo:true},
+    {id:19,name:"CAROLINA HERRERA CH MEN",gender:"caballero",img:"CAROLINA HERRERA CH MEN CABALLERO.PNG",promo:false},
+    {id:20,name:"CAROLINA HERRERA GOOD GIRL",gender:"dama",img:"CAROLINA HERRERA GOOD GIRL DAMA.PNG",promo:true},
+    {id:21,name:"CHANEL BLEU DE CHANEL",gender:"caballero",img:"CHANEL BLUE DE CHANEL CABALLERO.PNG",promo:true},
+    {id:22,name:"CHANEL COCO CHANEL",gender:"dama",img:"CHANEL COCO CHANEL DAMA.PNG",promo:false},
+    {id:23,name:"CRISTIANO RONALDO LEGACY",gender:"caballero",img:"CRISTIANO RONALDO LEGACY CABALLERO.PNG",promo:false},
+    {id:24,name:"DIOR SAUVAGE",gender:"caballero",img:"DIOR SAUVAGE CABALLERO.PNG",promo:true},
+    {id:25,name:"DOLCE & GABBANA LIGHT BLUE POUR HOMME",gender:"caballero",img:"DOLCE & GABBANA LIGHT BLUE POUR HOMME CABALLERO.PNG",promo:false},
+    {id:26,name:"DULCE VAINILLA",gender:"dama",img:"DULCE VAINILLA DAMA.PNG",promo:false},
+    {id:27,name:"DUMONT NITRO RED",gender:"caballero",img:"DUMONT NITRO RED CABALLERO.PNG",promo:false},
+    {id:28,name:"ESIKA WINNER SPORT",gender:"caballero",img:"ESIKA WINNER SPORT CABALLERO.PNG",promo:false},
+    {id:29,name:"GIORGIO ARMANI ACQUA DI GIÒ",gender:"caballero",img:"GIORGIO ARMANI ACQUA DI GI#U251c#U00c6 CABALLERO.PNG",promo:true},
+    {id:30,name:"GIORGIO ARMANI STRONGER WITH YOU",gender:"caballero",img:"GIORGIO ARMANI STRONGER WITH YOU CABALLERO.PNG",promo:false},
+    {id:31,name:"HUGO BOSS BOTTLED UNLIMITED",gender:"caballero",img:"HUGO BOSS BOSS BOTTLED UNLIMITED CABALLERO.PNG",promo:false},
+    {id:32,name:"ISSEY MIYAKE L'EAU D'ISSEY POUR HOMME",gender:"caballero",img:"ISSEEY MIYAKE L'EAU D'ISSEYP OUR HOMME CABALLERO.PNG",promo:false},
+    {id:33,name:"ISSEY MIYAKE L'EAU D'ISSEY SPORT",gender:"caballero",img:"ISSEY MIYAKE L'EAU D'ISSEY SPORT CABALLERO.PNG",promo:false},
+    {id:34,name:"JEAN PAUL GAULTIER LE MALE",gender:"caballero",img:"JEAN PAUL GAULTIER LE MALE CABALLERO.PNG",promo:true},
+    {id:35,name:"JEAN PAUL GAULTIER LE MALE ELIXIR",gender:"caballero",img:"JEAN PAUL GAULTIER LE MALE ELIXIR CABALLERO.png",promo:false},
+    {id:36,name:"KATY PERRY MEOW",gender:"dama",img:"KATY PERRY MEOW DAMA.PNG",promo:false},
+    {id:37,name:"LACOSTE L.12.12 WHITE",gender:"caballero",img:"LACOSTE L.12.12 WHITE CABALLERO.PNG",promo:false},
+    {id:38,name:"LACOSTE RED",gender:"caballero",img:"LACOSTE LACOSTE RED CABALLERO.PNG",promo:false},
+    {id:39,name:"LANCÔME LA VIE EST BELLE",gender:"dama",img:"LANCOME LA VIE EST BELLE DAMA.PNG",promo:true},
+    {id:40,name:"LATTAFA ART OF UNIVERSE",gender:"unisex",img:"LATTAFA ART OF UNIVERSE UNISEX.png",promo:false},
+    {id:41,name:"LATTAFA ASAD",gender:"caballero",img:"LATTAFA PERFUMES ASAD CABALLERO.png",promo:true},
+    {id:42,name:"LATTAFA BADE'E AL OUD SUBLIME",gender:"unisex",img:"LATTAFA PERFUMES BADE'E AL OUD SUBLIME UNISEX.PNG",promo:false},
+    {id:43,name:"LATTAFA HAYA",gender:"dama",img:"LATTAFA PERFUMES HAYA DAMA.PNG",promo:false},
+    {id:44,name:"LATTAFA HER CONFESSION",gender:"dama",img:"LATTAFA PERFUMES HER CONFESSION DAMA.PNG",promo:false},
+    {id:45,name:"LATTAFA KHAMRAH",gender:"unisex",img:"LATTAFA PERFUMES KHAMRAH UNISEX.PNG",promo:true},
+    {id:46,name:"LATTAFA YARA CANDY",gender:"dama",img:"LATTAFA PERFUMES YARA CANDY DAMA.PNG",promo:false},
+    {id:47,name:"LATTAFA YARA",gender:"dama",img:"LATTAFA PERFUMES YARA DAMA.PNG",promo:true},
+    {id:48,name:"LATTAFA YARA ELIXIR",gender:"dama",img:"LATTAFA PERFUMES YARA ELIXIR DAMA.png",promo:false},
+    {id:49,name:"LE LABO SANTAL 33",gender:"unisex",img:"LE LABO SANTAL 33 UNISEX.PNG",promo:false},
+    {id:50,name:"NAUTICA VOYAGE",gender:"caballero",img:"NAUTICA NAUTICA VOYAGE CABALLERO.PNG",promo:false},
+    {id:51,name:"ORIENTICA AMBER ROUGE",gender:"unisex",img:"ORIENTICA PREMIUM ORIENTICA AMBER ROUGE UNISEX.PNG",promo:false},
+    {id:52,name:"ORIENTICA VELVET GOLD",gender:"unisex",img:"ORIENTICA PREMIUM ORIENTICA VELVET GOLD UNISEX.PNG",promo:false},
+    {id:53,name:"PACO RABANNE FAME",gender:"dama",img:"PACO RABANNE FAME DAMA.PNG",promo:false},
+    {id:54,name:"PACO RABANNE INVICTUS",gender:"caballero",img:"PACO RABANNE INVICTUS CABALLERO.PNG",promo:true},
+    {id:55,name:"PACO RABANNE LADY MILLION",gender:"dama",img:"PACO RABANNE LADY MILLION DAMA.PNG",promo:true},
+    {id:56,name:"PACO RABANNE OLYMPÉA",gender:"dama",img:"PACO RABANNE OLYMPEA DAMA.PNG",promo:false},
+    {id:57,name:"PACO RABANNE ONE MILLION",gender:"caballero",img:"PACO RABANNE ONE MILLION CABALLERO.PNG",promo:true},
+    {id:58,name:"PACO RABANNE ONE MILLION LUCKY",gender:"caballero",img:"PACO RABANNE ONE MILLION LUCKY CABALLERO.PNG",promo:false},
+    {id:59,name:"PACO RABANNE PHANTOM",gender:"caballero",img:"PACO RABANNE PHANTOM CABALLERO.PNG",promo:false},
+    {id:60,name:"PARIS HILTON CAN CAN",gender:"dama",img:"PARIS HILTON CAN CAN DAMA.PNG",promo:false},
+    {id:61,name:"PARIS HILTON HEIRESS",gender:"dama",img:"PARIS HILTON HEIRESS DAMA.PNG",promo:false},
+    {id:62,name:"PARIS HILTON MEN",gender:"caballero",img:"PARIS HILTON PARIS HILTON MEN CABALLERO.PNG",promo:false},
+    {id:63,name:"PARIS HILTON WOMEN",gender:"dama",img:"PARIS HILTON PARIS HILTON WOMEN DAMA.PNG",promo:false},
+    {id:64,name:"PERRY ELLIS 360°",gender:"dama",img:"PERRY ELLIS 360#U252c#U2591 DAMA.PNG",promo:false},
+    {id:65,name:"PERRY ELLIS 360° RED FOR MEN",gender:"caballero",img:"PERRY ELLIS 360#U252c#U2591 RED FOR MEN CABALLERO.PNG",promo:false},
+    {id:66,name:"RALPH LAUREN POLO RED",gender:"caballero",img:"RALPH LAUREN POLO RED CABALLERO.PNG",promo:false},
+    {id:67,name:"RALPH LAUREN RALPH LOVE",gender:"dama",img:"RALPH LAUREN RALPH LOVE DAMA.PNG",promo:false},
+    {id:68,name:"SELENA GOMEZ",gender:"dama",img:"SELENA GOMEZ SELENA GOMEZ DAMA.PNG",promo:false},
+    {id:69,name:"VALENTINO UOMO",gender:"caballero",img:"VALENTINO VALENTINO UOMO CABALLERO.png",promo:false},
+    {id:70,name:"VERSACE EROS FLAME",gender:"caballero",img:"VERSACE EROS FLAME CABALLERO.PNG",promo:true},
+    {id:71,name:"VERSACE EROS PARFUM",gender:"caballero",img:"VERSACE EROS PARFUM CABALLERO.png",promo:true},
+    {id:72,name:"VICTORIA'S SECRET PURE SEDUCTION",gender:"dama",img:"VICTORIA'S SECRET  PURE SEDUCCION  DAMA.PNG",promo:false},
+    {id:73,name:"VICTORIA'S SECRET COCONUT PASSION",gender:"dama",img:"VICTORIA'S SECRET COCONUT PASSION DAMA.PNG",promo:false},
+    {id:74,name:"VICTORINOX SWISS ARMY",gender:"caballero",img:"VICTORINOX  SWISS ARMY  CABALLERO.PNG",promo:false},
+    {id:75,name:"VICTORINOX SWISS ARMY FOR HER",gender:"dama",img:"VICTORINOX SWISS ARMY FOR HER DAMA.PNG",promo:false}
+  ];
+  const obj = {};
+  defaults.forEach(p => obj[p.id] = p);
+  db.ref("products").set(obj);
+  db.ref("config").set({ wa: "584120000000", prices: PRICES });
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  if (id === "catalogo") renderCatalog();
+  if (id === "carrito") renderCart();
+  if (id === "promos") renderPromos();
+  if (id === "inicio") renderTop();
+  if (id === "admin") {
+    document.getElementById("waNumber").value = config.wa || "";
+    if (sessionStorage.getItem("lr_admin") === "1") {
+      document.getElementById("adminLogin").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+      fillPriceInputs();
+      renderAdminProducts();
+    }
+  }
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderCatalog();
+}
+
+function imgSrc(img) {
+  return "images/1_FICHA_TECNICA_PERFUMES/" + encodeURIComponent(img);
+}
+function imgFallback() {
+  return "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#222" width="100" height="100"/><text x="50" y="55" fill="#666" text-anchor="middle" font-size="12">L&R</text></svg>');
+}
+
+function renderCatalog() {
+  const q = (document.getElementById("search").value || "").toLowerCase();
+  let list = products.filter(p => {
+    const matchQ = p.name.toLowerCase().includes(q);
+    const matchF = currentFilter === "all" || (currentFilter === "promo" ? p.promo : p.gender === currentFilter);
+    return matchQ && matchF;
+  });
+  const grid = document.getElementById("catalogGrid");
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No hay resultados</div>';
+    return;
+  }
+  grid.innerHTML = list.map(p =>
+    '<div class="card">' +
+      '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
+      '<div class="card-body">' +
+        '<div class="card-title">' + p.name + '</div>' +
+        '<div><span class="badge ' + p.gender + '">' + p.gender + '</span><span class="badge replica">1.1</span>' +
+        (p.promo ? '<span class="badge promo">PROMO</span>' : '') + '</div>' +
+        '<div class="price">30ml $' + PRICES[30].Normal + '/' + PRICES[30].Premium +
+          ' · 60ml $' + PRICES[60].Normal + '/' + PRICES[60].Premium +
+          ' · 120ml $' + PRICES[120].Normal + '/' + PRICES[120].Premium + '</div>' +
+        '<div class="btns"><button class="btn-premium" onclick="openAddModal(' + p.id + ')">Agregar</button></div>' +
+      '</div></div>'
+  ).join("");
+}
+
+function openAddModal(id) {
+  pendingProductId = id;
+  selectedSize = 30;
+  selectedTipo = "Normal";
+  const p = products.find(x => x.id === id);
+  document.getElementById("modalTitle").textContent = p ? p.name : "Agregar";
+  updateModalButtons();
+  updateModalPrice();
+  document.getElementById("addModal").classList.add("show");
+}
+function closeModal() {
+  document.getElementById("addModal").classList.remove("show");
+  pendingProductId = null;
+}
+function selectSize(size) {
+  selectedSize = size;
+  updateModalButtons();
+  updateModalPrice();
+}
+function selectTipo(tipo) {
+  selectedTipo = tipo;
+  updateModalButtons();
+  updateModalPrice();
+}
+function updateModalButtons() {
+  document.querySelectorAll(".size-btns button").forEach(b => {
+    b.classList.toggle("selected", parseInt(b.dataset.size) === selectedSize);
+  });
+  document.querySelectorAll(".tipo-btns button").forEach(b => {
+    b.classList.toggle("selected", b.dataset.tipo === selectedTipo);
+  });
+}
+function updateModalPrice() {
+  const price = PRICES[selectedSize][selectedTipo];
+  document.getElementById("modalPrice").textContent = selectedSize + " ml · " + selectedTipo + " · $" + price;
+}
+function confirmAdd() {
+  if (!pendingProductId) return;
+  const p = products.find(x => x.id === pendingProductId);
+  if (!p) return;
+  const price = PRICES[selectedSize][selectedTipo];
+  const key = pendingProductId + "_" + selectedSize + "_" + selectedTipo;
+  const exist = cart.find(c => c.key === key);
+  if (exist) exist.qty++;
+  else cart.push({ key: key, id: pendingProductId, name: p.name, size: selectedSize, tipo: selectedTipo, price: price, qty: 1 });
+  localStorage.setItem("lr_cart", JSON.stringify(cart));
+  toast(p.name + " (" + selectedSize + "ml " + selectedTipo + ") agregado");
+  closeModal();
+}
+
+function renderCart() {
+  const list = document.getElementById("cartList");
+  const empty = document.getElementById("cartEmpty");
+  const totalBox = document.getElementById("cartTotal");
+  if (!cart.length) {
+    list.innerHTML = "";
+    empty.style.display = "block";
+    totalBox.style.display = "none";
+    return;
+  }
+  empty.style.display = "none";
+  totalBox.style.display = "block";
+  let total = 0;
+  list.innerHTML = cart.map(function(c, i) {
+    total += c.price * c.qty;
+    return '<div class="cart-item"><div class="info"><strong>' + c.name + '</strong><br>' +
+      '<span style="color:var(--gold);font-size:13px">' + c.size + ' ml · ' + c.tipo + ' · $' + c.price + '</span></div>' +
+      '<div class="qty"><button onclick="changeQty(' + i + ',-1)">−</button><span>' + c.qty + '</span>' +
+      '<button onclick="changeQty(' + i + ',1)">+</button></div></div>';
+  }).join("");
+  document.getElementById("totalAmount").textContent = "$" + total.toFixed(1);
+}
+
+function changeQty(i, d) {
+  cart[i].qty += d;
+  if (cart[i].qty <= 0) cart.splice(i, 1);
+  localStorage.setItem("lr_cart", JSON.stringify(cart));
+  renderCart();
+}
+
+/* ========== WHATSAPP CORREGIDO ==========
+   Se construye el texto con saltos de línea reales (\n)
+   y se codifica TODO el mensaje con encodeURIComponent.
+   Así el carrito SÍ llega completo con cantidades.
+*/
+function sendWhatsApp() {
+  if (!cart.length) {
+    toast("El carrito está vacío");
+    return;
+  }
+  var lines = [];
+  lines.push("¡Hola! Quiero hacer este pedido de *Perfumes L&R* (Réplicas 1.1):");
+  lines.push("");
+  var total = 0;
+  cart.forEach(function(c) {
+    var sub = (c.price * c.qty);
+    total += sub;
+    lines.push("• " + c.name + " (" + c.size + " ml " + c.tipo + ") x" + c.qty + " = $" + sub.toFixed(1));
+  });
+  lines.push("");
+  lines.push("*Total: $" + total.toFixed(1) + "*");
+  lines.push("");
+  lines.push("Gracias.");
+  var texto = lines.join("\n");
+  var url = "https://wa.me/" + (config.wa || "584120000000") + "?text=" + encodeURIComponent(texto);
+  window.open(url, "_blank");
+}
+
+function renderPromos() {
+  var promos = products.filter(function(p) { return p.promo; });
+  var el = document.getElementById("promosList");
+  if (!promos.length) {
+    el.innerHTML = '<div class="empty">No hay promociones activas</div>';
+    return;
+  }
+  el.innerHTML = '<div class="grid">' + promos.map(function(p) {
+    return '<div class="card">' +
+      '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
+      '<div class="card-body">' +
+        '<div class="card-title">' + p.name + '</div>' +
+        '<span class="badge promo">PROMO</span><span class="badge replica">1.1</span>' +
+        '<div class="price">30ml $' + PRICES[30].Normal + '/' + PRICES[30].Premium +
+          ' · 60ml $' + PRICES[60].Normal + '/' + PRICES[60].Premium +
+          ' · 120ml $' + PRICES[120].Normal + '/' + PRICES[120].Premium + '</div>' +
+        '<div class="btns"><button class="btn-premium" onclick="openAddModal(' + p.id + ')">Agregar</button></div>' +
+      '</div></div>';
+  }).join("") + '</div>';
+}
+
+/* Lo más pedido: con FOTOS de productos (scroll horizontal) */
+function renderTop() {
+  var promos = products.filter(function(p) { return p.promo; }).slice(0, 8);
+  var el = document.getElementById("topSellers");
+  if (!promos.length) {
+    el.innerHTML = '<div class="loading" style="width:100%">Próximamente</div>';
+    return;
+  }
+  el.innerHTML = promos.map(function(p) {
+    return '<div class="top-card" onclick="openAddModal(' + p.id + ')" style="cursor:pointer">' +
+      '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
+      '<div class="name">' + p.name + '</div></div>';
+  }).join("");
+}
+
+function loginAdmin() {
+  if (document.getElementById("adminPass").value === ADMIN_PASS) {
+    sessionStorage.setItem("lr_admin", "1");
+    document.getElementById("adminLogin").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    document.getElementById("waNumber").value = config.wa || "";
+    fillPriceInputs();
+    renderAdminProducts();
+  } else toast("Contraseña incorrecta");
+}
+function logoutAdmin() {
+  sessionStorage.removeItem("lr_admin");
+  document.getElementById("adminLogin").style.display = "block";
+  document.getElementById("adminPanel").style.display = "none";
+  document.getElementById("adminPass").value = "";
+}
+function fillPriceInputs() {
+  document.getElementById("price30n").value = PRICES[30].Normal;
+  document.getElementById("price30p").value = PRICES[30].Premium;
+  document.getElementById("price60n").value = PRICES[60].Normal;
+  document.getElementById("price60p").value = PRICES[60].Premium;
+  document.getElementById("price120n").value = PRICES[120].Normal;
+  document.getElementById("price120p").value = PRICES[120].Premium;
+}
+function savePrices() {
+  var p30n = parseFloat(document.getElementById("price30n").value);
+  var p30p = parseFloat(document.getElementById("price30p").value);
+  var p60n = parseFloat(document.getElementById("price60n").value);
+  var p60p = parseFloat(document.getElementById("price60p").value);
+  var p120n = parseFloat(document.getElementById("price120n").value);
+  var p120p = parseFloat(document.getElementById("price120p").value);
+  if ([p30n,p30p,p60n,p60p,p120n,p120p].some(function(x){ return isNaN(x) || x < 0; })) {
+    return toast("Revisa los precios (números válidos)");
+  }
+  PRICES = {
+    30:  { Normal: p30n, Premium: p30p },
+    60:  { Normal: p60n, Premium: p60p },
+    120: { Normal: p120n, Premium: p120p }
+  };
+  var newConfig = Object.assign({}, config, { prices: PRICES, wa: config.wa || "584120000000" });
+  db.ref("config").set(newConfig);
+  config = newConfig;
+  updatePriceSummary();
+  renderCatalog();
+  renderPromos();
+  toast("Precios guardados");
+}
+function renderAdminProducts() {
+  document.getElementById("adminProducts").innerHTML = products.map(function(p) {
+    return '<div class="product-admin"><strong>' + p.name + '</strong> ' +
+      '<span class="badge ' + p.gender + '">' + p.gender + '</span>' +
+      (p.promo ? ' <span class="badge promo">PROMO</span>' : '') +
+      '<div class="actions">' +
+        '<button class="btn-secondary" onclick="editProduct(' + p.id + ')">Editar</button>' +
+        '<button class="btn-danger" onclick="deleteProduct(' + p.id + ')">Borrar</button>' +
+      '</div></div>';
+  }).join("");
+}
+function editProduct(id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  editingId = id;
+  document.getElementById("pName").value = p.name;
+  document.getElementById("pGender").value = p.gender;
+  document.getElementById("pImg").value = p.img;
+  document.getElementById("pPromo").checked = !!p.promo;
+}
+function clearForm() {
+  editingId = null;
+  document.getElementById("pName").value = "";
+  document.getElementById("pImg").value = "";
+  document.getElementById("pPromo").checked = false;
+}
+function saveProduct() {
+  var name = document.getElementById("pName").value.trim();
+  if (!name) return toast("Nombre requerido");
+  var gender = document.getElementById("pGender").value;
+  var img = document.getElementById("pImg").value.trim();
+  var promo = document.getElementById("pPromo").checked;
+  if (editingId) {
+    db.ref("products/" + editingId).update({ name: name, gender: gender, img: img, promo: promo });
+  } else {
+    var newId = products.length ? Math.max.apply(null, products.map(function(p){ return p.id; })) + 1 : 1;
+    db.ref("products/" + newId).set({ id: newId, name: name, gender: gender, img: img, promo: promo });
+  }
+  clearForm();
+  toast("Perfume guardado");
+}
+function deleteProduct(id) {
+  if (!confirm("¿Borrar este perfume?")) return;
+  db.ref("products/" + id).remove();
+  toast("Borrado");
+}
+function saveConfig() {
+  var wa = document.getElementById("waNumber").value.trim();
+  if (!wa) return toast("Número requerido");
+  var newConfig = Object.assign({}, config, { wa: wa, prices: PRICES });
+  db.ref("config").set(newConfig);
+  config = newConfig;
+  toast("WhatsApp guardado");
+}
+function toast(msg) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  setTimeout(function(){ t.style.display = "none"; }, 2200);
+}
+
+window.addEventListener("beforeunload", function(e) {
+  if (cart.length) { e.preventDefault(); e.returnValue = ""; }
+});
+history.pushState(null, "", location.href);
+window.addEventListener("popstate", function(){ history.pushState(null, "", location.href); });
+
+loadFromFirebase();
+</script>
+</body>
+</html>
