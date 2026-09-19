@@ -14,110 +14,133 @@ header{background:linear-gradient(180deg,#1a1a1a,#0d0d0d);padding:12px 16px;text
 .logo{font-size:28px;font-weight:700;color:var(--gold);letter-spacing:2px}
 .logo span{color:var(--text);font-weight:300}
 .tagline{font-size:11px;color:var(--muted);margin-top:2px}
+
 nav{display:flex;justify-content:space-around;background:#111;position:fixed;bottom:0;left:0;right:0;border-top:1px solid #333;z-index:100;padding:8px 0 env(safe-area-inset-bottom)}
-nav button{background:none;border:none;color:var(--muted);font-size:11px;padding:6px 4px;flex:1;cursor:pointer}
+nav button{background:none;border:none;color:var(--muted);font-size:11px;padding:6px 4px;flex:1;cursor:pointer;position:relative;transition:color .2s}
 nav button.active{color:var(--gold)}
-nav button span{display:block;font-size:20px;margin-bottom:2px}
+nav button span.icon{display:block;font-size:22px;margin-bottom:2px;transition:transform .25s}
+nav button.pulse span.icon{animation:navPulse .6s ease}
+@keyframes navPulse{
+  0%{transform:scale(1)}
+  30%{transform:scale(1.35)}
+  60%{transform:scale(0.95)}
+  100%{transform:scale(1)}
+}
+
+/* Badge del carrito */
+.cart-badge{
+  position:absolute;top:0;right:18%;
+  background:var(--danger);color:#fff;
+  font-size:10px;font-weight:700;
+  min-width:18px;height:18px;line-height:18px;
+  border-radius:9px;padding:0 4px;
+  display:none;pointer-events:none;
+  transition:transform .2s;
+}
+.cart-badge.show{display:block}
+.cart-badge.bump{animation:badgeBump .4s ease}
+@keyframes badgeBump{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.4)}
+  100%{transform:scale(1)}
+}
+
 .section{display:none;padding:16px}
 .section.active{display:block}
 h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #333;padding-bottom:6px}
+
+/* Tip de uso (primera vez) */
+.tip-bar{
+  background:linear-gradient(90deg,#1a2a1a,#1a1a1a);
+  border:1px solid #2a4a2a;
+  border-radius:10px;padding:10px 12px;
+  margin-bottom:12px;font-size:13px;color:var(--muted);
+  display:flex;align-items:center;gap:10px;
+  animation:fadeIn .4s ease;
+}
+.tip-bar strong{color:var(--gold)}
+.tip-bar button{
+  margin-left:auto;background:none;border:none;color:var(--muted);
+  font-size:18px;cursor:pointer;padding:0 4px;line-height:1;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
 .search-bar{display:flex;gap:8px;margin-bottom:12px}
 .search-bar input{flex:1;background:var(--card);border:1px solid #333;color:var(--text);padding:10px 12px;border-radius:8px;font-size:15px}
 .filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;-webkit-overflow-scrolling:touch}
 .filters button{background:var(--card);border:1px solid #333;color:var(--muted);padding:6px 12px;border-radius:20px;font-size:13px;white-space:nowrap;cursor:pointer}
 .filters button.active{background:var(--gold);color:#000;border-color:var(--gold)}
+
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid #2a2a2a;display:flex;flex-direction:column}
-.card img{width:100%;height:220px;object-fit:contain;background:#111;padding:4px}
+.card img{width:100%;height:200px;object-fit:contain;background:#111;padding:4px}
 .card-body{padding:10px;flex:1;display:flex;flex-direction:column}
 .card-title{font-size:12px;font-weight:600;line-height:1.3;margin-bottom:4px;min-height:32px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-bottom:4px;margin-right:4px}
-.badge.dama{background:#9b59b6}.badge.caballero{background:#2980b9}.badge.unisex{background:#16a085}.badge.promo{background:var(--danger)}.badge.replica{background:#8e44ad}
+.badge.dama{background:#9b59b6}.badge.caballero{background:#2980b9}.badge.unisex{background:#16a085}
+.badge.promo{background:var(--danger)}.badge.replica{background:#8e44ad}
 .price{font-size:11px;color:var(--gold);margin-bottom:6px;line-height:1.4}
-.btns{display:flex;flex-direction:column;gap:4px;margin-top:auto}
-.btns button{flex:1;border:none;padding:8px 4px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
-.btn-premium{background:var(--gold);color:#000}
-.hero{text-align:center;padding:0 0 20px}
-.banner-wrap{margin:0 -16px 16px;overflow:hidden}
-.banner-wrap img{width:100%;display:block;max-height:320px;object-fit:cover}
-.promo-banner{background:linear-gradient(135deg,#2a1a00,#1a1a1a);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center}
-.promo-banner h3{color:var(--gold);margin-bottom:6px}
-/* Carrusel horizontal de lo más pedido con fotos */
-.top-scroll{display:flex;gap:12px;overflow-x:auto;padding:8px 0 16px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
-.top-card{flex:0 0 140px;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid #2a2a2a;scroll-snap-align:start}
-.top-card img{width:100%;height:160px;object-fit:contain;background:#111}
-.top-card .name{font-size:11px;padding:8px;text-align:center;line-height:1.3;height:48px;overflow:hidden}
-.cart-item{background:var(--card);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.btns{margin-top:auto}
+.btns button{width:100%;border:none;padding:9px 4px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:var(--gold);color:#000}
+
+.cart-item{background:var(--card);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;animation:fadeIn .3s ease}
 .cart-item .info{flex:1}
 .cart-item .qty{display:flex;align-items:center;gap:8px}
 .cart-item button{background:#333;border:none;color:var(--text);width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer}
 .total{background:var(--card);padding:16px;border-radius:12px;text-align:center;margin:16px 0;border:1px solid var(--gold)}
 .total .amount{font-size:28px;color:var(--gold);font-weight:700}
 .btn-whatsapp{display:block;width:100%;background:#25d366;color:#fff;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+
 .admin-login,.admin-panel{max-width:400px;margin:0 auto}
 input,select,textarea{width:100%;background:var(--card);border:1px solid #333;color:var(--text);padding:12px;border-radius:8px;margin-bottom:10px;font-size:15px}
 .admin-panel label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
 .btn{background:var(--gold);color:#000;border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px}
 .btn-secondary{background:#333;color:var(--text)}.btn-danger{background:var(--danger);color:#fff}
 .empty{text-align:center;color:var(--muted);padding:40px 20px}
-.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--success);color:#fff;padding:10px 20px;border-radius:8px;z-index:200;display:none;font-size:14px;white-space:nowrap}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--success);color:#fff;padding:10px 20px;border-radius:8px;z-index:200;display:none;font-size:14px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 .product-admin{background:var(--card);padding:10px;border-radius:8px;margin-bottom:8px;font-size:13px}
 .product-admin .actions{margin-top:6px;display:flex;gap:6px}
 .product-admin button{flex:1;padding:6px;font-size:12px}
 .loading{text-align:center;padding:40px;color:var(--muted)}
 .price-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .price-row input{margin-bottom:0}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;align-items:center;justify-content:center;padding:16px}
+.info-box{background:var(--card);border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.5}
+
+/* Modal agregar */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:var(--card);border-radius:16px;padding:20px;max-width:340px;width:100%;border:1px solid #333}
+.modal{background:var(--card);border-radius:16px;padding:20px;max-width:340px;width:100%;border:1px solid #333;animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
 .modal h3{color:var(--gold);margin-bottom:12px;font-size:16px}
 .modal .size-btns,.modal .tipo-btns{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .modal button{flex:1;min-width:80px;padding:12px 8px;border-radius:8px;border:1px solid #333;background:#222;color:var(--text);font-size:13px;cursor:pointer}
 .modal button.selected{background:var(--gold);color:#000;border-color:var(--gold)}
-.modal .confirm{width:100%;margin-top:8px}
-.info-box{background:var(--card);border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.5}
+.modal .confirm{width:100%;margin-top:8px;background:var(--gold);color:#000;border:none;font-weight:700}
+
+/* Animación: partícula que vuela al carrito */
+.fly-dot{
+  position:fixed;z-index:999;width:22px;height:22px;border-radius:50%;
+  background:var(--gold);pointer-events:none;
+  box-shadow:0 0 12px rgba(201,162,39,.8);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#000;font-weight:700;
+  transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .55s ease;
+}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">L&R <span>PERFUMES</span></div>
-  <div class="tagline">Réplicas 1.1 • Idénticas al original</div>
+  <div class="tagline">Réplicas 1.1 • 30 · 60 · 120 ml</div>
 </header>
 <div id="toast" class="toast"></div>
 
-<!-- ========== INICIO ========== -->
-<section id="inicio" class="section active">
-  <div class="hero">
-    <!-- Banner fundadores -->
-    <div class="banner-wrap">
-      <img src="images/banner_1.jpg" alt="Fundadores Perfumes L&R — Reaul Torres y Luis Bonilla" loading="eager">
-    </div>
-
-    <div class="promo-banner">
-      <h3>Réplicas 1.1</h3>
-      <p style="font-size:14px;color:var(--muted)">Idénticas en todo al original</p>
-      <p style="font-size:13px;margin-top:8px;color:var(--gold)">
-        Envases tipo ordinario: <strong>30 ml</strong> · <strong>60 ml</strong> · <strong>120 ml</strong>
-      </p>
-      <p id="priceSummary" style="font-size:12px;margin-top:8px;color:var(--muted)"></p>
-    </div>
-
-    <!-- Banner productos (botellas) -->
-    <div class="banner-wrap" style="margin-bottom:20px">
-      <img src="images/banner_2.jpg" alt="Presentaciones L&R — 30ml 60ml 120ml" loading="lazy">
-    </div>
-
-    <div class="promo-banner" style="border-color:#27ae60;text-align:left">
-      <h3 style="color:#27ae60;text-align:center">Lo más pedido</h3>
-      <div class="top-scroll" id="topSellers">
-        <div class="loading" style="padding:20px;width:100%">Cargando...</div>
-      </div>
-    </div>
+<!-- ========== CATÁLOGO (pantalla principal) ========== -->
+<section id="catalogo" class="section active">
+  <div class="tip-bar" id="tipBar">
+    <span>👆 Elige un perfume → <strong>Agregar</strong> → ve al <strong>🛒 Carrito</strong> y envía por WhatsApp</span>
+    <button type="button" onclick="dismissTip()" aria-label="Cerrar">×</button>
   </div>
-</section>
-
-<!-- ========== CATÁLOGO ========== -->
-<section id="catalogo" class="section">
   <div class="search-bar">
     <input type="text" id="search" placeholder="Buscar perfume..." oninput="renderCatalog()">
   </div>
@@ -131,12 +154,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <div class="grid" id="catalogGrid"><div class="loading">Cargando catálogo...</div></div>
 </section>
 
-<!-- ========== PROMOS ========== -->
-<section id="promos" class="section">
-  <h2>Promociones & Tendencias</h2>
-  <div id="promosList"><div class="loading">Cargando...</div></div>
-</section>
-
 <!-- ========== CARRITO ========== -->
 <section id="carrito" class="section">
   <h2>Tu pedido</h2>
@@ -146,7 +163,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="amount" id="totalAmount">$0</div>
     <button class="btn-whatsapp" onclick="sendWhatsApp()">Enviar pedido por WhatsApp</button>
   </div>
-  <div class="empty" id="cartEmpty">Carrito vacío</div>
+  <div class="empty" id="cartEmpty">Carrito vacío — ve al Catálogo y agrega perfumes</div>
 </section>
 
 <!-- ========== ADMIN ========== -->
@@ -158,18 +175,12 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   </div>
   <div id="adminPanel" class="admin-panel" style="display:none">
     <h2>Panel Admin</h2>
-
     <label>Número WhatsApp (código país, sin +)</label>
     <input type="text" id="waNumber" placeholder="58412XXXXXXX">
     <button class="btn" onclick="saveConfig()">Guardar WhatsApp</button>
-
     <hr style="border-color:#333;margin:16px 0">
-
     <h3 style="color:var(--gold);margin-bottom:8px">Precios por presentación</h3>
-    <div class="info-box">
-      Las réplicas 1.1 se venden en envases ordinarios de 30 ml, 60 ml y 120 ml (como en el banner de botellas).
-      Aquí editas los precios globales de cada tamaño y calidad.
-    </div>
+    <div class="info-box">Réplicas 1.1 en envases de 30 · 60 · 120 ml. Precios globales.</div>
     <label>30 ml — Normal / Premium</label>
     <div class="price-row">
       <input type="number" step="0.1" id="price30n" placeholder="Normal">
@@ -186,9 +197,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
       <input type="number" step="0.1" id="price120p" placeholder="Premium">
     </div>
     <button class="btn" onclick="savePrices()">Guardar precios</button>
-
     <hr style="border-color:#333;margin:16px 0">
-
     <h3 style="color:var(--gold);margin-bottom:10px">Agregar / Editar perfume</h3>
     <input type="text" id="pName" placeholder="Nombre del perfume">
     <select id="pGender">
@@ -197,10 +206,9 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
       <option value="unisex">Unisex</option>
     </select>
     <input type="text" id="pImg" placeholder="Nombre exacto del archivo de imagen">
-    <label><input type="checkbox" id="pPromo"> Es promoción / tendencia (aparece en lo más pedido)</label>
+    <label><input type="checkbox" id="pPromo"> Es promoción / tendencia</label>
     <button class="btn" onclick="saveProduct()">Guardar perfume</button>
     <button class="btn btn-secondary" onclick="clearForm()">Limpiar</button>
-
     <hr style="border-color:#333;margin:16px 0">
     <h3 style="color:var(--gold);margin-bottom:10px">Catálogo actual</h3>
     <div id="adminProducts"></div>
@@ -208,7 +216,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   </div>
 </section>
 
-<!-- Modal agregar -->
+<!-- Modal elegir tamaño + calidad -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <h3 id="modalTitle">Agregar al carrito</h3>
@@ -223,30 +231,25 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
       <button type="button" data-tipo="Premium" onclick="selectTipo('Premium')">Premium</button>
     </div>
     <p id="modalPrice" style="color:var(--gold);font-size:14px;margin-bottom:10px;text-align:center"></p>
-    <button class="btn confirm" onclick="confirmAdd()">Agregar al carrito</button>
-    <button class="btn btn-secondary" style="margin-top:6px" onclick="closeModal()">Cancelar</button>
+    <button class="btn confirm" id="confirmAddBtn" onclick="confirmAdd()">Agregar al carrito</button>
+    <button class="btn btn-secondary" style="margin-top:6px;width:100%" onclick="closeModal()">Cancelar</button>
   </div>
 </div>
 
 <nav>
-  <button class="active" onclick="showSection('inicio',this)"><span>🏠</span>Inicio</button>
-  <button onclick="showSection('catalogo',this)"><span>🧴</span>Catálogo</button>
-  <button onclick="showSection('promos',this)"><span>🔥</span>Promos</button>
-  <button onclick="showSection('carrito',this)"><span>🛒</span>Carrito</button>
-  <button onclick="showSection('admin',this)"><span>⚙️</span>Admin</button>
+  <button class="active" id="navCatalogo" onclick="showSection('catalogo',this)"><span class="icon">🧴</span>Catálogo</button>
+  <button id="navCarrito" onclick="showSection('carrito',this)">
+    <span class="icon">🛒</span>Carrito
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
+  <button id="navAdmin" onclick="showSection('admin',this)"><span class="icon">⚙️</span>Admin</button>
 </nav>
 
 <script>
 /*
-  ============================================================
-  PERFUMES L&R — Catálogo Réplicas 1.1
-  ============================================================
-  - Firebase: productos + config (WhatsApp + precios)
-  - Envases ordinarios: 30 ml / 60 ml / 120 ml (banner_2)
-  - Réplicas 1.1 idénticas al original
-  - Admin: editar precios globales por tamaño/calidad
-  - WhatsApp: mensaje codificado con encodeURIComponent
-  ============================================================
+  Perfumes L&R — versión directa (solo Catálogo / Carrito / Admin)
+  - Al agregar: animación que vuela al botón Carrito + badge con cantidad
+  - Al enviar WhatsApp: limpia el carrito para empezar de nuevo
 */
 
 const firebaseConfig = {
@@ -262,13 +265,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* Precios por defecto (se pueden sobreescribir desde Admin y se guardan en Firebase) */
 let PRICES = {
   30:  { Normal: 5,   Premium: 5.5 },
   60:  { Normal: 9,   Premium: 10 },
   120: { Normal: 16,  Premium: 18 }
 };
-
 const ADMIN_PASS = "lr2026";
 
 let products = [];
@@ -281,43 +282,39 @@ let pendingProductId = null;
 let selectedSize = 30;
 let selectedTipo = "Normal";
 
+/* ---------- Tip de uso ---------- */
+function dismissTip() {
+  var el = document.getElementById("tipBar");
+  if (el) el.style.display = "none";
+  localStorage.setItem("lr_tip_dismissed", "1");
+}
+if (localStorage.getItem("lr_tip_dismissed") === "1") {
+  var tip = document.getElementById("tipBar");
+  if (tip) tip.style.display = "none";
+}
+
+/* ---------- Firebase ---------- */
 function loadFromFirebase() {
-  db.ref("products").on("value", snap => {
-    const val = snap.val();
+  db.ref("products").on("value", function(snap) {
+    var val = snap.val();
     products = val ? Object.values(val) : [];
     if (products.length === 0) seedProducts();
     renderCatalog();
-    renderPromos();
-    renderTop();
-    updatePriceSummary();
     if (sessionStorage.getItem("lr_admin") === "1") renderAdminProducts();
   });
-  db.ref("config").on("value", snap => {
-    const val = snap.val();
+  db.ref("config").on("value", function(snap) {
+    var val = snap.val();
     if (val) {
       config = val;
-      if (val.prices) {
-        PRICES = val.prices;
-      }
-      updatePriceSummary();
-      // Si estamos en admin, rellenar campos
+      if (val.prices) PRICES = val.prices;
       if (sessionStorage.getItem("lr_admin") === "1") fillPriceInputs();
     }
   });
-}
-
-function updatePriceSummary() {
-  const el = document.getElementById("priceSummary");
-  if (!el) return;
-  el.innerHTML =
-    "30 ml: Normal $" + PRICES[30].Normal + " · Premium $" + PRICES[30].Premium + "<br>" +
-    "60 ml: Normal $" + PRICES[60].Normal + " · Premium $" + PRICES[60].Premium + "<br>" +
-    "120 ml: Normal $" + PRICES[120].Normal + " · Premium $" + PRICES[120].Premium + "<br>" +
-    "<span style='font-size:11px'>Precios a tasa BCV</span>";
+  updateCartBadge();
 }
 
 function seedProducts() {
-  const defaults = [
+  var defaults = [
     {id:1,name:"AFNAN 9 PM REBEL",gender:"unisex",img:"AFNAN 9 PM REBEL UNISEX.PNG",promo:false},
     {id:2,name:"ANTONIO BANDERAS BLUE SEDUCTION",gender:"caballero",img:"ANTONIO BANDERAS BLUE SEDUCTION CABALLERO.PNG",promo:false},
     {id:3,name:"ARIANA GRANDE CLOUD",gender:"dama",img:"ARIANA GRANDE CLOUD DAMA.PNG",promo:true},
@@ -394,21 +391,20 @@ function seedProducts() {
     {id:74,name:"VICTORINOX SWISS ARMY",gender:"caballero",img:"VICTORINOX  SWISS ARMY  CABALLERO.PNG",promo:false},
     {id:75,name:"VICTORINOX SWISS ARMY FOR HER",gender:"dama",img:"VICTORINOX SWISS ARMY FOR HER DAMA.PNG",promo:false}
   ];
-  const obj = {};
-  defaults.forEach(p => obj[p.id] = p);
+  var obj = {};
+  defaults.forEach(function(p){ obj[p.id] = p; });
   db.ref("products").set(obj);
   db.ref("config").set({ wa: "584120000000", prices: PRICES });
 }
 
+/* ---------- Navegación ---------- */
 function showSection(id, btn) {
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(function(s){ s.classList.remove("active"); });
   document.getElementById(id).classList.add("active");
-  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(function(b){ b.classList.remove("active"); });
   if (btn) btn.classList.add("active");
   if (id === "catalogo") renderCatalog();
   if (id === "carrito") renderCart();
-  if (id === "promos") renderPromos();
-  if (id === "inicio") renderTop();
   if (id === "admin") {
     document.getElementById("waNumber").value = config.wa || "";
     if (sessionStorage.getItem("lr_admin") === "1") {
@@ -416,13 +412,16 @@ function showSection(id, btn) {
       document.getElementById("adminPanel").style.display = "block";
       fillPriceInputs();
       renderAdminProducts();
+    } else {
+      document.getElementById("adminLogin").style.display = "block";
+      document.getElementById("adminPanel").style.display = "none";
     }
   }
 }
 
 function setFilter(f, btn) {
   currentFilter = f;
-  document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".filters button").forEach(function(b){ b.classList.remove("active"); });
   btn.classList.add("active");
   renderCatalog();
 }
@@ -435,19 +434,19 @@ function imgFallback() {
 }
 
 function renderCatalog() {
-  const q = (document.getElementById("search").value || "").toLowerCase();
-  let list = products.filter(p => {
-    const matchQ = p.name.toLowerCase().includes(q);
-    const matchF = currentFilter === "all" || (currentFilter === "promo" ? p.promo : p.gender === currentFilter);
+  var q = (document.getElementById("search").value || "").toLowerCase();
+  var list = products.filter(function(p) {
+    var matchQ = p.name.toLowerCase().includes(q);
+    var matchF = currentFilter === "all" || (currentFilter === "promo" ? p.promo : p.gender === currentFilter);
     return matchQ && matchF;
   });
-  const grid = document.getElementById("catalogGrid");
+  var grid = document.getElementById("catalogGrid");
   if (!list.length) {
     grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No hay resultados</div>';
     return;
   }
-  grid.innerHTML = list.map(p =>
-    '<div class="card">' +
+  grid.innerHTML = list.map(function(p) {
+    return '<div class="card">' +
       '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
       '<div class="card-body">' +
         '<div class="card-title">' + p.name + '</div>' +
@@ -456,16 +455,17 @@ function renderCatalog() {
         '<div class="price">30ml $' + PRICES[30].Normal + '/' + PRICES[30].Premium +
           ' · 60ml $' + PRICES[60].Normal + '/' + PRICES[60].Premium +
           ' · 120ml $' + PRICES[120].Normal + '/' + PRICES[120].Premium + '</div>' +
-        '<div class="btns"><button class="btn-premium" onclick="openAddModal(' + p.id + ')">Agregar</button></div>' +
-      '</div></div>'
-  ).join("");
+        '<div class="btns"><button onclick="openAddModal(' + p.id + ')">Agregar</button></div>' +
+      '</div></div>';
+  }).join("");
 }
 
+/* ---------- Modal ---------- */
 function openAddModal(id) {
   pendingProductId = id;
   selectedSize = 30;
   selectedTipo = "Normal";
-  const p = products.find(x => x.id === id);
+  var p = products.find(function(x){ return x.id === id; });
   document.getElementById("modalTitle").textContent = p ? p.name : "Agregar";
   updateModalButtons();
   updateModalPrice();
@@ -486,35 +486,107 @@ function selectTipo(tipo) {
   updateModalPrice();
 }
 function updateModalButtons() {
-  document.querySelectorAll(".size-btns button").forEach(b => {
+  document.querySelectorAll(".size-btns button").forEach(function(b) {
     b.classList.toggle("selected", parseInt(b.dataset.size) === selectedSize);
   });
-  document.querySelectorAll(".tipo-btns button").forEach(b => {
+  document.querySelectorAll(".tipo-btns button").forEach(function(b) {
     b.classList.toggle("selected", b.dataset.tipo === selectedTipo);
   });
 }
 function updateModalPrice() {
-  const price = PRICES[selectedSize][selectedTipo];
+  var price = PRICES[selectedSize][selectedTipo];
   document.getElementById("modalPrice").textContent = selectedSize + " ml · " + selectedTipo + " · $" + price;
 }
+
+/* ---------- Agregar + animación hacia el carrito ---------- */
 function confirmAdd() {
   if (!pendingProductId) return;
-  const p = products.find(x => x.id === pendingProductId);
+  var p = products.find(function(x){ return x.id === pendingProductId; });
   if (!p) return;
-  const price = PRICES[selectedSize][selectedTipo];
-  const key = pendingProductId + "_" + selectedSize + "_" + selectedTipo;
-  const exist = cart.find(c => c.key === key);
+  var price = PRICES[selectedSize][selectedTipo];
+  var key = pendingProductId + "_" + selectedSize + "_" + selectedTipo;
+  var exist = cart.find(function(c){ return c.key === key; });
   if (exist) exist.qty++;
   else cart.push({ key: key, id: pendingProductId, name: p.name, size: selectedSize, tipo: selectedTipo, price: price, qty: 1 });
   localStorage.setItem("lr_cart", JSON.stringify(cart));
-  toast(p.name + " (" + selectedSize + "ml " + selectedTipo + ") agregado");
+
+  // Animación: punto que vuela del botón "Agregar" al ícono del carrito
+  var btn = document.getElementById("confirmAddBtn");
+  flyToCart(btn);
+
   closeModal();
+  toast("Agregado → mira el 🛒 Carrito abajo");
+  updateCartBadge();
 }
 
+function flyToCart(fromEl) {
+  var cartBtn = document.getElementById("navCarrito");
+  if (!fromEl || !cartBtn) {
+    pulseCart();
+    return;
+  }
+  var from = fromEl.getBoundingClientRect();
+  var to = cartBtn.getBoundingClientRect();
+  var startX = from.left + from.width / 2;
+  var startY = from.top + from.height / 2;
+  var endX = to.left + to.width / 2;
+  var endY = to.top + to.height / 2;
+
+  var dot = document.createElement("div");
+  dot.className = "fly-dot";
+  dot.textContent = "+1";
+  dot.style.left = startX + "px";
+  dot.style.top = startY + "px";
+  document.body.appendChild(dot);
+
+  // Forzar reflow y animar
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      var dx = endX - startX;
+      var dy = endY - startY;
+      dot.style.transform = "translate(" + dx + "px," + dy + "px) scale(0.4)";
+      dot.style.opacity = "0.3";
+    });
+  });
+
+  setTimeout(function() {
+    if (dot.parentNode) dot.parentNode.removeChild(dot);
+    pulseCart();
+  }, 560);
+}
+
+function pulseCart() {
+  var cartBtn = document.getElementById("navCarrito");
+  if (!cartBtn) return;
+  cartBtn.classList.remove("pulse");
+  void cartBtn.offsetWidth;
+  cartBtn.classList.add("pulse");
+  setTimeout(function(){ cartBtn.classList.remove("pulse"); }, 650);
+
+  var badge = document.getElementById("cartBadge");
+  badge.classList.remove("bump");
+  void badge.offsetWidth;
+  badge.classList.add("bump");
+  setTimeout(function(){ badge.classList.remove("bump"); }, 450);
+}
+
+function updateCartBadge() {
+  var n = 0;
+  cart.forEach(function(c){ n += c.qty; });
+  var badge = document.getElementById("cartBadge");
+  if (n > 0) {
+    badge.textContent = n > 99 ? "99+" : String(n);
+    badge.classList.add("show");
+  } else {
+    badge.classList.remove("show");
+  }
+}
+
+/* ---------- Carrito ---------- */
 function renderCart() {
-  const list = document.getElementById("cartList");
-  const empty = document.getElementById("cartEmpty");
-  const totalBox = document.getElementById("cartTotal");
+  var list = document.getElementById("cartList");
+  var empty = document.getElementById("cartEmpty");
+  var totalBox = document.getElementById("cartTotal");
   if (!cart.length) {
     list.innerHTML = "";
     empty.style.display = "block";
@@ -523,7 +595,7 @@ function renderCart() {
   }
   empty.style.display = "none";
   totalBox.style.display = "block";
-  let total = 0;
+  var total = 0;
   list.innerHTML = cart.map(function(c, i) {
     total += c.price * c.qty;
     return '<div class="cart-item"><div class="info"><strong>' + c.name + '</strong><br>' +
@@ -539,13 +611,10 @@ function changeQty(i, d) {
   if (cart[i].qty <= 0) cart.splice(i, 1);
   localStorage.setItem("lr_cart", JSON.stringify(cart));
   renderCart();
+  updateCartBadge();
 }
 
-/* ========== WHATSAPP CORREGIDO ==========
-   Se construye el texto con saltos de línea reales (\n)
-   y se codifica TODO el mensaje con encodeURIComponent.
-   Así el carrito SÍ llega completo con cantidades.
-*/
+/* ---------- WhatsApp + limpiar carrito ---------- */
 function sendWhatsApp() {
   if (!cart.length) {
     toast("El carrito está vacío");
@@ -556,7 +625,7 @@ function sendWhatsApp() {
   lines.push("");
   var total = 0;
   cart.forEach(function(c) {
-    var sub = (c.price * c.qty);
+    var sub = c.price * c.qty;
     total += sub;
     lines.push("• " + c.name + " (" + c.size + " ml " + c.tipo + ") x" + c.qty + " = $" + sub.toFixed(1));
   });
@@ -567,44 +636,16 @@ function sendWhatsApp() {
   var texto = lines.join("\n");
   var url = "https://wa.me/" + (config.wa || "584120000000") + "?text=" + encodeURIComponent(texto);
   window.open(url, "_blank");
+
+  // Limpiar todo para empezar de nuevo
+  cart = [];
+  localStorage.setItem("lr_cart", "[]");
+  updateCartBadge();
+  renderCart();
+  toast("Pedido enviado · carrito vacío");
 }
 
-function renderPromos() {
-  var promos = products.filter(function(p) { return p.promo; });
-  var el = document.getElementById("promosList");
-  if (!promos.length) {
-    el.innerHTML = '<div class="empty">No hay promociones activas</div>';
-    return;
-  }
-  el.innerHTML = '<div class="grid">' + promos.map(function(p) {
-    return '<div class="card">' +
-      '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
-      '<div class="card-body">' +
-        '<div class="card-title">' + p.name + '</div>' +
-        '<span class="badge promo">PROMO</span><span class="badge replica">1.1</span>' +
-        '<div class="price">30ml $' + PRICES[30].Normal + '/' + PRICES[30].Premium +
-          ' · 60ml $' + PRICES[60].Normal + '/' + PRICES[60].Premium +
-          ' · 120ml $' + PRICES[120].Normal + '/' + PRICES[120].Premium + '</div>' +
-        '<div class="btns"><button class="btn-premium" onclick="openAddModal(' + p.id + ')">Agregar</button></div>' +
-      '</div></div>';
-  }).join("") + '</div>';
-}
-
-/* Lo más pedido: con FOTOS de productos (scroll horizontal) */
-function renderTop() {
-  var promos = products.filter(function(p) { return p.promo; }).slice(0, 8);
-  var el = document.getElementById("topSellers");
-  if (!promos.length) {
-    el.innerHTML = '<div class="loading" style="width:100%">Próximamente</div>';
-    return;
-  }
-  el.innerHTML = promos.map(function(p) {
-    return '<div class="top-card" onclick="openAddModal(' + p.id + ')" style="cursor:pointer">' +
-      '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
-      '<div class="name">' + p.name + '</div></div>';
-  }).join("");
-}
-
+/* ---------- Admin ---------- */
 function loginAdmin() {
   if (document.getElementById("adminPass").value === ADMIN_PASS) {
     sessionStorage.setItem("lr_admin", "1");
@@ -637,7 +678,7 @@ function savePrices() {
   var p120n = parseFloat(document.getElementById("price120n").value);
   var p120p = parseFloat(document.getElementById("price120p").value);
   if ([p30n,p30p,p60n,p60p,p120n,p120p].some(function(x){ return isNaN(x) || x < 0; })) {
-    return toast("Revisa los precios (números válidos)");
+    return toast("Revisa los precios");
   }
   PRICES = {
     30:  { Normal: p30n, Premium: p30p },
@@ -647,9 +688,7 @@ function savePrices() {
   var newConfig = Object.assign({}, config, { prices: PRICES, wa: config.wa || "584120000000" });
   db.ref("config").set(newConfig);
   config = newConfig;
-  updatePriceSummary();
   renderCatalog();
-  renderPromos();
   toast("Precios guardados");
 }
 function renderAdminProducts() {
@@ -710,14 +749,8 @@ function toast(msg) {
   var t = document.getElementById("toast");
   t.textContent = msg;
   t.style.display = "block";
-  setTimeout(function(){ t.style.display = "none"; }, 2200);
+  setTimeout(function(){ t.style.display = "none"; }, 2400);
 }
-
-window.addEventListener("beforeunload", function(e) {
-  if (cart.length) { e.preventDefault(); e.returnValue = ""; }
-});
-history.pushState(null, "", location.href);
-window.addEventListener("popstate", function(){ history.pushState(null, "", location.href); });
 
 loadFromFirebase();
 </script>
