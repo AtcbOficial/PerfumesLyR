@@ -23,9 +23,23 @@ nav button.pulse span.icon{animation:navPulse .6s ease}
 @keyframes navPulse{0%{transform:scale(1)}30%{transform:scale(1.35)}60%{transform:scale(0.95)}100%{transform:scale(1)}}
 
 .cart-badge{position:absolute;top:0;right:18%;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;line-height:18px;border-radius:9px;padding:0 4px;display:none;pointer-events:none}
-.cart-badge.show{display:block}
+.cart-badge.show{display:block;animation:badgePulse 1.4s ease-in-out infinite}
 .cart-badge.bump{animation:badgeBump .4s ease}
-@keyframes badgeBump{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes badgeBump{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
+@keyframes badgePulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(231,76,60,.5)}
+  50%{transform:scale(1.12);box-shadow:0 0 0 6px rgba(231,76,60,0)}
+}
+/* Carrito con productos: el botón de la nav también llama la atención */
+nav button.has-items span.icon{animation:cartWiggle 1.6s ease-in-out infinite;color:var(--gold)}
+nav button.has-items{color:var(--gold)}
+@keyframes cartWiggle{
+  0%,100%{transform:rotate(0) scale(1)}
+  20%{transform:rotate(-12deg) scale(1.12)}
+  40%{transform:rotate(10deg) scale(1.12)}
+  60%{transform:rotate(-6deg) scale(1.06)}
+  80%{transform:rotate(4deg) scale(1.04)}
+}
 
 .section{display:none;padding:16px}
 .section.active{display:block}
@@ -55,7 +69,18 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 .badge.promo{background:var(--danger)}.badge.replica{background:#8e44ad}.badge.premium{background:var(--gold);color:#000}
 .sizes-hint{font-size:11px;color:var(--muted);margin-bottom:6px}
 .btns{margin-top:auto}
-.btns button{width:100%;border:none;padding:9px 4px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:var(--gold);color:#000}
+.btns button{
+  width:100%;border:none;padding:10px 4px;border-radius:8px;font-size:13px;font-weight:700;
+  cursor:pointer;background:var(--gold);color:#000;
+  animation:addPulse 2s ease-in-out infinite;
+  box-shadow:0 2px 10px rgba(201,162,39,.35);
+  transition:transform .15s,box-shadow .15s;
+}
+.btns button:active{transform:scale(.96)}
+@keyframes addPulse{
+  0%,100%{box-shadow:0 2px 8px rgba(201,162,39,.3);transform:scale(1)}
+  50%{box-shadow:0 4px 16px rgba(201,162,39,.55);transform:scale(1.03)}
+}
 
 /* Carrito con imagen */
 .cart-item{background:var(--card);border-radius:10px;padding:10px;margin-bottom:10px;display:flex;align-items:center;gap:12px;animation:fadeIn .3s ease}
@@ -67,7 +92,18 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 
 .total{background:var(--card);padding:16px;border-radius:12px;text-align:center;margin:16px 0;border:1px solid var(--gold)}
 .total p{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.4}
-.btn-whatsapp{display:block;width:100%;background:#25d366;color:#fff;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.btn-whatsapp{
+  display:block;width:100%;background:#25d366;color:#fff;border:none;padding:16px;
+  border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px;
+  animation:waPulse 1.8s ease-in-out infinite;
+  box-shadow:0 4px 18px rgba(37,211,102,.4);
+  transition:transform .15s;
+}
+.btn-whatsapp:active{transform:scale(.97)}
+@keyframes waPulse{
+  0%,100%{box-shadow:0 4px 14px rgba(37,211,102,.35);transform:scale(1);background:#25d366}
+  50%{box-shadow:0 6px 24px rgba(37,211,102,.65);transform:scale(1.025);background:#2fe074}
+}
 
 .admin-login,.admin-panel{max-width:400px;margin:0 auto}
 input,select,textarea{width:100%;background:var(--card);border:1px solid #333;color:var(--text);padding:12px;border-radius:8px;margin-bottom:10px;font-size:15px}
@@ -155,9 +191,20 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   border:1px solid var(--gold);
   border-radius:12px;padding:14px 12px;margin-bottom:14px;
   text-align:center;line-height:1.45;
+  animation:makerGlow 3s ease-in-out infinite, makerIn .5s ease;
+  box-shadow:0 0 0 0 rgba(201,162,39,.25);
 }
-.maker-bar h3{color:var(--gold);font-size:15px;margin-bottom:4px;letter-spacing:1px}
+.maker-bar h3{color:var(--gold);font-size:15px;margin-bottom:4px;letter-spacing:1px;
+  animation:makerTitle 2.5s ease-in-out infinite}
 .maker-bar p{font-size:12px;color:var(--muted);margin:0}
+@keyframes makerGlow{
+  0%,100%{box-shadow:0 0 8px 0 rgba(201,162,39,.2);border-color:#c9a227}
+  50%{box-shadow:0 0 18px 2px rgba(201,162,39,.45);border-color:#e8c84a}
+}
+@keyframes makerTitle{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.92;transform:scale(1.02)}
+}
 
 </style>
 </head>
@@ -468,7 +515,7 @@ function renderCatalog() {
   var q = (document.getElementById("search").value || "").toLowerCase();
   var list = products.filter(function(p) {
     var matchQ = p.name.toLowerCase().includes(q);
-    var matchF = currentFilter === "all" || (currentFilter === "promo" ? p.promo : p.gender === currentFilter);
+    var matchF = currentFilter === "all" || (currentFilter === "promo" || currentFilter === "Lo Mas Vendido" ? p.promo : p.gender === currentFilter);
     return matchQ && matchF;
   });
   var grid = document.getElementById("catalogGrid");
@@ -583,11 +630,14 @@ function updateCartBadge() {
   var n = 0;
   cart.forEach(function(c){ n += c.qty; });
   var badge = document.getElementById("cartBadge");
+  var navCart = document.getElementById("navCarrito");
   if (n > 0) {
     badge.textContent = n > 99 ? "99+" : String(n);
     badge.classList.add("show");
+    if (navCart) navCart.classList.add("has-items");
   } else {
     badge.classList.remove("show");
+    if (navCart) navCart.classList.remove("has-items");
   }
 }
 
