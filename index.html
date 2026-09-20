@@ -130,19 +130,25 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 @keyframes welcomePop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
 .welcome-card img{width:100%;display:block;vertical-align:middle}
 .welcome-close{
-  position:absolute;top:10px;right:10px;
-  width:36px;height:36px;border-radius:50%;
-  background:rgba(0,0,0,.65);border:2px solid #c9a227;
-  color:#fff;font-size:22px;line-height:1;
+  position:absolute;top:12px;right:12px;
+  width:48px;height:48px;border-radius:50%;
+  background:#c9a227;border:3px solid #fff;
+  color:#000;font-size:32px;font-weight:700;line-height:1;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
-  z-index:2;
-  transition:transform .2s,background .2s;
-  animation:welcomePulse 1.5s ease infinite;
+  z-index:10;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+  transition:transform .2s,background .2s,box-shadow .2s;
+  animation:welcomePulse 1.2s ease infinite;
+  -webkit-tap-highlight-color:transparent;
+  padding:0;margin:0;
 }
-.welcome-close:hover{background:var(--gold);color:#000;transform:scale(1.1) rotate(90deg)}
+.welcome-close:active,.welcome-close:hover{
+  background:#fff;color:#000;transform:scale(1.15) rotate(90deg);
+  box-shadow:0 6px 20px rgba(201,162,39,.7);
+}
 @keyframes welcomePulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,.5)}
-  50%{box-shadow:0 0 0 8px rgba(201,162,39,0)}
+  0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,.7);transform:scale(1)}
+  50%{box-shadow:0 0 0 12px rgba(201,162,39,0);transform:scale(1.08)}
 }
 .maker-bar{
   background:linear-gradient(135deg,#1a1508,#1a1a1a);
@@ -164,7 +170,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 <!-- Publicidad emergente al abrir -->
 <div class="welcome-layer" id="welcomeLayer" role="dialog" aria-label="Bienvenida">
   <div class="welcome-card">
-    <button type="button" class="welcome-close" onclick="closeWelcome()" aria-label="Cerrar">×</button>
+    <button type="button" class="welcome-close" onclick="closeWelcome(event)" ontouchend="closeWelcome(event)" aria-label="Cerrar">✕</button>
     <img id="welcomeImg" src="images/banner_bienvenida.png" alt="Perfumes L&R Fabricantes — Lotes surtidos para revendedores" onerror="this.style.display='none';document.getElementById('welcomeFallback').style.display='block';">
     <div class="welcome-fallback" id="welcomeFallback">
       <h2>PERFUMES L&R</h2>
@@ -759,20 +765,25 @@ function toast(msg) {
 }
 
 
-function closeWelcome() {
+function closeWelcome(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   var el = document.getElementById("welcomeLayer");
   if (!el) return;
   el.classList.add("hide");
   setTimeout(function() {
+    el.style.display = "none";
     el.classList.add("hidden");
-    el.classList.remove("hide");
   }, 280);
-}, 300);
 }
-/* Mostrar bienvenida al abrir */
+
+/* Cerrar también al tocar el fondo oscuro */
 document.addEventListener("DOMContentLoaded", function() {
   var el = document.getElementById("welcomeLayer");
-  if (el) el.style.display = "flex";
+  if (!el) return;
+  el.style.display = "flex";
+  el.addEventListener("click", function(ev) {
+    if (ev.target === el) closeWelcome(ev);
+  });
 });
 
 loadFromFirebase();
