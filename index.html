@@ -98,31 +98,38 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 .fly-dot{position:fixed;z-index:999;width:22px;height:22px;border-radius:50%;background:var(--gold);pointer-events:none;box-shadow:0 0 12px rgba(201,162,39,.8);display:flex;align-items:center;justify-content:center;font-size:12px;color:#000;font-weight:700;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s ease}
 
-/* Popup publicidad emergente */
-.ad-overlay{
-  position:fixed;inset:0;z-index:500;
-  background:rgba(0,0,0,.82);
+/* Pantalla de bienvenida */
+.welcome-layer{
+  position:fixed;inset:0;z-index:99999;
+  background:rgba(0,0,0,.85);
   display:flex;align-items:center;justify-content:center;
   padding:16px;
-  animation:adFadeIn .35s ease;
+  animation:welcomeFadeIn .35s ease;
 }
-.ad-overlay.hide{
-  animation:adFadeOut .3s ease forwards;
+.welcome-layer.hidden{display:none !important}
+.welcome-layer.hide{
+  animation:welcomeFadeOut .3s ease forwards;
   pointer-events:none;
 }
-@keyframes adFadeIn{from{opacity:0}to{opacity:1}}
-@keyframes adFadeOut{from{opacity:1}to{opacity:0}}
-.ad-box{
+.welcome-fallback{
+  display:none;padding:28px 20px;text-align:center;background:#1a1a1a;color:#f5f5f5;
+}
+.welcome-fallback h2{color:#c9a227;font-size:20px;margin-bottom:8px}
+.welcome-fallback p{font-size:14px;color:#aaa;line-height:1.5;margin:6px 0}
+
+@keyframes welcomeFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes welcomeFadeOut{from{opacity:1}to{opacity:0}}
+.welcome-card{
   position:relative;
   max-width:420px;width:100%;
   border-radius:16px;overflow:hidden;
   box-shadow:0 12px 40px rgba(0,0,0,.55);
   border:1px solid #c9a22755;
-  animation:adPop .4s cubic-bezier(.2,.9,.3,1.2);
+  animation:welcomePop .4s cubic-bezier(.2,.9,.3,1.2);
 }
-@keyframes adPop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
-.ad-box img{width:100%;display:block;vertical-align:middle}
-.ad-close{
+@keyframes welcomePop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
+.welcome-card img{width:100%;display:block;vertical-align:middle}
+.welcome-close{
   position:absolute;top:10px;right:10px;
   width:36px;height:36px;border-radius:50%;
   background:rgba(0,0,0,.65);border:2px solid #c9a227;
@@ -130,10 +137,10 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   z-index:2;
   transition:transform .2s,background .2s;
-  animation:adXpulse 1.5s ease infinite;
+  animation:welcomePulse 1.5s ease infinite;
 }
-.ad-close:hover{background:var(--gold);color:#000;transform:scale(1.1) rotate(90deg)}
-@keyframes adXpulse{
+.welcome-close:hover{background:var(--gold);color:#000;transform:scale(1.1) rotate(90deg)}
+@keyframes welcomePulse{
   0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,.5)}
   50%{box-shadow:0 0 0 8px rgba(201,162,39,0)}
 }
@@ -155,10 +162,16 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 </header>
 
 <!-- Publicidad emergente al abrir -->
-<div class="ad-overlay" id="adOverlay" role="dialog" aria-label="Publicidad">
-  <div class="ad-box">
-    <button type="button" class="ad-close" onclick="closeAd()" aria-label="Cerrar publicidad">×</button>
-    <img src="images/publicidad_emergente.png" alt="Perfumes L&R Fabricantes — Lotes surtidos para revendedores">
+<div class="welcome-layer" id="welcomeLayer" role="dialog" aria-label="Bienvenida">
+  <div class="welcome-card">
+    <button type="button" class="welcome-close" onclick="closeWelcome()" aria-label="Cerrar">×</button>
+    <img id="welcomeImg" src="images/banner_bienvenida.png" alt="Perfumes L&R Fabricantes — Lotes surtidos para revendedores" onerror="this.style.display='none';document.getElementById('welcomeFallback').style.display='block';">
+    <div class="welcome-fallback" id="welcomeFallback">
+      <h2>PERFUMES L&R</h2>
+      <p><strong style="color:#c9a227">FABRICANTES</strong></p>
+      <p>Precios para revendedores<br>Lotes surtidos<br>Emprende con nosotros</p>
+      <p style="margin-top:12px;font-size:12px;color:#666">Toca × para ver el catálogo</p>
+    </div>
   </div>
 </div>
 
@@ -746,17 +759,19 @@ function toast(msg) {
 }
 
 
-function closeAd() {
-  var el = document.getElementById("adOverlay");
+function closeWelcome() {
+  var el = document.getElementById("welcomeLayer");
   if (!el) return;
   el.classList.add("hide");
   setTimeout(function() {
-    if (el.parentNode) el.parentNode.removeChild(el);
-  }, 300);
+    el.classList.add("hidden");
+    el.classList.remove("hide");
+  }, 280);
+}, 300);
 }
-/* Mostrar publicidad al abrir (siempre, cada visita) */
+/* Mostrar bienvenida al abrir */
 document.addEventListener("DOMContentLoaded", function() {
-  var el = document.getElementById("adOverlay");
+  var el = document.getElementById("welcomeLayer");
   if (el) el.style.display = "flex";
 });
 
