@@ -97,6 +97,55 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .modal .confirm{width:100%;margin-top:4px;background:var(--gold);color:#000;border:none;font-weight:700;padding:12px;border-radius:8px;font-size:14px;cursor:pointer}
 
 .fly-dot{position:fixed;z-index:999;width:22px;height:22px;border-radius:50%;background:var(--gold);pointer-events:none;box-shadow:0 0 12px rgba(201,162,39,.8);display:flex;align-items:center;justify-content:center;font-size:12px;color:#000;font-weight:700;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s ease}
+
+/* Popup publicidad emergente */
+.ad-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.82);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+  animation:adFadeIn .35s ease;
+}
+.ad-overlay.hide{
+  animation:adFadeOut .3s ease forwards;
+  pointer-events:none;
+}
+@keyframes adFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes adFadeOut{from{opacity:1}to{opacity:0}}
+.ad-box{
+  position:relative;
+  max-width:420px;width:100%;
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.55);
+  border:1px solid #c9a22755;
+  animation:adPop .4s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes adPop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
+.ad-box img{width:100%;display:block;vertical-align:middle}
+.ad-close{
+  position:absolute;top:10px;right:10px;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(0,0,0,.65);border:2px solid #c9a227;
+  color:#fff;font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  z-index:2;
+  transition:transform .2s,background .2s;
+  animation:adXpulse 1.5s ease infinite;
+}
+.ad-close:hover{background:var(--gold);color:#000;transform:scale(1.1) rotate(90deg)}
+@keyframes adXpulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,.5)}
+  50%{box-shadow:0 0 0 8px rgba(201,162,39,0)}
+}
+.maker-bar{
+  background:linear-gradient(135deg,#1a1508,#1a1a1a);
+  border:1px solid var(--gold);
+  border-radius:12px;padding:14px 12px;margin-bottom:14px;
+  text-align:center;line-height:1.45;
+}
+.maker-bar h3{color:var(--gold);font-size:15px;margin-bottom:4px;letter-spacing:1px}
+.maker-bar p{font-size:12px;color:var(--muted);margin:0}
+
 </style>
 </head>
 <body>
@@ -104,6 +153,15 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <div class="logo">L&R <span>PERFUMES</span></div>
   <div class="tagline">Réplicas 1.1 · Línea Premium · 30 · 60 · 120 ml</div>
 </header>
+
+<!-- Publicidad emergente al abrir -->
+<div class="ad-overlay" id="adOverlay" role="dialog" aria-label="Publicidad">
+  <div class="ad-box">
+    <button type="button" class="ad-close" onclick="closeAd()" aria-label="Cerrar publicidad">×</button>
+    <img src="images/publicidad_emergente.png" alt="Perfumes L&R Fabricantes — Lotes surtidos para revendedores">
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <section id="catalogo" class="section active">
@@ -111,9 +169,11 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span>👆 Elige perfume → <strong>Agregar</strong> → <strong>🛒 Carrito</strong> → pide cotización por WhatsApp</span>
     <button type="button" onclick="dismissTip()" aria-label="Cerrar">×</button>
   </div>
-  <div class="note-bar">
-    <strong>Línea Premium</strong> — la mejor calidad · Réplicas 1.1 idénticas al original<br>
-    Envíanos tu pedido por WhatsApp y te respondemos con la <strong>cotización</strong> a la brevedad.
+  <div class="maker-bar">
+    <h3>PERFUMES L&R · FABRICANTES</h3>
+    <p>Precios para revendedores · Lotes surtidos · Emprende con nosotros</p>
+    <p style="margin-top:6px"><strong style="color:var(--gold)">Línea Premium</strong> · Réplicas 1.1 · 30 · 60 · 120 ml</p>
+    <p style="margin-top:4px">Pide tu cotización por WhatsApp y te respondemos a la brevedad</p>
   </div>
   <div class="search-bar">
     <input type="text" id="search" placeholder="Buscar perfume..." oninput="renderCatalog()">
@@ -130,6 +190,11 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 <section id="carrito" class="section">
   <h2>Tu pedido</h2>
+  <div class="maker-bar">
+    <h3>PERFUMES L&R · FABRICANTES</h3>
+    <p>Precios para revendedores · Lotes surtidos · Emprende con nosotros</p>
+    <p style="margin-top:6px">Línea Premium · Réplicas 1.1 · Envíanos tu lista y te cotizamos</p>
+  </div>
   <div id="cartList"></div>
   <div class="total" id="cartTotal" style="display:none">
     <p>Envíanos este pedido por WhatsApp.<br>Te responderemos con la <strong style="color:var(--gold)">cotización</strong> a la brevedad.</p>
@@ -679,6 +744,21 @@ function toast(msg) {
   t.style.display = "block";
   setTimeout(function(){ t.style.display = "none"; }, 2400);
 }
+
+
+function closeAd() {
+  var el = document.getElementById("adOverlay");
+  if (!el) return;
+  el.classList.add("hide");
+  setTimeout(function() {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }, 300);
+}
+/* Mostrar publicidad al abrir (siempre, cada visita) */
+document.addEventListener("DOMContentLoaded", function() {
+  var el = document.getElementById("adOverlay");
+  if (el) el.style.display = "flex";
+});
 
 loadFromFirebase();
 </script>
