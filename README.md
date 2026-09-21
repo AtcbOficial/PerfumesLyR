@@ -7,7 +7,7 @@
 - **Carrito siempre vacío** al abrir la web (cada cliente empieza de cero)
 - También se limpia después de enviar por WhatsApp
 
-## Admin (contraseña: lr2026)
+## Admin (contraseña: ******)
 - Agregar productos nuevos
 - Editar nombre, género, imagen, promo
 - Borrar productos
