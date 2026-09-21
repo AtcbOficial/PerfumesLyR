@@ -206,6 +206,39 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   50%{opacity:.92;transform:scale(1.02)}
 }
 
+
+.badge.agotado{background:#c0392b;color:#fff}
+.badge.masvendido{background:var(--gold);color:#000}
+
+.card-img-wrap{position:relative;background:#111}
+.card-img-wrap img{width:100%;height:200px;object-fit:contain;background:#111;padding:4px;display:block}
+.soldout-seal{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;z-index:2;
+  background:rgba(0,0,0,.35);
+}
+.soldout-seal span{
+  background:#c0392b;color:#fff;font-weight:800;font-size:15px;
+  letter-spacing:2px;padding:8px 14px;border:3px solid #fff;
+  transform:rotate(-18deg);box-shadow:0 4px 14px rgba(0,0,0,.5);
+  text-transform:uppercase;
+}
+.btns button.disabled-agotado{
+  background:#555;color:#bbb;animation:none;box-shadow:none;cursor:not-allowed;
+}
+
+.admin-search{margin-bottom:10px}
+.admin-search input{margin-bottom:0}
+.admin-quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.admin-quick button{
+  flex:1;min-width:100px;padding:8px 6px;font-size:11px;font-weight:700;
+  border:none;border-radius:6px;cursor:pointer;
+}
+.admin-quick .q-promo{background:var(--gold);color:#000}
+.admin-quick .q-agotado{background:#c0392b;color:#fff}
+.admin-quick .q-promo.on,.admin-quick .q-agotado.on{outline:2px solid #fff;outline-offset:1px}
+.product-admin.agotado-row{opacity:.75;border:1px solid #c0392b55}
+
 </style>
 </head>
 <body>
@@ -298,12 +331,16 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     </select>
     <label>Archivo de imagen (nombre exacto)</label>
     <input type="text" id="pImg" placeholder="EJ: DIOR SAUVAGE CABALLERO.PNG" oninput="previewAdminImg()">
-    <label><input type="checkbox" id="pPromo"> Es promoción / tendencia</label>
+    <label><input type="checkbox" id="pPromo"> Más vendido / tendencia</label>
+    <label><input type="checkbox" id="pAgotado"> Agotado (sello en catálogo)</label>
     <button class="btn" onclick="saveProduct()">Guardar perfume</button>
     <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
 
     <hr style="border-color:#333;margin:16px 0">
     <h3 style="color:var(--gold);margin-bottom:10px">Catálogo actual (<span id="productCount">0</span>)</h3>
+    <div class="admin-search">
+      <input type="text" id="adminSearch" placeholder="Buscar perfume para editar o borrar..." oninput="renderAdminProducts()">
+    </div>
     <div id="adminProducts"></div>
     <button class="btn btn-danger" style="margin-top:20px" onclick="logoutAdmin()">Cerrar sesión</button>
   </div>
@@ -524,18 +561,26 @@ function renderCatalog() {
     return;
   }
   grid.innerHTML = list.map(function(p) {
+    var seal = p.agotado ? '<div class="soldout-seal"><span>AGOTADO</span></div>' : '';
+    var btn = p.agotado
+      ? '<button class="disabled-agotado" disabled>Agotado</button>'
+      : '<button onclick="openAddModal(' + p.id + ')">Agregar</button>';
     return '<div class="card">' +
-      '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
+      '<div class="card-img-wrap">' +
+        '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
+        seal +
+      '</div>' +
       '<div class="card-body">' +
         '<div class="card-title">' + p.name + '</div>' +
         '<div>' +
           '<span class="badge ' + p.gender + '">' + p.gender + '</span>' +
           '<span class="badge replica">1.1</span>' +
           '<span class="badge premium">Premium</span>' +
-          (p.promo ? '<span class="badge promo">PROMO</span>' : '') +
+          (p.promo ? '<span class="badge masvendido">MÁS VENDIDO</span>' : '') +
+          (p.agotado ? '<span class="badge agotado">AGOTADO</span>' : '') +
         '</div>' +
         '<div class="sizes-hint">30 · 60 · 120 ml</div>' +
-        '<div class="btns"><button onclick="openAddModal(' + p.id + ')">Agregar</button></div>' +
+        '<div class="btns">' + btn + '</div>' +
       '</div></div>';
   }).join("");
 }
@@ -733,19 +778,48 @@ function previewAdminImg() {
 }
 
 function renderAdminProducts() {
-  document.getElementById("productCount").textContent = products.length;
-  document.getElementById("adminProducts").innerHTML = products.map(function(p) {
-    return '<div class="product-admin">' +
+  var q = ((document.getElementById("adminSearch") || {}).value || "").toLowerCase().trim();
+  var list = products.filter(function(p) {
+    return !q || (p.name || "").toLowerCase().indexOf(q) !== -1;
+  });
+  document.getElementById("productCount").textContent = list.length + (q ? " / " + products.length : "");
+  if (!list.length) {
+    document.getElementById("adminProducts").innerHTML = '<div class="empty">No hay resultados</div>';
+    return;
+  }
+  document.getElementById("adminProducts").innerHTML = list.map(function(p) {
+    return '<div class="product-admin' + (p.agotado ? ' agotado-row' : '') + '">' +
       '<img src="' + imgSrc(p.img) + '" alt="" onerror="this.src=\'' + imgFallback() + '\'">' +
       '<div class="meta"><strong>' + p.name + '</strong><br>' +
       '<span class="badge ' + p.gender + '">' + p.gender + '</span>' +
-      (p.promo ? ' <span class="badge promo">PROMO</span>' : '') +
-      '<br><span style="font-size:11px;color:var(--muted);word-break:break-all">' + (p.img || "(sin imagen)") + '</span></div>' +
+      (p.promo ? ' <span class="badge masvendido">MÁS VENDIDO</span>' : '') +
+      (p.agotado ? ' <span class="badge agotado">AGOTADO</span>' : '') +
+      '<br><span style="font-size:11px;color:var(--muted);word-break:break-all">' + (p.img || "(sin imagen)") + '</span>' +
+      '<div class="admin-quick">' +
+        '<button type="button" class="q-promo' + (p.promo ? ' on' : '') + '" onclick="togglePromo(' + p.id + ')">' + (p.promo ? '★ Más vendido' : 'Más vendido') + '</button>' +
+        '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(' + p.id + ')">' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
+      '</div></div>' +
       '<div class="actions">' +
         '<button class="btn-secondary" onclick="editProduct(' + p.id + ')">Editar</button>' +
         '<button class="btn-danger" onclick="deleteProduct(' + p.id + ')">Borrar</button>' +
       '</div></div>';
   }).join("");
+}
+
+function togglePromo(id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  var next = !p.promo;
+  db.ref("products/" + id).update({ promo: next });
+  toast(next ? "Marcado como más vendido" : "Quitado de más vendido");
+}
+
+function toggleAgotado(id) {
+  var p = products.find(function(x){ return x.id === id; });
+  if (!p) return;
+  var next = !p.agotado;
+  db.ref("products/" + id).update({ agotado: next });
+  toast(next ? "Marcado AGOTADO" : "Ya no está agotado");
 }
 
 function editProduct(id) {
@@ -757,6 +831,7 @@ function editProduct(id) {
   document.getElementById("pGender").value = p.gender;
   document.getElementById("pImg").value = p.img || "";
   document.getElementById("pPromo").checked = !!p.promo;
+  var ag = document.getElementById("pAgotado"); if (ag) ag.checked = !!p.agotado;
   previewAdminImg();
   /* Scroll al formulario */
   document.getElementById("formTitle").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -769,6 +844,7 @@ function clearForm() {
   document.getElementById("pName").value = "";
   document.getElementById("pImg").value = "";
   document.getElementById("pPromo").checked = false;
+  var ag = document.getElementById("pAgotado"); if (ag) ag.checked = false;
   document.getElementById("pGender").value = "dama";
   var prev = document.getElementById("adminPreview");
   prev.classList.remove("show");
@@ -781,12 +857,13 @@ function saveProduct() {
   var gender = document.getElementById("pGender").value;
   var img = document.getElementById("pImg").value.trim();
   var promo = document.getElementById("pPromo").checked;
+  var agotado = !!(document.getElementById("pAgotado") && document.getElementById("pAgotado").checked);
   if (editingId) {
-    db.ref("products/" + editingId).update({ name: name, gender: gender, img: img, promo: promo });
+    db.ref("products/" + editingId).update({ name: name, gender: gender, img: img, promo: promo, agotado: agotado });
     toast("Producto actualizado");
   } else {
     var newId = products.length ? Math.max.apply(null, products.map(function(p){ return p.id; })) + 1 : 1;
-    db.ref("products/" + newId).set({ id: newId, name: name, gender: gender, img: img, promo: promo });
+    db.ref("products/" + newId).set({ id: newId, name: name, gender: gender, img: img, promo: promo, agotado: agotado });
     toast("Producto agregado");
   }
   clearForm();
