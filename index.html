@@ -119,8 +119,21 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .product-admin .actions button{padding:6px 10px;font-size:11px;border:none;border-radius:6px;cursor:pointer;white-space:nowrap}
 .loading{text-align:center;padding:40px;color:var(--muted)}
 .info-box{background:var(--card);border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.5}
-.admin-preview{width:80px;height:80px;object-fit:contain;background:#111;border-radius:8px;margin-bottom:10px;display:none}
+
+.admin-check{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;color:var(--muted);cursor:pointer}
+.admin-check input{width:auto;margin:0;accent-color:var(--gold)}
+.upload-box{
+  border:2px dashed #444;border-radius:10px;padding:14px;text-align:center;
+  margin-bottom:10px;background:#141414;cursor:pointer;transition:border-color .2s;
+}
+.upload-box:hover,.upload-box.drag{border-color:var(--gold)}
+.upload-box p{font-size:13px;color:var(--muted);margin:6px 0 0}
+.upload-box strong{color:var(--gold)}
+.upload-box input[type=file]{display:none}
+.admin-preview{width:100%;max-height:180px;height:auto;object-fit:contain;background:#111;border-radius:8px;margin-bottom:10px;display:none}
 .admin-preview.show{display:block}
+.img-hint{font-size:11px;color:var(--muted);margin-bottom:10px;word-break:break-all}
+
 
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.show{display:flex}
@@ -319,20 +332,25 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <h3 style="color:var(--gold);margin-bottom:8px" id="formTitle">Agregar perfume</h3>
     <div class="info-box">
       Solo línea <strong style="color:var(--gold)">Premium</strong>. Sin precios.<br>
-      La imagen debe estar en la carpeta <code style="color:var(--gold)">images/1_FICHA_TECNICA_PERFUMES/</code>
-      con el <strong>nombre exacto</strong> del archivo (incluye .PNG o .png).
+      Sube la imagen con el botón 📷 (PNG o JPG). También puedes seguir usando fotos ya subidas al repositorio.
     </div>
-    <img id="adminPreview" class="admin-preview" alt="Vista previa">
     <input type="text" id="pName" placeholder="Nombre del perfume">
     <select id="pGender">
       <option value="dama">Dama</option>
       <option value="caballero">Caballero</option>
       <option value="unisex">Unisex</option>
     </select>
-    <label>Archivo de imagen (nombre exacto)</label>
-    <input type="text" id="pImg" placeholder="EJ: DIOR SAUVAGE CABALLERO.PNG" oninput="previewAdminImg()">
-    <label><input type="checkbox" id="pPromo"> Más vendido / tendencia</label>
-    <label><input type="checkbox" id="pAgotado"> Agotado (sello en catálogo)</label>
+    <label>Imagen del perfume</label>
+    <div class="upload-box" id="uploadBox" onclick="document.getElementById('pFile').click()">
+      <strong>📷 Toca para subir imagen PNG / JPG</strong>
+      <p>Se guarda sola · no hace falta el nombre del archivo</p>
+      <input type="file" id="pFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onAdminFile(event)">
+    </div>
+    <img id="adminPreview" class="admin-preview" alt="Vista previa">
+    <div class="img-hint" id="imgHint"></div>
+    <input type="hidden" id="pImg" value="">
+    <label class="admin-check"><input type="checkbox" id="pPromo"> Más vendido / tendencia</label>
+    <label class="admin-check"><input type="checkbox" id="pAgotado"> Agotado (sello en catálogo)</label>
     <button class="btn" onclick="saveProduct()">Guardar perfume</button>
     <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
 
@@ -542,7 +560,57 @@ function setFilter(f, btn) {
 
 function imgSrc(img) {
   if (!img) return imgFallback();
+  /* URL completa, data URL (subida) o nombre de archivo en la carpeta del repo */
+  if (/^(https?:|data:)/i.test(img)) return img;
   return "images/1_FICHA_TECNICA_PERFUMES/" + encodeURIComponent(img);
+}
+
+/* Imagen pendiente de subir (data URL comprimida) */
+var pendingImageData = null;
+
+function onAdminFile(ev) {
+  var file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  if (!file.type || file.type.indexOf("image") !== 0) {
+    toast("Elige una imagen PNG o JPG");
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function() {
+    compressImage(reader.result, function(dataUrl) {
+      pendingImageData = dataUrl;
+      var prev = document.getElementById("adminPreview");
+      prev.src = dataUrl;
+      prev.classList.add("show");
+      document.getElementById("pImg").value = "";
+      document.getElementById("imgHint").textContent = "Nueva imagen lista · " + file.name + " (" + Math.round(dataUrl.length / 1024) + " KB)";
+      toast("Imagen lista para guardar");
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+/* Comprime para no saturar Firebase (máx ~900px, JPEG 0.72) */
+function compressImage(src, cb) {
+  var img = new Image();
+  img.onload = function() {
+    var max = 900;
+    var w = img.width, h = img.height;
+    if (w > max || h > max) {
+      if (w > h) { h = Math.round(h * max / w); w = max; }
+      else { w = Math.round(w * max / h); h = max; }
+    }
+    var canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    var out = canvas.toDataURL("image/jpeg", 0.72);
+    cb(out);
+  };
+  img.onerror = function() { toast("No se pudo leer la imagen"); };
+  img.src = src;
 }
 function imgFallback() {
   return "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#222" width="100" height="100"/><text x="50" y="55" fill="#666" text-anchor="middle" font-size="12">L&R</text></svg>');
@@ -765,13 +833,21 @@ function logoutAdmin() {
 function previewAdminImg() {
   var name = document.getElementById("pImg").value.trim();
   var prev = document.getElementById("adminPreview");
+  var hint = document.getElementById("imgHint");
+  if (pendingImageData) {
+    prev.src = pendingImageData;
+    prev.classList.add("show");
+    return;
+  }
   if (!name) {
     prev.classList.remove("show");
     prev.removeAttribute("src");
+    if (hint) hint.textContent = "";
     return;
   }
   prev.src = imgSrc(name);
   prev.classList.add("show");
+  if (hint) hint.textContent = name.indexOf("data:") === 0 ? "Imagen guardada en la nube" : ("Archivo: " + name);
   prev.onerror = function() {
     prev.src = imgFallback();
   };
@@ -829,7 +905,9 @@ function editProduct(id) {
   document.getElementById("formTitle").textContent = "Editar perfume";
   document.getElementById("pName").value = p.name;
   document.getElementById("pGender").value = p.gender;
+  pendingImageData = null;
   document.getElementById("pImg").value = p.img || "";
+  var pf = document.getElementById("pFile"); if (pf) pf.value = "";
   document.getElementById("pPromo").checked = !!p.promo;
   var ag = document.getElementById("pAgotado"); if (ag) ag.checked = !!p.agotado;
   previewAdminImg();
@@ -840,30 +918,43 @@ function editProduct(id) {
 
 function clearForm() {
   editingId = null;
+  pendingImageData = null;
   document.getElementById("formTitle").textContent = "Agregar perfume";
   document.getElementById("pName").value = "";
   document.getElementById("pImg").value = "";
+  var pf = document.getElementById("pFile"); if (pf) pf.value = "";
   document.getElementById("pPromo").checked = false;
   var ag = document.getElementById("pAgotado"); if (ag) ag.checked = false;
   document.getElementById("pGender").value = "dama";
   var prev = document.getElementById("adminPreview");
   prev.classList.remove("show");
   prev.removeAttribute("src");
+  var hint = document.getElementById("imgHint");
+  if (hint) hint.textContent = "";
 }
 
 function saveProduct() {
   var name = document.getElementById("pName").value.trim();
   if (!name) return toast("Nombre requerido");
   var gender = document.getElementById("pGender").value;
-  var img = document.getElementById("pImg").value.trim();
+  var img = pendingImageData || document.getElementById("pImg").value.trim();
+  if (!img && !editingId) return toast("Sube una imagen del perfume");
   var promo = document.getElementById("pPromo").checked;
   var agotado = !!(document.getElementById("pAgotado") && document.getElementById("pAgotado").checked);
+  var payload = { name: name, gender: gender, promo: promo, agotado: agotado };
+  if (img) payload.img = img;
   if (editingId) {
-    db.ref("products/" + editingId).update({ name: name, gender: gender, img: img, promo: promo, agotado: agotado });
+    if (!img) {
+      /* mantener imagen anterior si no subió una nueva */
+      var cur = products.find(function(x){ return x.id === editingId; });
+      if (cur && cur.img) payload.img = cur.img;
+    }
+    db.ref("products/" + editingId).update(payload);
     toast("Producto actualizado");
   } else {
     var newId = products.length ? Math.max.apply(null, products.map(function(p){ return p.id; })) + 1 : 1;
-    db.ref("products/" + newId).set({ id: newId, name: name, gender: gender, img: img, promo: promo, agotado: agotado });
+    payload.id = newId;
+    db.ref("products/" + newId).set(payload);
     toast("Producto agregado");
   }
   clearForm();
