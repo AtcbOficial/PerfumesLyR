@@ -329,6 +329,22 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
     <hr style="border-color:#333;margin:16px 0">
 
+    <h3 style="color:var(--gold);margin-bottom:8px">Banner al abrir la web</h3>
+    <div class="info-box">
+      Esta es la imagen emergente al entrar. Sube un <strong style="color:var(--gold)">PNG o JPG</strong> y se actualiza para todos los clientes.
+    </div>
+    <div class="upload-box" onclick="document.getElementById('bannerFile').click()">
+      <strong>🖼️ Cambiar banner de bienvenida</strong>
+      <p>Toca aquí y elige el archivo</p>
+      <input type="file" id="bannerFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onBannerFile(event)">
+    </div>
+    <img id="bannerPreview" class="admin-preview" alt="Vista previa banner">
+    <div class="img-hint" id="bannerHint"></div>
+    <button class="btn" onclick="saveWelcomeBanner()">Guardar banner</button>
+    <button class="btn btn-secondary" onclick="resetWelcomeBanner()">Usar banner original del sitio</button>
+
+    <hr style="border-color:#333;margin:16px 0">
+
     <h3 style="color:var(--gold);margin-bottom:8px" id="formTitle">Agregar perfume</h3>
     <div class="info-box">
       Solo línea <strong style="color:var(--gold)">Premium</strong>. Sin precios.<br>
@@ -443,6 +459,11 @@ function loadFromFirebase() {
   db.ref("config").on("value", function(snap) {
     var val = snap.val();
     if (val) config = val;
+    applyWelcomeBanner();
+    var waEl = document.getElementById("waNumber");
+    if (waEl && sessionStorage.getItem("lr_admin") === "1") {
+      waEl.value = (config && config.wa) || "";
+    }
   });
   updateCartBadge();
 }
@@ -969,11 +990,108 @@ function deleteProduct(id) {
   toast("Borrado");
 }
 
+var pendingBannerData = null;
+var DEFAULT_BANNER = "images/banner_bienvenida.png";
+
+function applyWelcomeBanner() {
+  var img = document.getElementById("welcomeImg");
+  if (!img) return;
+  var src = (config && config.welcomeBanner) ? config.welcomeBanner : DEFAULT_BANNER;
+  img.style.display = "block";
+  var fb = document.getElementById("welcomeFallback");
+  if (fb) fb.style.display = "none";
+  img.onerror = function() {
+    this.style.display = "none";
+    if (fb) fb.style.display = "block";
+  };
+  img.src = src;
+  /* Vista previa en admin si está abierto */
+  var prev = document.getElementById("bannerPreview");
+  var hint = document.getElementById("bannerHint");
+  if (prev && !pendingBannerData) {
+    prev.src = src;
+    prev.classList.add("show");
+    if (hint) hint.textContent = (config && config.welcomeBanner) ? "Banner personalizado (guardado en la nube)" : "Banner original del sitio";
+  }
+}
+
+function onBannerFile(ev) {
+  var file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  if (!file.type || file.type.indexOf("image") !== 0) {
+    toast("Elige una imagen PNG o JPG");
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function() {
+    /* Banner puede ser más alto: max 1200px, calidad un poco mayor */
+    compressBanner(reader.result, function(dataUrl) {
+      pendingBannerData = dataUrl;
+      var prev = document.getElementById("bannerPreview");
+      prev.src = dataUrl;
+      prev.classList.add("show");
+      document.getElementById("bannerHint").textContent = "Nueva imagen lista · " + file.name + " · toca Guardar banner";
+      toast("Banner listo · pulsa Guardar banner");
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function compressBanner(src, cb) {
+  var img = new Image();
+  img.onload = function() {
+    var max = 1200;
+    var w = img.width, h = img.height;
+    if (w > max || h > max) {
+      if (w > h) { h = Math.round(h * max / w); w = max; }
+      else { w = Math.round(w * max / h); h = max; }
+    }
+    var canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    cb(canvas.toDataURL("image/jpeg", 0.82));
+  };
+  img.onerror = function() { toast("No se pudo leer la imagen"); };
+  img.src = src;
+}
+
+function saveWelcomeBanner() {
+  if (!pendingBannerData) return toast("Primero elige una imagen");
+  var wa = (document.getElementById("waNumber").value || config.wa || "").trim();
+  var data = { wa: wa || (config.wa || "584120000000"), welcomeBanner: pendingBannerData };
+  db.ref("config").set(data);
+  config = data;
+  pendingBannerData = null;
+  var bf = document.getElementById("bannerFile");
+  if (bf) bf.value = "";
+  applyWelcomeBanner();
+  toast("Banner actualizado");
+}
+
+function resetWelcomeBanner() {
+  if (!confirm("¿Volver al banner original del sitio?")) return;
+  var wa = (document.getElementById("waNumber").value || config.wa || "").trim();
+  var data = { wa: wa || (config.wa || "584120000000") };
+  /* sin welcomeBanner = usa archivo del repo */
+  db.ref("config").set(data);
+  config = data;
+  pendingBannerData = null;
+  var bf = document.getElementById("bannerFile");
+  if (bf) bf.value = "";
+  applyWelcomeBanner();
+  toast("Banner original restaurado");
+}
+
 function saveConfig() {
   var wa = document.getElementById("waNumber").value.trim();
   if (!wa) return toast("Número requerido");
-  db.ref("config").set({ wa: wa });
-  config.wa = wa;
+  var data = { wa: wa };
+  if (config && config.welcomeBanner) data.welcomeBanner = config.welcomeBanner;
+  db.ref("config").set(data);
+  config = data;
   toast("WhatsApp guardado");
 }
 
