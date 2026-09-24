@@ -256,7 +256,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 </head>
 <body>
 <header>
-  <div class="logo">PERFUMES <span>L&R</span></div>
+  <div class="logo" id="logoTap" style="cursor:default;user-select:none">PERFUMES <span>L&R</span></div>
   <div class="tagline">ESENCIAS CON CALIDAD AL ORIGINAL 1.1 · TIKTOK: @PerfumesL&R /  INSTAGRAM: @perfumeslr26</div>
 </header>
 
@@ -326,6 +326,14 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <label>Número WhatsApp (código país, sin +)</label>
     <input type="text" id="waNumber" placeholder="58412XXXXXXX">
     <button class="btn" onclick="saveConfig()">Guardar WhatsApp</button>
+
+    <hr style="border-color:#333;margin:16px 0">
+
+    <h3 style="color:var(--gold);margin-bottom:8px">Cambiar clave de acceso</h3>
+    <div class="info-box">La clave se guarda <strong style="color:var(--gold)">cifrada (hash)</strong>, no en texto plano.</div>
+    <input type="password" id="newPass1" placeholder="Nueva clave">
+    <input type="password" id="newPass2" placeholder="Repetir nueva clave">
+    <button class="btn btn-secondary" onclick="changeAdminPass()">Guardar nueva clave</button>
 
     <hr style="border-color:#333;margin:16px 0">
 
@@ -400,7 +408,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span class="icon">🛒</span>Carrito
     <span class="cart-badge" id="cartBadge">0</span>
   </button>
-  <button id="navAdmin" onclick="showSection('admin',this)"><span class="icon">⚙️</span>Admin</button>
+  <button id="navAdmin" onclick="showSection('admin',this)" style="display:none"><span class="icon">⚙️</span>Panel</button>
 </nav>
 
 <script>
@@ -424,7 +432,36 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const ADMIN_PASS = "lr2026";
+/* Clave por defecto cifrada (SHA-256). No es texto legible.
+   Clave inicial: Lr&R2026!  — cámbiala en Admin cuando entres. */
+const DEFAULT_ADMIN_HASH = "0c32fc55e3ad1a62a853c0d938858c8bf2c6814ab0b86b2af58e1db8e42090d5";
+
+function sha256Hex(str) {
+  if (window.crypto && window.crypto.subtle) {
+    return window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then(function(buf) {
+      return Array.from(new Uint8Array(buf)).map(function(b) {
+        return b.toString(16).padStart(2, "0");
+      }).join("");
+    });
+  }
+  /* Fallback simple si el navegador no soporta subtle (poco frecuente) */
+  return Promise.resolve(simpleHash(str));
+}
+function simpleHash(s) {
+  var h0 = 0x811c9dc5, h1 = 0x811c9dc5;
+  for (var i = 0; i < s.length; i++) {
+    h0 ^= s.charCodeAt(i);
+    h0 = Math.imul(h0, 0x01000193) >>> 0;
+    h1 ^= s.charCodeAt(i) + i;
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+  }
+  return ("00000000" + h0.toString(16)).slice(-8) + ("00000000" + h1.toString(16)).slice(-8)
+    + ("00000000" + (h0 ^ h1).toString(16)).slice(-8) + ("00000000" + (h0 + h1).toString(16)).slice(-8)
+    + "00000000000000000000000000000000";
+}
+function getAdminHash() {
+  return (config && config.adminHash) ? config.adminHash : DEFAULT_ADMIN_HASH;
+}
 
 let products = [];
 /* Carrito siempre vacío al abrir la web — cada cliente empieza de cero */
@@ -835,13 +872,21 @@ function sendWhatsApp() {
 
 /* ---------- Admin: agregar / editar / borrar con imagen ---------- */
 function loginAdmin() {
-  if (document.getElementById("adminPass").value === ADMIN_PASS) {
-    sessionStorage.setItem("lr_admin", "1");
-    document.getElementById("adminLogin").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-    document.getElementById("waNumber").value = config.wa || "";
-    renderAdminProducts();
-  } else toast("Contraseña incorrecta");
+  var pass = document.getElementById("adminPass").value;
+  if (!pass) return toast("Escribe la clave");
+  sha256Hex(pass).then(function(hash) {
+    if (hash === getAdminHash()) {
+      sessionStorage.setItem("lr_admin", "1");
+      document.getElementById("adminLogin").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+      document.getElementById("waNumber").value = config.wa || "";
+      revealAdminNav(true);
+      renderAdminProducts();
+      toast("Acceso correcto");
+    } else {
+      toast("Contraseña incorrecta");
+    }
+  });
 }
 function logoutAdmin() {
   sessionStorage.removeItem("lr_admin");
@@ -849,6 +894,45 @@ function logoutAdmin() {
   document.getElementById("adminPanel").style.display = "none";
   document.getElementById("adminPass").value = "";
   clearForm();
+  revealAdminNav(false);
+  showSection("catalogo", document.getElementById("navCatalogo"));
+  toast("Sesión cerrada");
+}
+function revealAdminNav(show) {
+  var btn = document.getElementById("navAdmin");
+  if (!btn) return;
+  btn.style.display = show ? "" : "none";
+}
+function changeAdminPass() {
+  var p1 = document.getElementById("newPass1").value;
+  var p2 = document.getElementById("newPass2").value;
+  if (!p1 || p1.length < 6) return toast("Clave mínimo 6 caracteres");
+  if (p1 !== p2) return toast("Las claves no coinciden");
+  sha256Hex(p1).then(function(hash) {
+    var data = Object.assign({}, config || {});
+    data.wa = (document.getElementById("waNumber").value || data.wa || "").trim() || data.wa;
+    data.adminHash = hash;
+    db.ref("config").set(data);
+    config = data;
+    document.getElementById("newPass1").value = "";
+    document.getElementById("newPass2").value = "";
+    toast("Clave actualizada");
+  });
+}
+
+/* Acceso oculto: tocar el logo 10 veces */
+var logoTaps = 0;
+var logoTapTimer = null;
+function onLogoTap() {
+  logoTaps++;
+  if (logoTapTimer) clearTimeout(logoTapTimer);
+  logoTapTimer = setTimeout(function(){ logoTaps = 0; }, 2500);
+  if (logoTaps >= 10) {
+    logoTaps = 0;
+    revealAdminNav(true);
+    showSection("admin", document.getElementById("navAdmin"));
+    toast("Panel de gestión");
+  }
 }
 
 function previewAdminImg() {
@@ -1062,6 +1146,7 @@ function saveWelcomeBanner() {
   if (!pendingBannerData) return toast("Primero elige una imagen");
   var wa = (document.getElementById("waNumber").value || config.wa || "").trim();
   var data = { wa: wa || (config.wa || "584120000000"), welcomeBanner: pendingBannerData };
+  if (config && config.adminHash) data.adminHash = config.adminHash;
   db.ref("config").set(data);
   config = data;
   pendingBannerData = null;
@@ -1075,6 +1160,7 @@ function resetWelcomeBanner() {
   if (!confirm("¿Volver al banner original del sitio?")) return;
   var wa = (document.getElementById("waNumber").value || config.wa || "").trim();
   var data = { wa: wa || (config.wa || "584120000000") };
+  if (config && config.adminHash) data.adminHash = config.adminHash;
   /* sin welcomeBanner = usa archivo del repo */
   db.ref("config").set(data);
   config = data;
@@ -1090,6 +1176,7 @@ function saveConfig() {
   if (!wa) return toast("Número requerido");
   var data = { wa: wa };
   if (config && config.welcomeBanner) data.welcomeBanner = config.welcomeBanner;
+  if (config && config.adminHash) data.adminHash = config.adminHash;
   db.ref("config").set(data);
   config = data;
   toast("WhatsApp guardado");
@@ -1117,11 +1204,20 @@ function closeWelcome(e) {
 /* Cerrar también al tocar el fondo oscuro */
 document.addEventListener("DOMContentLoaded", function() {
   var el = document.getElementById("welcomeLayer");
-  if (!el) return;
-  el.style.display = "flex";
-  el.addEventListener("click", function(ev) {
-    if (ev.target === el) closeWelcome(ev);
-  });
+  if (el) {
+    el.style.display = "flex";
+    el.addEventListener("click", function(ev) {
+      if (ev.target === el) closeWelcome(ev);
+    });
+  }
+  var logo = document.getElementById("logoTap");
+  if (logo) {
+    logo.addEventListener("click", onLogoTap);
+  }
+  /* Si ya había sesión admin en esta pestaña, mostrar nav */
+  if (sessionStorage.getItem("lr_admin") === "1") {
+    revealAdminNav(true);
+  }
 });
 
 loadFromFirebase();
