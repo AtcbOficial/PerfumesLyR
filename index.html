@@ -6,6 +6,7 @@
 <title>Perfumes L&R — Réplicas 1.1 Premium</title>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{--bg:#0d0d0d;--card:#1a1a1a;--gold:#c9a227;--text:#f5f5f5;--muted:#aaa;--danger:#e74c3c;--success:#27ae60}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -252,6 +253,47 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .admin-quick .q-promo.on,.admin-quick .q-agotado.on{outline:2px solid #fff;outline-offset:1px}
 .product-admin.agotado-row{opacity:.75;border:1px solid #c0392b55}
 
+
+/* Herramientas para emprendedores */
+.tools-cta{
+  display:block;width:100%;margin:0 0 14px;padding:16px 14px;border:none;border-radius:14px;
+  font-size:15px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:#1a1200;
+  background:linear-gradient(105deg,#f0d78c 0%,#c9a227 40%,#e8c84a 70%,#c9a227 100%);
+  background-size:200% 100%;
+  box-shadow:0 0 0 0 rgba(201,162,39,.55),0 6px 20px rgba(201,162,39,.35);
+  animation:toolsShine 2.4s ease-in-out infinite, toolsGlow 1.8s ease-in-out infinite;
+  transition:transform .15s;
+}
+.tools-cta:active{transform:scale(.97)}
+.tools-cta span{display:block;font-size:11px;font-weight:600;opacity:.85;margin-top:4px}
+@keyframes toolsShine{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@keyframes toolsGlow{
+  0%,100%{box-shadow:0 0 8px 0 rgba(201,162,39,.35),0 4px 14px rgba(0,0,0,.3)}
+  50%{box-shadow:0 0 22px 4px rgba(232,200,74,.65),0 6px 18px rgba(0,0,0,.35)}
+}
+.tools-list{
+  max-height:42vh;overflow-y:auto;border:1px solid #333;border-radius:10px;
+  background:var(--card);margin-bottom:12px;-webkit-overflow-scrolling:touch;
+}
+.tools-row{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-bottom:1px solid #2a2a2a;font-size:13px;cursor:pointer;
+}
+.tools-row:last-child{border-bottom:none}
+.tools-row input{width:auto;margin:0;accent-color:var(--gold);flex-shrink:0}
+.tools-row .t-name{flex:1;min-width:0;font-weight:600;line-height:1.3}
+.tools-row .t-gender{font-size:11px;color:var(--muted);flex-shrink:0}
+.tools-actions{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.tools-actions button{flex:1;min-width:120px;padding:10px;border-radius:8px;border:1px solid #333;
+  background:#222;color:var(--text);font-size:13px;font-weight:600;cursor:pointer}
+.tools-actions button:active{background:#333}
+.tools-count{font-size:12px;color:var(--muted);margin-bottom:10px;text-align:center}
+.tools-count strong{color:var(--gold)}
+
 </style>
 </head>
 <body>
@@ -287,6 +329,10 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <p style="margin-top:6px"><strong style="color:var(--gold)">Línea Premium</strong> · ESENCIAS CON CALIDAD AL ORIGINAL 1.1 · 30 · 60 · 120 ml</p>
     <p style="margin-top:4px">Pide tu cotización por WhatsApp y te respondemos a la brevedad</p>
   </div>
+  <button type="button" class="tools-cta" onclick="showSection('herramientas',document.getElementById('navHerramientas'))">
+    ✨ Herramientas para emprendedores
+    <span>Crea tu propio catálogo con tu nombre y WhatsApp</span>
+  </button>
   <div class="search-bar">
     <input type="text" id="search" placeholder="Buscar perfume..." oninput="renderCatalog()">
   </div>
@@ -315,7 +361,39 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <div class="empty" id="cartEmpty">Carrito vacío — ve al Catálogo y agrega perfumes</div>
 </section>
 
+
+<section id="herramientas" class="section">
+  <h2>Herramientas para emprendedores</h2>
+  <div class="maker-bar">
+    <h3>Crear catálogo para emprendedores</h3>
+    <p>Elige los perfumes · pon el nombre de tu emprendimiento y tu WhatsApp · descarga un PDF listo para vender</p>
+  </div>
+
+  <label>Nombre de tu emprendimiento</label>
+  <input type="text" id="empName" placeholder="Ej: Aromas del Valle">
+
+  <label>WhatsApp para que te contacten (código país, sin +)</label>
+  <input type="text" id="empWa" placeholder="Ej: 584121234567">
+
+  <label>Buscar en la lista</label>
+  <input type="text" id="empSearch" placeholder="Filtrar perfumes..." oninput="renderEmpList()">
+
+  <div class="tools-actions">
+    <button type="button" onclick="empSelectAll(true)">Marcar todos</button>
+    <button type="button" onclick="empSelectAll(false)">Quitar todos</button>
+  </div>
+  <div class="tools-count">Seleccionados: <strong id="empCount">0</strong></div>
+  <div class="tools-list" id="empList"><div class="loading">Cargando lista...</div></div>
+
+  <button class="btn" onclick="downloadEmpPdf()">📄 Descargar catálogo PDF</button>
+  <button class="btn-whatsapp" onclick="shareEmpWhatsApp()">📲 Enviar aviso por WhatsApp</button>
+  <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4">
+    El PDF se descarga en tu teléfono. Luego puedes adjuntarlo en WhatsApp a tus clientes.
+  </p>
+</section>
+
 <section id="admin" class="section">
+
   <div id="adminLogin" class="admin-login">
     <h2>Admin</h2>
     <input type="password" id="adminPass" placeholder="Contraseña">
@@ -408,6 +486,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span class="icon">🛒</span>Carrito
     <span class="cart-badge" id="cartBadge">0</span>
   </button>
+  <button id="navHerramientas" onclick="showSection('herramientas',this)"><span class="icon">✨</span>Herramientas</button>
   <button id="navAdmin" onclick="showSection('admin',this)" style="display:none"><span class="icon">⚙️</span>Panel</button>
 </nav>
 
@@ -491,6 +570,7 @@ function loadFromFirebase() {
     products = val ? Object.values(val) : [];
     if (products.length === 0) seedProducts();
     renderCatalog();
+    if (document.getElementById("herramientas") && document.getElementById("herramientas").classList.contains("active")) renderEmpList();
     if (sessionStorage.getItem("lr_admin") === "1") renderAdminProducts();
   });
   db.ref("config").on("value", function(snap) {
@@ -596,6 +676,7 @@ function showSection(id, btn) {
   if (btn) btn.classList.add("active");
   if (id === "catalogo") renderCatalog();
   if (id === "carrito") renderCart();
+  if (id === "herramientas") renderEmpList();
   if (id === "admin") {
     document.getElementById("waNumber").value = config.wa || "";
     if (sessionStorage.getItem("lr_admin") === "1") {
@@ -1219,6 +1300,254 @@ document.addEventListener("DOMContentLoaded", function() {
     revealAdminNav(true);
   }
 });
+
+
+/* ========== Herramientas para emprendedores ========== */
+var empSelected = {};
+
+function genderLabel(g) {
+  if (g === "dama") return "Dama";
+  if (g === "caballero") return "Caballero";
+  if (g === "unisex") return "Unisex";
+  return g || "";
+}
+
+function renderEmpList() {
+  var q = ((document.getElementById("empSearch") || {}).value || "").toLowerCase().trim();
+  var list = (products || []).filter(function(p) {
+    if (p.agotado) return false;
+    return !q || (p.name || "").toLowerCase().indexOf(q) !== -1;
+  });
+  list.sort(function(a, b) {
+    return (a.name || "").localeCompare(b.name || "", "es");
+  });
+  var box = document.getElementById("empList");
+  if (!box) return;
+  if (!list.length) {
+    box.innerHTML = '<div class="empty" style="padding:20px">No hay perfumes</div>';
+    updateEmpCount();
+    return;
+  }
+  box.innerHTML = list.map(function(p) {
+    var checked = empSelected[p.id] ? " checked" : "";
+    return '<label class="tools-row">' +
+      '<input type="checkbox" data-id="' + p.id + '"' + checked + ' onchange="toggleEmpItem(' + p.id + ',this.checked)">' +
+      '<span class="t-name">' + p.name + '</span>' +
+      '<span class="t-gender">' + genderLabel(p.gender) + '</span>' +
+      '</label>';
+  }).join("");
+  updateEmpCount();
+}
+
+function toggleEmpItem(id, on) {
+  if (on) empSelected[id] = true;
+  else delete empSelected[id];
+  updateEmpCount();
+}
+
+function empSelectAll(on) {
+  var q = ((document.getElementById("empSearch") || {}).value || "").toLowerCase().trim();
+  (products || []).forEach(function(p) {
+    if (p.agotado) return;
+    if (q && (p.name || "").toLowerCase().indexOf(q) === -1) return;
+    if (on) empSelected[p.id] = true;
+    else delete empSelected[p.id];
+  });
+  renderEmpList();
+}
+
+function updateEmpCount() {
+  var n = Object.keys(empSelected).length;
+  var el = document.getElementById("empCount");
+  if (el) el.textContent = String(n);
+}
+
+function getSelectedEmpProducts() {
+  return (products || []).filter(function(p) {
+    return empSelected[p.id];
+  }).sort(function(a, b) {
+    return (a.name || "").localeCompare(b.name || "", "es");
+  });
+}
+
+function buildEmpPdf() {
+  var name = ((document.getElementById("empName") || {}).value || "").trim();
+  var wa = ((document.getElementById("empWa") || {}).value || "").trim();
+  var items = getSelectedEmpProducts();
+  if (!name) { toast("Escribe el nombre de tu emprendimiento"); return null; }
+  if (!wa) { toast("Escribe tu WhatsApp"); return null; }
+  if (!items.length) { toast("Selecciona al menos un perfume"); return null; }
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    toast("No se pudo cargar el generador de PDF");
+    return null;
+  }
+  var JsPDF = window.jspdf.jsPDF;
+  var doc = new JsPDF({ unit: "mm", format: "a4" });
+  var pageW = doc.internal.pageSize.getWidth();
+  var pageH = doc.internal.pageSize.getHeight();
+  var margin = 14;
+  var pastel = [245, 235, 220]; /* crema pastel */
+
+  function paintBackground() {
+    doc.setFillColor(pastel[0], pastel[1], pastel[2]);
+    doc.rect(0, 0, pageW, pageH, "F");
+    /* marco sutil */
+    doc.setDrawColor(201, 162, 39);
+    doc.setLineWidth(0.6);
+    doc.rect(8, 8, pageW - 16, pageH - 16);
+  }
+
+  paintBackground();
+
+  /* Título emprendimiento */
+  doc.setTextColor(40, 30, 10);
+  doc.setFont("helvetica", "bold");
+  var titleSize = name.length > 28 ? 18 : (name.length > 18 ? 22 : 26);
+  doc.setFontSize(titleSize);
+  var titleLines = doc.splitTextToSize(name.toUpperCase(), pageW - margin * 2);
+  var y = 28;
+  titleLines.forEach(function(line) {
+    doc.text(line, pageW / 2, y, { align: "center" });
+    y += titleSize * 0.45;
+  });
+
+  /* Línea dorada */
+  y += 4;
+  doc.setDrawColor(201, 162, 39);
+  doc.setLineWidth(0.8);
+  doc.line(margin + 20, y, pageW - margin - 20, y);
+  y += 10;
+
+  /* WhatsApp */
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(90, 70, 20);
+  doc.text("WhatsApp / Contacto", pageW / 2, y, { align: "center" });
+  y += 8;
+  doc.setFontSize(16);
+  doc.setTextColor(20, 20, 20);
+  doc.text("+" + wa.replace(/^\+/, ""), pageW / 2, y, { align: "center" });
+  y += 8;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(100, 90, 70);
+  doc.text("Catálogo de esencias · Calidad 1.1 · 30 · 60 · 120 ml", pageW / 2, y, { align: "center" });
+  y += 10;
+
+  doc.setDrawColor(201, 162, 39);
+  doc.setLineWidth(0.3);
+  doc.line(margin, y, pageW - margin, y);
+  y += 8;
+
+  /* Lista 2 columnas */
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(40, 30, 10);
+  doc.text("Lista de perfumes", margin, y);
+  y += 7;
+
+  var colW = (pageW - margin * 2 - 6) / 2;
+  var col1X = margin;
+  var col2X = margin + colW + 6;
+  var rowH = 7;
+  var bottom = pageH - 16;
+  var leftY = y;
+  var rightY = y;
+  var useLeft = true;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+
+  items.forEach(function(p, idx) {
+    var g = genderLabel(p.gender);
+    var line = (p.name || "") + "  ·  " + g;
+    var lines = doc.splitTextToSize(line, colW - 2);
+    var blockH = lines.length * 4.2 + 1.5;
+    var curY = useLeft ? leftY : rightY;
+    var curX = useLeft ? col1X : col2X;
+
+    if (curY + blockH > bottom) {
+      if (useLeft) {
+        /* pasar a columna derecha si cabe; si no, nueva página */
+        if (rightY + blockH > bottom) {
+          doc.addPage();
+          paintBackground();
+          leftY = 20;
+          rightY = 20;
+          useLeft = true;
+          curY = leftY;
+          curX = col1X;
+        } else {
+          useLeft = false;
+          curY = rightY;
+          curX = col2X;
+        }
+      } else {
+        doc.addPage();
+        paintBackground();
+        leftY = 20;
+        rightY = 20;
+        useLeft = true;
+        curY = leftY;
+        curX = col1X;
+      }
+    }
+
+    doc.setTextColor(30, 25, 15);
+    doc.text(lines, curX, curY);
+    if (useLeft) leftY = curY + blockH;
+    else rightY = curY + blockH;
+    useLeft = !useLeft;
+    /* si la columna izquierda está más abajo, equilibrar un poco: seguir alternando */
+  });
+
+  /* Pie en última página */
+  doc.setFontSize(8);
+  doc.setTextColor(120, 100, 70);
+  doc.text("Presentaciones: 30 ml · 60 ml · 120 ml", pageW / 2, pageH - 12, { align: "center" });
+
+  var safeName = name.replace(/[^\w\u00C0-\u024F\s-]/gi, "").trim().replace(/\s+/g, "_") || "catalogo";
+  return { doc: doc, filename: "Catalogo_" + safeName + ".pdf", name: name, wa: wa, count: items.length };
+}
+
+function downloadEmpPdf() {
+  var built = buildEmpPdf();
+  if (!built) return;
+  built.doc.save(built.filename);
+  toast("PDF descargado");
+}
+
+function shareEmpWhatsApp() {
+  var name = ((document.getElementById("empName") || {}).value || "").trim();
+  var wa = ((document.getElementById("empWa") || {}).value || "").trim();
+  var items = getSelectedEmpProducts();
+  if (!name) return toast("Escribe el nombre de tu emprendimiento");
+  if (!wa) return toast("Escribe tu WhatsApp");
+  if (!items.length) return toast("Selecciona al menos un perfume");
+
+  /* Genera PDF para que lo tengan descargado */
+  var built = buildEmpPdf();
+  if (built) {
+    try { built.doc.save(built.filename); } catch (e) {}
+  }
+
+  var lines = [];
+  lines.push("Hola, te comparto el catálogo de *" + name + "*");
+  lines.push("WhatsApp: +" + wa.replace(/^\+/, ""));
+  lines.push("");
+  lines.push("Perfumes disponibles (" + items.length + "):");
+  items.slice(0, 25).forEach(function(p) {
+    lines.push("• " + p.name + " (" + genderLabel(p.gender) + ")");
+  });
+  if (items.length > 25) lines.push("… y " + (items.length - 25) + " más (ver PDF)");
+  lines.push("");
+  lines.push("Te envío también el PDF del catálogo.");
+  var texto = lines.join("\n");
+  var url = "https://wa.me/" + wa.replace(/\D/g, "") + "?text=" + encodeURIComponent(texto);
+  window.open(url, "_blank");
+  toast("PDF listo · WhatsApp abierto");
+}
+
 
 loadFromFirebase();
 </script>
