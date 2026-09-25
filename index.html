@@ -313,12 +313,12 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .header-top .logo{margin:0}
 .social-icons{display:flex;align-items:center;gap:8px}
 .social-icons a{
-  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:#1a1a1a;border:1px solid var(--gold);text-decoration:none;font-size:16px;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:#1a1a1a;border:1px solid var(--gold);text-decoration:none;font-size:20px;
   transition:transform .15s,background .15s;line-height:1;
 }
 .social-icons a:active{transform:scale(.92);background:var(--gold)}
-.social-icons a img{width:20px;height:20px;object-fit:contain;display:block}
+.social-icons a img{width:26px;height:26px;object-fit:contain;display:block}
 .social-admin-row .ico-prev{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px;background:#111;border-radius:6px}
 .social-admin-row .upload-ico{font-size:12px;color:var(--gold);cursor:pointer;margin:6px 0;display:inline-block}
 .social-admin-row{
@@ -347,7 +347,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="welcome-fallback" id="welcomeFallback">
       <h2>PERFUMES L&R</h2>
       <p><strong style="color:#c9a227">SOMOS FABRICANTES, PRECIOS AL MAYOR O DETAL</strong></p>
-      <p>PRECIOS, PARA NUESTROS VERDADEROS EMPRENDEDORES <br>BUENOS LOTES VARIADOS DE PERFUMES CALIDAD 1.1<br>RECIBE LO MEJOR, EMPRENDE CON NOSOTROS, NO ESTAS SOLO.</p>
+      <p>PRECIOS, PARA NUESTROS VERDADEROS EMPRENDEDORES <br>BUENOS LOTES VARIADOS DE PERFUMES CALIDAD 1.1<br>RECIBE LO MEJOR, EMPRENDE CON NOSOTROS, NO ESTÁS SOLO.</p>
       <p style="margin-top:12px;font-size:12px;color:#666">Toca × para ver el catálogo</p>
     </div>
   </div>
@@ -362,10 +362,11 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   </div>
   <div class="maker-bar">
     <h3>SOMOS FABRICANTES, PRECIOS AL MAYOR O DETAL</h3>
-    <p>PRECIOS, PARA NUESTROS VERDADEROS EMPRENDEDORES  · BUENOS LOTES VARIADOS DE PERFUMES CALIDAD 1.1 · RECIBE LO MEJOR, EMPRENDE CON NOSOTROS, NO ESTAS SOLO.</p>
-    <p style="margin-top:6px"><strong style="color:var(--gold)">SOMOS LOS UNICOS QUE DAMOS COMODIDAD Y UN SISTEMA DE PAGOS AMPLIO:</strong> </p>
-     <p>· PUEDES PAGARNOS AL BCV · EN $ DIVISA FISICA · PAGOS EN BINANCE USDT · </p>
-    <p style="margin-top:4px">Pide tu cotización por WhatsApp y te respondemos a la brevedad</p>
+    <p>Precios para nuestros verdaderos emprendedores · Buenos lotes variados de perfumes calidad 1.1</p>
+    <p style="margin-top:6px">Recibe lo mejor, emprende con nosotros. <strong style="color:var(--gold)">No estás solo.</strong></p>
+    <p style="margin-top:8px"><strong style="color:var(--gold)">Somos los únicos que damos comodidad y un sistema de pagos amplio:</strong></p>
+    <p style="margin-top:4px">· BCV · $ divisa física · Binance USDT</p>
+    <p style="margin-top:6px">Pide tu cotización por WhatsApp y te respondemos a la brevedad</p>
   </div>
   <button type="button" class="tools-cta" onclick="showSection('herramientas',document.getElementById('navHerramientas'))">
     ✨ Herramientas para emprendedores
@@ -379,7 +380,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <button onclick="setFilter('dama',this)">Dama</button>
     <button onclick="setFilter('caballero',this)">Caballero</button>
     <button onclick="setFilter('unisex',this)">Unisex</button>
-    <button onclick="setFilter('Lo Mas Vendido',this)">Lo Mas Vendido </button>
+    <button onclick="setFilter('Lo Mas Vendido',this)">Lo Más Vendido </button>
   </div>
   <div class="grid" id="catalogGrid"><div class="loading">Cargando catálogo...</div></div>
 </section>
@@ -388,7 +389,8 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <h2>Tu pedido</h2>
   <div class="maker-bar">
     <h3>PERFUMES L&R · SOMOS FABRICANTES, PRECIOS AL MAYOR O DETAL</h3>
-    <p>PRECIOS, PARA NUESTROS VERDADEROS EMPRENDEDORES  · BUENOS LOTES VARIADOS DE PERFUMES CALIDAD 1.1 · RECIBE LO MEJOR, EMPRENDE CON NOSOTROS, NO ESTAS SOLO.</p>
+    <p>Precios para nuestros verdaderos emprendedores · Buenos lotes variados de perfumes calidad 1.1</p>
+    <p style="margin-top:6px">Recibe lo mejor, emprende con nosotros. <strong style="color:var(--gold)">No estás solo.</strong></p>
     <p style="margin-top:6px">Línea Premium · Réplicas 1.1 · Envíanos tu lista y te cotizamos</p>
   </div>
   <div id="cartList"></div>
@@ -409,8 +411,8 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <!-- 1. Crear catálogo PDF -->
   <div class="tool-item" id="toolCatalogo">
     <button type="button" class="tool-item-head" onclick="toggleTool('toolCatalogo')">
-      <span>📄 Crear catálogo para emprendedores
-        <small>PDF elegante con tu marca · Caballero / Dama / Unisex</small>
+      <span>📄 Crear catálogo PDF elegante para emprender
+        <small>PDF con tu nombre y WhatsApp · eliges los perfumes y lo compartes para empezar a vender</small>
       </span>
       <span class="chev">›</span>
     </button>
@@ -434,8 +436,8 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <!-- 2. Descargar flyer -->
   <div class="tool-item" id="toolFlyer">
     <button type="button" class="tool-item-head" onclick="toggleTool('toolFlyer')">
-      <span>🖼️ Descargar imagen Flyer
-        <small>Imagen promocional lista para redes o WhatsApp</small>
+      <span>🖼️ Descargar flyer (foto lista elegante)
+        <small>Imagen con la lista de perfumes para compartir por WhatsApp o redes y empezar a vender</small>
       </span>
       <span class="chev">›</span>
     </button>
@@ -1095,7 +1097,7 @@ function sendWhatsApp() {
     return;
   }
   var lines = [];
-  lines.push("LISTA DE PERFUMES):");
+  lines.push("LISTA DE PERFUMES:");
   lines.push("");
   cart.forEach(function(c) {
     lines.push("• " + c.name + " — " + c.size + " ml Premium × " + c.qty);
