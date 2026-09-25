@@ -308,12 +308,33 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .flyer-preview.show{display:block}
 
 
+
+.header-top{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.header-top .logo{margin:0}
+.social-icons{display:flex;align-items:center;gap:8px}
+.social-icons a{
+  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:#1a1a1a;border:1px solid var(--gold);text-decoration:none;font-size:16px;
+  transition:transform .15s,background .15s;line-height:1;
+}
+.social-icons a:active{transform:scale(.92);background:var(--gold)}
+.social-icons a img{width:18px;height:18px;object-fit:contain;border-radius:50%}
+.social-admin-row{
+  background:#141414;border:1px solid #333;border-radius:10px;padding:10px;margin-bottom:10px;
+}
+.social-admin-row input{margin-bottom:6px}
+.social-admin-row .row-actions{display:flex;gap:6px}
+.social-admin-row .row-actions button{flex:1;padding:8px;font-size:12px;border:none;border-radius:6px;cursor:pointer}
+
 </style>
 </head>
 <body>
 <header>
-  <div class="logo" id="logoTap" style="cursor:default;user-select:none">PERFUMES <span>L&R</span></div>
-  <div class="tagline">ESENCIAS CON CALIDAD AL ORIGINAL 1.1 · TIKTOK: @PerfumesL&R /  INSTAGRAM: @perfumeslr26</div>
+  <div class="header-top">
+    <div class="logo" id="logoTap" style="cursor:default;user-select:none">PERFUMES <span>L&R</span></div>
+    <div class="social-icons" id="socialIcons"></div>
+  </div>
+  <div class="tagline">ESENCIAS CON CALIDAD AL ORIGINAL 1.1 · 30 · 60 · 120 ml</div>
 </header>
 
 <!-- Publicidad emergente al abrir -->
@@ -435,84 +456,150 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   </div>
   <div id="adminPanel" class="admin-panel" style="display:none">
     <h2>Panel Admin</h2>
-    <label>Número WhatsApp (código país, sin +)</label>
-    <input type="text" id="waNumber" placeholder="58412XXXXXXX">
-    <button class="btn" onclick="saveConfig()">Guardar WhatsApp</button>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Toca cada título para abrir o cerrar el apartado.</p>
 
-    <hr style="border-color:#333;margin:16px 0">
-
-    <h3 style="color:var(--gold);margin-bottom:8px">Cambiar clave de acceso</h3>
-    <div class="info-box">La clave se guarda <strong style="color:var(--gold)">cifrada (hash)</strong>, no en texto plano.</div>
-    <input type="password" id="newPass1" placeholder="Nueva clave">
-    <input type="password" id="newPass2" placeholder="Repetir nueva clave">
-    <button class="btn btn-secondary" onclick="changeAdminPass()">Guardar nueva clave</button>
-
-    <hr style="border-color:#333;margin:16px 0">
-
-    <h3 style="color:var(--gold);margin-bottom:8px">Banner al abrir la web</h3>
-    <div class="info-box">
-      Esta es la imagen emergente al entrar. Sube un <strong style="color:var(--gold)">PNG o JPG</strong> y se actualiza para todos los clientes.
+    <!-- 1. WhatsApp -->
+    <div class="tool-item" id="admWa">
+      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admWa')">
+        <span>📱 Número de WhatsApp
+          <small>Pedidos y botón de contacto del encabezado</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+      <div class="tool-item-body">
+        <label>Número (código país, sin +)</label>
+        <input type="text" id="waNumber" placeholder="58412XXXXXXX">
+        <button class="btn" onclick="saveConfig()">Guardar WhatsApp</button>
+      </div>
     </div>
-    <div class="upload-box" onclick="document.getElementById('bannerFile').click()">
-      <strong>🖼️ Cambiar banner de bienvenida</strong>
-      <p>Toca aquí y elige el archivo</p>
-      <input type="file" id="bannerFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onBannerFile(event)">
-    </div>
-    <img id="bannerPreview" class="admin-preview" alt="Vista previa banner">
-    <div class="img-hint" id="bannerHint"></div>
-    <button class="btn" onclick="saveWelcomeBanner()">Guardar banner</button>
-    <button class="btn btn-secondary" onclick="resetWelcomeBanner()">Usar banner original del sitio</button>
 
-    <hr style="border-color:#333;margin:16px 0">
+    <!-- 2. Banner -->
+    <div class="tool-item" id="admBanner">
+      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admBanner')">
+        <span>🖼️ Banner al abrir la web
+          <small>Imagen emergente de bienvenida</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+      <div class="tool-item-body">
+        <div class="info-box">Sube un <strong style="color:var(--gold)">PNG o JPG</strong> y se actualiza para todos.</div>
+        <div class="upload-box" onclick="document.getElementById('bannerFile').click()">
+          <strong>🖼️ Cambiar banner de bienvenida</strong>
+          <p>Toca aquí y elige el archivo</p>
+          <input type="file" id="bannerFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onBannerFile(event)">
+        </div>
+        <img id="bannerPreview" class="admin-preview" alt="Vista previa banner">
+        <div class="img-hint" id="bannerHint"></div>
+        <button class="btn" onclick="saveWelcomeBanner()">Guardar banner</button>
+        <button class="btn btn-secondary" onclick="resetWelcomeBanner()">Usar banner original del sitio</button>
+      </div>
+    </div>
 
-    <h3 style="color:var(--gold);margin-bottom:8px">Flyer para emprendedores</h3>
-    <div class="info-box">
-      Imagen que los clientes descargan en <strong style="color:var(--gold)">Herramientas → Descargar imagen Flyer</strong>.
+    <!-- 3. Flyer -->
+    <div class="tool-item" id="admFlyer">
+      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admFlyer')">
+        <span>📥 Flyer para emprendedores
+          <small>Imagen descargable en Herramientas</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+      <div class="tool-item-body">
+        <div class="info-box">La ven en <strong style="color:var(--gold)">Herramientas → Descargar imagen Flyer</strong>.</div>
+        <div class="upload-box" onclick="document.getElementById('flyerFile').click()">
+          <strong>🖼️ Subir imagen flyer (PNG / JPG)</strong>
+          <p>Toca aquí y elige el archivo</p>
+          <input type="file" id="flyerFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onFlyerFile(event)">
+        </div>
+        <img id="flyerPreviewAdmin" class="admin-preview" alt="Vista previa flyer">
+        <div class="img-hint" id="flyerHintAdmin"></div>
+        <button class="btn" onclick="saveFlyerImage()">Guardar flyer</button>
+        <button class="btn btn-secondary" onclick="resetFlyerImage()">Quitar flyer</button>
+      </div>
     </div>
-    <div class="upload-box" onclick="document.getElementById('flyerFile').click()">
-      <strong>🖼️ Subir imagen flyer (PNG / JPG)</strong>
-      <p>Toca aquí y elige el archivo</p>
-      <input type="file" id="flyerFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onFlyerFile(event)">
-    </div>
-    <img id="flyerPreviewAdmin" class="admin-preview" alt="Vista previa flyer">
-    <div class="img-hint" id="flyerHintAdmin"></div>
-    <button class="btn" onclick="saveFlyerImage()">Guardar flyer</button>
-    <button class="btn btn-secondary" onclick="resetFlyerImage()">Quitar flyer</button>
 
-    <hr style="border-color:#333;margin:16px 0">
+    <!-- 4. Redes / iconos -->
+    <div class="tool-item" id="admSocial">
+      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admSocial')">
+        <span>🔗 Iconos y enlaces del encabezado
+          <small>TikTok, Instagram, WhatsApp y más</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+      <div class="tool-item-body">
+        <div class="info-box">
+          WhatsApp usa automáticamente el número guardado arriba.<br>
+          Puedes editar, borrar o agregar iconos nuevos (emoji o texto corto).
+        </div>
+        <div id="socialAdminList"></div>
+        <h3 style="color:var(--gold);font-size:14px;margin:12px 0 8px">Agregar icono nuevo</h3>
+        <input type="text" id="socIcon" placeholder="Icono (emoji) ej: 🎵 📷 🌐" maxlength="4">
+        <input type="text" id="socLabel" placeholder="Nombre ej: TikTok">
+        <input type="text" id="socUrl" placeholder="Enlace https://...">
+        <button class="btn" onclick="addSocialLink()">Agregar icono</button>
+        <button class="btn btn-secondary" onclick="resetSocialLinks()">Restaurar iconos por defecto</button>
+      </div>
+    </div>
 
-    <h3 style="color:var(--gold);margin-bottom:8px" id="formTitle">Agregar perfume</h3>
-    <div class="info-box">
-      Solo línea <strong style="color:var(--gold)">Premium</strong>. Sin precios.<br>
-      Sube la imagen con el botón 📷 (PNG o JPG). También puedes seguir usando fotos ya subidas al repositorio.
-    </div>
-    <input type="text" id="pName" placeholder="Nombre del perfume">
-    <select id="pGender">
-      <option value="dama">Dama</option>
-      <option value="caballero">Caballero</option>
-      <option value="unisex">Unisex</option>
-    </select>
-    <label>Imagen del perfume</label>
-    <div class="upload-box" id="uploadBox" onclick="document.getElementById('pFile').click()">
-      <strong>📷 Toca para subir imagen PNG / JPG</strong>
-      <p>Se guarda sola · no hace falta el nombre del archivo</p>
-      <input type="file" id="pFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onAdminFile(event)">
-    </div>
-    <img id="adminPreview" class="admin-preview" alt="Vista previa">
-    <div class="img-hint" id="imgHint"></div>
-    <input type="hidden" id="pImg" value="">
-    <label class="admin-check"><input type="checkbox" id="pPromo"> Más vendido / tendencia</label>
-    <label class="admin-check"><input type="checkbox" id="pAgotado"> Agotado (sello en catálogo)</label>
-    <button class="btn" onclick="saveProduct()">Guardar perfume</button>
-    <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
+    <!-- 5. Productos -->
+    <div class="tool-item" id="admProducts">
+      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admProducts')">
+        <span>🧴 Agregar perfume y catálogo
+          <small>Alta, edición, más vendido y agotado (<span id="productCount">0</span>)</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+      <div class="tool-item-body">
+        <h3 style="color:var(--gold);margin-bottom:8px;font-size:15px" id="formTitle">Agregar perfume</h3>
+        <div class="info-box">
+          Solo línea <strong style="color:var(--gold)">Premium</strong>. Sin precios.<br>
+          Sube la imagen con el botón 📷 (PNG o JPG).
+        </div>
+        <input type="text" id="pName" placeholder="Nombre del perfume">
+        <select id="pGender">
+          <option value="dama">Dama</option>
+          <option value="caballero">Caballero</option>
+          <option value="unisex">Unisex</option>
+        </select>
+        <label>Imagen del perfume</label>
+        <div class="upload-box" id="uploadBox" onclick="document.getElementById('pFile').click()">
+          <strong>📷 Toca para subir imagen PNG / JPG</strong>
+          <p>Se guarda sola · no hace falta el nombre del archivo</p>
+          <input type="file" id="pFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onAdminFile(event)">
+        </div>
+        <img id="adminPreview" class="admin-preview" alt="Vista previa">
+        <div class="img-hint" id="imgHint"></div>
+        <input type="hidden" id="pImg" value="">
+        <label class="admin-check"><input type="checkbox" id="pPromo"> Más vendido / tendencia</label>
+        <label class="admin-check"><input type="checkbox" id="pAgotado"> Agotado (sello en catálogo)</label>
+        <button class="btn" onclick="saveProduct()">Guardar perfume</button>
+        <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
 
-    <hr style="border-color:#333;margin:16px 0">
-    <h3 style="color:var(--gold);margin-bottom:10px">Catálogo actual (<span id="productCount">0</span>)</h3>
-    <div class="admin-search">
-      <input type="text" id="adminSearch" placeholder="Buscar perfume para editar o borrar..." oninput="renderAdminProducts()">
+        <hr style="border-color:#333;margin:16px 0">
+        <h3 style="color:var(--gold);margin-bottom:10px;font-size:15px">Catálogo actual</h3>
+        <div class="admin-search">
+          <input type="text" id="adminSearch" placeholder="Buscar perfume para editar o borrar..." oninput="renderAdminProducts()">
+        </div>
+        <div id="adminProducts"></div>
+      </div>
     </div>
-    <div id="adminProducts"></div>
-    <button class="btn btn-danger" style="margin-top:20px" onclick="logoutAdmin()">Cerrar sesión</button>
+
+    <!-- 6. Clave -->
+    <div class="tool-item" id="admPass">
+      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admPass')">
+        <span>🔐 Cambiar clave de acceso
+          <small>Se guarda cifrada (hash)</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+      <div class="tool-item-body">
+        <div class="info-box">La clave se guarda <strong style="color:var(--gold)">cifrada</strong>, no en texto plano.</div>
+        <input type="password" id="newPass1" placeholder="Nueva clave">
+        <input type="password" id="newPass2" placeholder="Repetir nueva clave">
+        <button class="btn btn-secondary" onclick="changeAdminPass()">Guardar nueva clave</button>
+      </div>
+    </div>
+
+    <button class="btn btn-danger" style="margin-top:8px" onclick="logoutAdmin()">Cerrar sesión</button>
   </div>
 </section>
 
@@ -628,6 +715,7 @@ function loadFromFirebase() {
     if (val) config = val;
     applyWelcomeBanner();
     refreshFlyerUserView();
+    renderSocialIcons();
     var waEl = document.getElementById("waNumber");
     if (waEl && sessionStorage.getItem("lr_admin") === "1") {
       waEl.value = (config && config.wa) || "";
@@ -1157,7 +1245,10 @@ function editProduct(id) {
   document.getElementById("pPromo").checked = !!p.promo;
   var ag = document.getElementById("pAgotado"); if (ag) ag.checked = !!p.agotado;
   previewAdminImg();
-  /* Scroll al formulario */
+  /* Abrir apartado de productos y bajar al formulario */
+  document.querySelectorAll("#adminPanel .tool-item").forEach(function(t){ t.classList.remove("open"); });
+  var box = document.getElementById("admProducts");
+  if (box) box.classList.add("open");
   document.getElementById("formTitle").scrollIntoView({ behavior: "smooth", block: "start" });
   toast("Editando: " + p.name);
 }
@@ -1289,6 +1380,7 @@ function saveWelcomeBanner() {
   var data = { wa: wa || (config.wa || "584120000000"), welcomeBanner: pendingBannerData };
   if (config && config.adminHash) data.adminHash = config.adminHash;
   if (config && config.flyerImage) data.flyerImage = config.flyerImage;
+  if (config && config.socialLinks) data.socialLinks = config.socialLinks;
   db.ref("config").set(data);
   config = data;
   pendingBannerData = null;
@@ -1304,6 +1396,7 @@ function resetWelcomeBanner() {
   var data = { wa: wa || (config.wa || "584120000000") };
   if (config && config.adminHash) data.adminHash = config.adminHash;
   if (config && config.flyerImage) data.flyerImage = config.flyerImage;
+  if (config && config.socialLinks) data.socialLinks = config.socialLinks;
   /* sin welcomeBanner = usa archivo del repo */
   db.ref("config").set(data);
   config = data;
@@ -1321,8 +1414,10 @@ function saveConfig() {
   if (config && config.welcomeBanner) data.welcomeBanner = config.welcomeBanner;
   if (config && config.adminHash) data.adminHash = config.adminHash;
   if (config && config.flyerImage) data.flyerImage = config.flyerImage;
+  if (config && config.socialLinks) data.socialLinks = config.socialLinks;
   db.ref("config").set(data);
   config = data;
+  renderSocialIcons();
   toast("WhatsApp guardado");
 }
 
@@ -1362,6 +1457,7 @@ document.addEventListener("DOMContentLoaded", function() {
   if (sessionStorage.getItem("lr_admin") === "1") {
     revealAdminNav(true);
   }
+  renderSocialIcons();
 });
 
 
@@ -1381,6 +1477,143 @@ function toggleTool(id) {
     if (id === "toolFlyer") refreshFlyerUserView();
   }
 }
+
+function toggleAdminTool(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var wasOpen = el.classList.contains("open");
+  document.querySelectorAll("#adminPanel .tool-item").forEach(function(t){ t.classList.remove("open"); });
+  if (!wasOpen) {
+    el.classList.add("open");
+    if (id === "admProducts") renderAdminProducts();
+    if (id === "admSocial") renderSocialAdmin();
+    if (id === "admBanner") applyWelcomeBanner();
+    if (id === "admFlyer") {
+      var fp = document.getElementById("flyerPreviewAdmin");
+      if (fp && config && config.flyerImage && !pendingFlyerData) {
+        fp.src = config.flyerImage;
+        fp.classList.add("show");
+      }
+    }
+  }
+}
+
+function defaultSocialLinks() {
+  return [
+    { id: "tiktok", icon: "🎵", label: "TikTok", url: "https://www.tiktok.com/@perfumeslr" },
+    { id: "instagram", icon: "📸", label: "Instagram", url: "https://www.instagram.com/perfumeslr26" },
+    { id: "whatsapp", icon: "💬", label: "WhatsApp", url: "whatsapp", isWhatsApp: true }
+  ];
+}
+
+function getSocialLinks() {
+  if (config && Array.isArray(config.socialLinks) && config.socialLinks.length) {
+    return config.socialLinks;
+  }
+  return defaultSocialLinks();
+}
+
+function resolveSocialHref(item) {
+  if (item.isWhatsApp || item.url === "whatsapp") {
+    var wa = (config && config.wa) ? String(config.wa).replace(/\D/g, "") : "";
+    return wa ? ("https://wa.me/" + wa) : "#";
+  }
+  return item.url || "#";
+}
+
+function renderSocialIcons() {
+  var box = document.getElementById("socialIcons");
+  if (!box) return;
+  var list = getSocialLinks();
+  box.innerHTML = list.map(function(item) {
+    var href = resolveSocialHref(item);
+    var title = item.label || "";
+    var inner;
+    if (item.iconImage) {
+      inner = '<img src="' + item.iconImage + '" alt="">';
+    } else {
+      inner = item.icon || "🔗";
+    }
+    return '<a href="' + href + '" target="_blank" rel="noopener" title="' + title + '">' + inner + '</a>';
+  }).join("");
+}
+
+function renderSocialAdmin() {
+  var box = document.getElementById("socialAdminList");
+  if (!box) return;
+  var list = getSocialLinks();
+  if (!list.length) {
+    box.innerHTML = '<div class="empty" style="padding:12px">Sin iconos</div>';
+    return;
+  }
+  box.innerHTML = list.map(function(item, i) {
+    var urlShow = item.isWhatsApp ? "(usa el número de WhatsApp del admin)" : (item.url || "");
+    return '<div class="social-admin-row">' +
+      '<strong style="color:var(--gold)">' + (item.icon || "🔗") + " " + (item.label || "") + '</strong><br>' +
+      '<span style="font-size:11px;color:var(--muted)">' + urlShow + '</span>' +
+      '<input type="text" data-i="' + i + '" data-f="icon" value="' + (item.icon || "").replace(/"/g, "&quot;") + '" placeholder="Emoji icono" onchange="updateSocialField(' + i + ',\'icon\',this.value)">' +
+      '<input type="text" data-i="' + i + '" data-f="label" value="' + (item.label || "").replace(/"/g, "&quot;") + '" placeholder="Nombre" onchange="updateSocialField(' + i + ',\'label\',this.value)">' +
+      (item.isWhatsApp ? '' : '<input type="text" value="' + (item.url || "").replace(/"/g, "&quot;") + '" placeholder="https://..." onchange="updateSocialField(' + i + ',\'url\',this.value)">') +
+      '<div class="row-actions">' +
+        '<button type="button" class="btn-danger" style="background:var(--danger);color:#fff" onclick="removeSocialLink(' + i + ')">Borrar</button>' +
+      '</div></div>';
+  }).join("");
+}
+
+function updateSocialField(i, field, value) {
+  var list = getSocialLinks().map(function(x){ return Object.assign({}, x); });
+  if (!list[i]) return;
+  list[i][field] = value;
+  saveSocialLinks(list);
+}
+
+function removeSocialLink(i) {
+  var list = getSocialLinks().slice();
+  list.splice(i, 1);
+  saveSocialLinks(list);
+  toast("Icono eliminado");
+}
+
+function addSocialLink() {
+  var icon = (document.getElementById("socIcon").value || "🔗").trim();
+  var label = (document.getElementById("socLabel").value || "").trim();
+  var url = (document.getElementById("socUrl").value || "").trim();
+  if (!label) return toast("Escribe un nombre");
+  if (!url) return toast("Escribe el enlace");
+  if (!/^https?:\/\//i.test(url) && url !== "whatsapp") {
+    url = "https://" + url;
+  }
+  var list = getSocialLinks().map(function(x){ return Object.assign({}, x); });
+  list.push({
+    id: "custom_" + Date.now(),
+    icon: icon,
+    label: label,
+    url: url,
+    isWhatsApp: false
+  });
+  saveSocialLinks(list);
+  document.getElementById("socIcon").value = "";
+  document.getElementById("socLabel").value = "";
+  document.getElementById("socUrl").value = "";
+  toast("Icono agregado");
+}
+
+function resetSocialLinks() {
+  if (!confirm("¿Restaurar TikTok, Instagram y WhatsApp por defecto?")) return;
+  saveSocialLinks(defaultSocialLinks());
+  toast("Iconos restaurados");
+}
+
+function saveSocialLinks(list) {
+  var data = Object.assign({}, config || {});
+  data.wa = (document.getElementById("waNumber") && document.getElementById("waNumber").value.trim()) || data.wa || "";
+  data.socialLinks = list;
+  db.ref("config").set(data);
+  config = data;
+  renderSocialIcons();
+  renderSocialAdmin();
+}
+
 
 function genderLabel(g) {
   if (g === "dama") return "Dama";
