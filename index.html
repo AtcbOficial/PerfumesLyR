@@ -318,7 +318,9 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   transition:transform .15s,background .15s;line-height:1;
 }
 .social-icons a:active{transform:scale(.92);background:var(--gold)}
-.social-icons a img{width:18px;height:18px;object-fit:contain;border-radius:50%}
+.social-icons a img{width:20px;height:20px;object-fit:contain;display:block}
+.social-admin-row .ico-prev{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px;background:#111;border-radius:6px}
+.social-admin-row .upload-ico{font-size:12px;color:var(--gold);cursor:pointer;margin:6px 0;display:inline-block}
 .social-admin-row{
   background:#141414;border:1px solid #333;border-radius:10px;padding:10px;margin-bottom:10px;
 }
@@ -527,12 +529,18 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
       </button>
       <div class="tool-item-body">
         <div class="info-box">
-          WhatsApp usa automáticamente el número guardado arriba.<br>
-          Puedes editar, borrar o agregar iconos nuevos (emoji o texto corto).
+          Usa <strong style="color:var(--gold)">PNG</strong> (recomendado) o JPG/ICO para el logo de cada red.<br>
+          WhatsApp usa el número guardado en Admin. Puedes cambiar la imagen de cada icono.
         </div>
         <div id="socialAdminList"></div>
         <h3 style="color:var(--gold);font-size:14px;margin:12px 0 8px">Agregar icono nuevo</h3>
-        <input type="text" id="socIcon" placeholder="Icono (emoji) ej: 🎵 📷 🌐" maxlength="4">
+        <div class="upload-box" onclick="document.getElementById('socFile').click()">
+          <strong>🖼️ Imagen del icono (PNG / JPG / ICO)</strong>
+          <p>Toca para subir el logo · 64×64 o más</p>
+          <input type="file" id="socFile" accept="image/png,image/jpeg,image/webp,image/x-icon,.ico,image/*" onchange="onSocFile(event)">
+        </div>
+        <img id="socPreview" class="admin-preview" alt="Vista previa icono">
+        <div class="img-hint" id="socHint"></div>
         <input type="text" id="socLabel" placeholder="Nombre ej: TikTok">
         <input type="text" id="socUrl" placeholder="Enlace https://...">
         <button class="btn" onclick="addSocialLink()">Agregar icono</button>
@@ -1524,10 +1532,13 @@ function toggleAdminTool(id) {
 }
 
 function defaultSocialLinks() {
+  var tiktok = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ffffff"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .56.04.82.12v-3.4a6.22 6.22 0 0 0-.82-.05A6.34 6.34 0 0 0 3.15 15.2a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.73a8.18 8.18 0 0 0 4.76 1.52V6.79a4.85 4.85 0 0 1-1-.1z"/></svg>');
+  var ig = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.12.14 4.79 1.84 4.93 4.93.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.14 3.08-1.8 4.79-4.93 4.93-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-3.14-.14-4.79-1.86-4.93-4.93C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85C2.37 3.99 4.03 2.3 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95C23.73 2.7 21.31.27 16.95.07 15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zM12 16a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm6.41-11.85a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44z"/></svg>');
+  var wa = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#25D366"><path d="M17.47 14.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.04-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/><path d="M12 2a10 10 0 0 0-8.65 15.05L2 22l5.1-1.34A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31A8.2 8.2 0 1 1 12 20.2z"/></svg>');
   return [
-    { id: "tiktok", icon: "🎵", label: "TikTok", url: "https://www.tiktok.com/@perfumeslr" },
-    { id: "instagram", icon: "📸", label: "Instagram", url: "https://www.instagram.com/perfumeslr26" },
-    { id: "whatsapp", icon: "💬", label: "WhatsApp", url: "whatsapp", isWhatsApp: true }
+    { id: "tiktok", label: "TikTok", url: "https://www.tiktok.com/@perfumeslr", iconImage: tiktok },
+    { id: "instagram", label: "Instagram", url: "https://www.instagram.com/perfumeslr26", iconImage: ig },
+    { id: "whatsapp", label: "WhatsApp", url: "whatsapp", isWhatsApp: true, iconImage: wa }
   ];
 }
 
@@ -1553,14 +1564,65 @@ function renderSocialIcons() {
   box.innerHTML = list.map(function(item) {
     var href = resolveSocialHref(item);
     var title = item.label || "";
-    var inner;
-    if (item.iconImage) {
-      inner = '<img src="' + item.iconImage + '" alt="">';
-    } else {
-      inner = item.icon || "🔗";
-    }
+    var inner = item.iconImage
+      ? '<img src="' + item.iconImage + '" alt="">'
+      : (item.icon || "🔗");
     return '<a href="' + href + '" target="_blank" rel="noopener" title="' + title + '">' + inner + '</a>';
   }).join("");
+}
+
+var pendingSocIcon = null;
+
+function onSocFile(ev) {
+  var file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function() {
+    compressSocialIcon(reader.result, function(dataUrl) {
+      pendingSocIcon = dataUrl;
+      var prev = document.getElementById("socPreview");
+      if (prev) { prev.src = dataUrl; prev.classList.add("show"); }
+      var h = document.getElementById("socHint");
+      if (h) h.textContent = "Icono listo · " + file.name;
+      toast("Icono listo");
+    });
+  };
+  reader.onerror = function() { toast("No se pudo leer el archivo"); };
+  reader.readAsDataURL(file);
+}
+
+function compressSocialIcon(src, cb) {
+  var img = new Image();
+  img.onload = function() {
+    var size = 96;
+    var canvas = document.createElement("canvas");
+    canvas.width = size; canvas.height = size;
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, size, size);
+    var r = Math.min(size / img.width, size / img.height);
+    var w = img.width * r, h = img.height * r;
+    ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+    cb(canvas.toDataURL("image/png"));
+  };
+  img.onerror = function() { toast("No se pudo leer la imagen"); };
+  img.src = src;
+}
+
+function onSocIconReplace(i, ev) {
+  var file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function() {
+    compressSocialIcon(reader.result, function(dataUrl) {
+      var list = getSocialLinks().map(function(x){ return Object.assign({}, x); });
+      if (!list[i]) return;
+      list[i].iconImage = dataUrl;
+      delete list[i].icon;
+      saveSocialLinks(list);
+      toast("Icono actualizado");
+    });
+  };
+  reader.readAsDataURL(file);
 }
 
 function renderSocialAdmin() {
@@ -1573,11 +1635,17 @@ function renderSocialAdmin() {
   }
   box.innerHTML = list.map(function(item, i) {
     var urlShow = item.isWhatsApp ? "(usa el número de WhatsApp del admin)" : (item.url || "");
+    var preview = item.iconImage
+      ? '<img class="ico-prev" src="' + item.iconImage + '" alt="">'
+      : '<span style="font-size:22px;margin-right:6px">' + (item.icon || "🔗") + '</span>';
     return '<div class="social-admin-row">' +
-      '<strong style="color:var(--gold)">' + (item.icon || "🔗") + " " + (item.label || "") + '</strong><br>' +
+      preview +
+      '<strong style="color:var(--gold)">' + (item.label || "") + '</strong><br>' +
       '<span style="font-size:11px;color:var(--muted)">' + urlShow + '</span>' +
-      '<input type="text" data-i="' + i + '" data-f="icon" value="' + (item.icon || "").replace(/"/g, "&quot;") + '" placeholder="Emoji icono" onchange="updateSocialField(' + i + ',\'icon\',this.value)">' +
-      '<input type="text" data-i="' + i + '" data-f="label" value="' + (item.label || "").replace(/"/g, "&quot;") + '" placeholder="Nombre" onchange="updateSocialField(' + i + ',\'label\',this.value)">' +
+      '<label class="upload-ico">📷 Cambiar imagen PNG / ICO' +
+      '<input type="file" accept="image/png,image/jpeg,image/webp,.ico,image/*" style="display:none" onchange="onSocIconReplace(' + i + ',event)">' +
+      '</label>' +
+      '<input type="text" value="' + (item.label || "").replace(/"/g, "&quot;") + '" placeholder="Nombre" onchange="updateSocialField(' + i + ',\'label\',this.value)">' +
       (item.isWhatsApp ? '' : '<input type="text" value="' + (item.url || "").replace(/"/g, "&quot;") + '" placeholder="https://..." onchange="updateSocialField(' + i + ',\'url\',this.value)">') +
       '<div class="row-actions">' +
         '<button type="button" class="btn-danger" style="background:var(--danger);color:#fff" onclick="removeSocialLink(' + i + ')">Borrar</button>' +
@@ -1600,26 +1668,30 @@ function removeSocialLink(i) {
 }
 
 function addSocialLink() {
-  var icon = (document.getElementById("socIcon").value || "🔗").trim();
   var label = (document.getElementById("socLabel").value || "").trim();
   var url = (document.getElementById("socUrl").value || "").trim();
   if (!label) return toast("Escribe un nombre");
   if (!url) return toast("Escribe el enlace");
+  if (!pendingSocIcon) return toast("Sube una imagen PNG del icono");
   if (!/^https?:\/\//i.test(url) && url !== "whatsapp") {
     url = "https://" + url;
   }
   var list = getSocialLinks().map(function(x){ return Object.assign({}, x); });
   list.push({
     id: "custom_" + Date.now(),
-    icon: icon,
     label: label,
     url: url,
+    iconImage: pendingSocIcon,
     isWhatsApp: false
   });
   saveSocialLinks(list);
-  document.getElementById("socIcon").value = "";
+  pendingSocIcon = null;
   document.getElementById("socLabel").value = "";
   document.getElementById("socUrl").value = "";
+  var sf = document.getElementById("socFile"); if (sf) sf.value = "";
+  var prev = document.getElementById("socPreview");
+  if (prev) { prev.classList.remove("show"); prev.removeAttribute("src"); }
+  var h = document.getElementById("socHint"); if (h) h.textContent = "";
   toast("Icono agregado");
 }
 
@@ -1638,6 +1710,7 @@ function saveSocialLinks(list) {
   renderSocialIcons();
   renderSocialAdmin();
 }
+
 
 
 function genderLabel(g) {
