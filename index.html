@@ -544,7 +544,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="tool-item" id="admProducts">
       <button type="button" class="tool-item-head" onclick="toggleAdminTool('admProducts')">
         <span>🧴 Agregar perfume y catálogo
-          <small>Alta, edición, más vendido y agotado (<span id="productCount">0</span>)</small>
+          <small>Stock y gestión del inventario</small>
         </span>
         <span class="chev">›</span>
       </button>
@@ -576,6 +576,12 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
         <hr style="border-color:#333;margin:16px 0">
         <h3 style="color:var(--gold);margin-bottom:10px;font-size:15px">Catálogo actual</h3>
+        <div class="info-box" id="stockStats" style="text-align:center">
+          <strong style="color:var(--gold)">Total:</strong> <span id="statTotal">0</span>
+          &nbsp;·&nbsp; <strong style="color:#27ae60">Disponibles:</strong> <span id="statDisp">0</span>
+          &nbsp;·&nbsp; <strong style="color:#c0392b">Agotados:</strong> <span id="statAgot">0</span>
+          &nbsp;·&nbsp; <strong style="color:var(--gold)">Más vendidos:</strong> <span id="statPromo">0</span>
+        </div>
         <div class="admin-search">
           <input type="text" id="adminSearch" placeholder="Buscar perfume para editar o borrar..." oninput="renderAdminProducts()">
         </div>
@@ -1187,12 +1193,31 @@ function previewAdminImg() {
   };
 }
 
+function updateStockStats() {
+  var total = (products || []).length;
+  var agot = 0, promo = 0;
+  (products || []).forEach(function(p) {
+    if (p.agotado) agot++;
+    if (p.promo) promo++;
+  });
+  var disp = total - agot;
+  var set = function(id, v) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(v);
+  };
+  set("statTotal", total);
+  set("statDisp", disp);
+  set("statAgot", agot);
+  set("statPromo", promo);
+  set("productCount", total);
+}
+
 function renderAdminProducts() {
+  updateStockStats();
   var q = ((document.getElementById("adminSearch") || {}).value || "").toLowerCase().trim();
   var list = products.filter(function(p) {
     return !q || (p.name || "").toLowerCase().indexOf(q) !== -1;
   });
-  document.getElementById("productCount").textContent = list.length + (q ? " / " + products.length : "");
   if (!list.length) {
     document.getElementById("adminProducts").innerHTML = '<div class="empty">No hay resultados</div>';
     return;
@@ -1624,8 +1649,8 @@ function genderLabel(g) {
 
 function renderEmpList() {
   var q = ((document.getElementById("empSearch") || {}).value || "").toLowerCase().trim();
+  /* Todos los perfumes: también agotados y más vendidos */
   var list = (products || []).filter(function(p) {
-    if (p.agotado) return false;
     return !q || (p.name || "").toLowerCase().indexOf(q) !== -1;
   });
   list.sort(function(a, b) {
@@ -1640,9 +1665,12 @@ function renderEmpList() {
   }
   box.innerHTML = list.map(function(p) {
     var checked = empSelected[p.id] ? " checked" : "";
+    var extra = "";
+    if (p.agotado) extra += ' <span class="badge agotado">AGOTADO</span>';
+    if (p.promo) extra += ' <span class="badge masvendido">MÁS VENDIDO</span>';
     return '<label class="tools-row">' +
       '<input type="checkbox" data-id="' + p.id + '"' + checked + ' onchange="toggleEmpItem(' + p.id + ',this.checked)">' +
-      '<span class="t-name">' + p.name + '</span>' +
+      '<span class="t-name">' + p.name + extra + '</span>' +
       '<span class="t-gender">' + genderLabel(p.gender) + '</span>' +
       '</label>';
   }).join("");
@@ -1658,7 +1686,6 @@ function toggleEmpItem(id, on) {
 function empSelectAll(on) {
   var q = ((document.getElementById("empSearch") || {}).value || "").toLowerCase().trim();
   (products || []).forEach(function(p) {
-    if (p.agotado) return;
     if (q && (p.name || "").toLowerCase().indexOf(q) === -1) return;
     if (on) empSelected[p.id] = true;
     else delete empSelected[p.id];
