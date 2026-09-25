@@ -254,6 +254,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .product-admin.agotado-row{opacity:.75;border:1px solid #c0392b55}
 
 
+
 /* Herramientas para emprendedores */
 .tools-cta{
   display:block;width:100%;margin:0 0 14px;padding:16px 14px;border:none;border-radius:14px;
@@ -275,9 +276,20 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   0%,100%{box-shadow:0 0 8px 0 rgba(201,162,39,.35),0 4px 14px rgba(0,0,0,.3)}
   50%{box-shadow:0 0 22px 4px rgba(232,200,74,.65),0 6px 18px rgba(0,0,0,.35)}
 }
+.tool-item{background:var(--card);border:1px solid #333;border-radius:12px;margin-bottom:12px;overflow:hidden}
+.tool-item-head{
+  width:100%;text-align:left;background:linear-gradient(90deg,#1a1508,#1a1a1a);
+  border:none;color:var(--text);padding:14px 14px;font-size:14px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:10px;
+}
+.tool-item-head .chev{margin-left:auto;color:var(--gold);transition:transform .25s;font-size:16px}
+.tool-item.open .tool-item-head .chev{transform:rotate(90deg)}
+.tool-item-head small{display:block;font-weight:500;color:var(--muted);font-size:11px;margin-top:3px}
+.tool-item-body{display:none;padding:12px 14px 16px;border-top:1px solid #333}
+.tool-item.open .tool-item-body{display:block;animation:fadeIn .3s ease}
 .tools-list{
-  max-height:42vh;overflow-y:auto;border:1px solid #333;border-radius:10px;
-  background:var(--card);margin-bottom:12px;-webkit-overflow-scrolling:touch;
+  max-height:38vh;overflow-y:auto;border:1px solid #333;border-radius:10px;
+  background:#121212;margin-bottom:12px;-webkit-overflow-scrolling:touch;
 }
 .tools-row{
   display:flex;align-items:center;gap:10px;padding:10px 12px;
@@ -290,9 +302,11 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .tools-actions{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 .tools-actions button{flex:1;min-width:120px;padding:10px;border-radius:8px;border:1px solid #333;
   background:#222;color:var(--text);font-size:13px;font-weight:600;cursor:pointer}
-.tools-actions button:active{background:#333}
 .tools-count{font-size:12px;color:var(--muted);margin-bottom:10px;text-align:center}
 .tools-count strong{color:var(--gold)}
+.flyer-preview{width:100%;max-height:220px;object-fit:contain;background:#111;border-radius:10px;margin:10px 0;display:none}
+.flyer-preview.show{display:block}
+
 
 </style>
 </head>
@@ -364,32 +378,52 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 <section id="herramientas" class="section">
   <h2>Herramientas para emprendedores</h2>
-  <div class="maker-bar">
-    <h3>Crear catálogo para emprendedores</h3>
-    <p>Elige los perfumes · pon el nombre de tu emprendimiento y tu WhatsApp · descarga un PDF listo para vender</p>
-  </div>
-
-  <label>Nombre de tu emprendimiento</label>
-  <input type="text" id="empName" placeholder="Ej: Aromas del Valle">
-
-  <label>WhatsApp para que te contacten (código país, sin +)</label>
-  <input type="text" id="empWa" placeholder="Ej: 584121234567">
-
-  <label>Buscar en la lista</label>
-  <input type="text" id="empSearch" placeholder="Filtrar perfumes..." oninput="renderEmpList()">
-
-  <div class="tools-actions">
-    <button type="button" onclick="empSelectAll(true)">Marcar todos</button>
-    <button type="button" onclick="empSelectAll(false)">Quitar todos</button>
-  </div>
-  <div class="tools-count">Seleccionados: <strong id="empCount">0</strong></div>
-  <div class="tools-list" id="empList"><div class="loading">Cargando lista...</div></div>
-
-  <button class="btn" onclick="downloadEmpPdf()">📄 Descargar catálogo PDF</button>
-  <button class="btn-whatsapp" onclick="shareEmpWhatsApp()">📲 Enviar aviso por WhatsApp</button>
-  <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4">
-    El PDF se descarga en tu teléfono. Luego puedes adjuntarlo en WhatsApp a tus clientes.
+  <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.45">
+    Elige una herramienta. Toca el título para abrir o cerrar cada apartado.
   </p>
+
+  <!-- 1. Crear catálogo PDF -->
+  <div class="tool-item" id="toolCatalogo">
+    <button type="button" class="tool-item-head" onclick="toggleTool('toolCatalogo')">
+      <span>📄 Crear catálogo para emprendedores
+        <small>PDF elegante con tu marca · Caballero / Dama / Unisex</small>
+      </span>
+      <span class="chev">›</span>
+    </button>
+    <div class="tool-item-body">
+      <label>Nombre de tu emprendimiento</label>
+      <input type="text" id="empName" placeholder="Ej: Aromas del Valle">
+      <label>WhatsApp para que te contacten (código país, sin +)</label>
+      <input type="text" id="empWa" placeholder="Ej: 584121234567">
+      <label>Buscar en la lista</label>
+      <input type="text" id="empSearch" placeholder="Filtrar perfumes..." oninput="renderEmpList()">
+      <div class="tools-actions">
+        <button type="button" onclick="empSelectAll(true)">Marcar todos</button>
+        <button type="button" onclick="empSelectAll(false)">Quitar todos</button>
+      </div>
+      <div class="tools-count">Seleccionados: <strong id="empCount">0</strong></div>
+      <div class="tools-list" id="empList"><div class="loading">Cargando lista...</div></div>
+      <button class="btn" onclick="downloadEmpPdf()">📄 Descargar catálogo PDF</button>
+    </div>
+  </div>
+
+  <!-- 2. Descargar flyer -->
+  <div class="tool-item" id="toolFlyer">
+    <button type="button" class="tool-item-head" onclick="toggleTool('toolFlyer')">
+      <span>🖼️ Descargar imagen Flyer
+        <small>Imagen promocional lista para redes o WhatsApp</small>
+      </span>
+      <span class="chev">›</span>
+    </button>
+    <div class="tool-item-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.4">
+        Descarga el flyer oficial para compartirlo con tus clientes.
+      </p>
+      <img id="flyerPreviewUser" class="flyer-preview" alt="Flyer">
+      <div class="img-hint" id="flyerHintUser">Cargando flyer...</div>
+      <button class="btn" onclick="downloadFlyer()">⬇️ Descargar flyer</button>
+    </div>
+  </div>
 </section>
 
 <section id="admin" class="section">
@@ -428,6 +462,22 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="img-hint" id="bannerHint"></div>
     <button class="btn" onclick="saveWelcomeBanner()">Guardar banner</button>
     <button class="btn btn-secondary" onclick="resetWelcomeBanner()">Usar banner original del sitio</button>
+
+    <hr style="border-color:#333;margin:16px 0">
+
+    <h3 style="color:var(--gold);margin-bottom:8px">Flyer para emprendedores</h3>
+    <div class="info-box">
+      Imagen que los clientes descargan en <strong style="color:var(--gold)">Herramientas → Descargar imagen Flyer</strong>.
+    </div>
+    <div class="upload-box" onclick="document.getElementById('flyerFile').click()">
+      <strong>🖼️ Subir imagen flyer (PNG / JPG)</strong>
+      <p>Toca aquí y elige el archivo</p>
+      <input type="file" id="flyerFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onFlyerFile(event)">
+    </div>
+    <img id="flyerPreviewAdmin" class="admin-preview" alt="Vista previa flyer">
+    <div class="img-hint" id="flyerHintAdmin"></div>
+    <button class="btn" onclick="saveFlyerImage()">Guardar flyer</button>
+    <button class="btn btn-secondary" onclick="resetFlyerImage()">Quitar flyer</button>
 
     <hr style="border-color:#333;margin:16px 0">
 
@@ -577,9 +627,19 @@ function loadFromFirebase() {
     var val = snap.val();
     if (val) config = val;
     applyWelcomeBanner();
+    refreshFlyerUserView();
     var waEl = document.getElementById("waNumber");
     if (waEl && sessionStorage.getItem("lr_admin") === "1") {
       waEl.value = (config && config.wa) || "";
+    }
+    if (sessionStorage.getItem("lr_admin") === "1") {
+      var fp = document.getElementById("flyerPreviewAdmin");
+      var fh = document.getElementById("flyerHintAdmin");
+      if (fp && config && config.flyerImage && !pendingFlyerData) {
+        fp.src = config.flyerImage;
+        fp.classList.add("show");
+        if (fh) fh.textContent = "Flyer actual (guardado)";
+      }
     }
   });
   updateCartBadge();
@@ -1228,6 +1288,7 @@ function saveWelcomeBanner() {
   var wa = (document.getElementById("waNumber").value || config.wa || "").trim();
   var data = { wa: wa || (config.wa || "584120000000"), welcomeBanner: pendingBannerData };
   if (config && config.adminHash) data.adminHash = config.adminHash;
+  if (config && config.flyerImage) data.flyerImage = config.flyerImage;
   db.ref("config").set(data);
   config = data;
   pendingBannerData = null;
@@ -1242,6 +1303,7 @@ function resetWelcomeBanner() {
   var wa = (document.getElementById("waNumber").value || config.wa || "").trim();
   var data = { wa: wa || (config.wa || "584120000000") };
   if (config && config.adminHash) data.adminHash = config.adminHash;
+  if (config && config.flyerImage) data.flyerImage = config.flyerImage;
   /* sin welcomeBanner = usa archivo del repo */
   db.ref("config").set(data);
   config = data;
@@ -1258,6 +1320,7 @@ function saveConfig() {
   var data = { wa: wa };
   if (config && config.welcomeBanner) data.welcomeBanner = config.welcomeBanner;
   if (config && config.adminHash) data.adminHash = config.adminHash;
+  if (config && config.flyerImage) data.flyerImage = config.flyerImage;
   db.ref("config").set(data);
   config = data;
   toast("WhatsApp guardado");
@@ -1302,8 +1365,22 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
+
 /* ========== Herramientas para emprendedores ========== */
 var empSelected = {};
+var pendingFlyerData = null;
+
+function toggleTool(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var wasOpen = el.classList.contains("open");
+  document.querySelectorAll(".tool-item").forEach(function(t){ t.classList.remove("open"); });
+  if (!wasOpen) {
+    el.classList.add("open");
+    if (id === "toolCatalogo") renderEmpList();
+    if (id === "toolFlyer") refreshFlyerUserView();
+  }
+}
 
 function genderLabel(g) {
   if (g === "dama") return "Dama";
@@ -1370,6 +1447,7 @@ function getSelectedEmpProducts() {
   });
 }
 
+/* PDF estilo catálogo L&R: 3 columnas Caballero / Dama / Unisex */
 function buildEmpPdf() {
   var name = ((document.getElementById("empName") || {}).value || "").trim();
   var wa = ((document.getElementById("empWa") || {}).value || "").trim();
@@ -1381,133 +1459,145 @@ function buildEmpPdf() {
     toast("No se pudo cargar el generador de PDF");
     return null;
   }
+
+  var cab = items.filter(function(p){ return p.gender === "caballero"; });
+  var dam = items.filter(function(p){ return p.gender === "dama"; });
+  var uni = items.filter(function(p){ return p.gender === "unisex"; });
+
   var JsPDF = window.jspdf.jsPDF;
   var doc = new JsPDF({ unit: "mm", format: "a4" });
   var pageW = doc.internal.pageSize.getWidth();
   var pageH = doc.internal.pageSize.getHeight();
-  var margin = 14;
-  var pastel = [245, 235, 220]; /* crema pastel */
+  var cream = [252, 247, 236];
+  var gold = [184, 148, 55];
+  var ink = [45, 40, 30];
 
-  function paintBackground() {
-    doc.setFillColor(pastel[0], pastel[1], pastel[2]);
+  function bg() {
+    doc.setFillColor(cream[0], cream[1], cream[2]);
     doc.rect(0, 0, pageW, pageH, "F");
-    /* marco sutil */
-    doc.setDrawColor(201, 162, 39);
-    doc.setLineWidth(0.6);
-    doc.rect(8, 8, pageW - 16, pageH - 16);
   }
+  bg();
 
-  paintBackground();
-
-  /* Título emprendimiento */
-  doc.setTextColor(40, 30, 10);
+  /* Logo circular L&R */
+  var cx = pageW / 2, cy = 22;
+  doc.setDrawColor(gold[0], gold[1], gold[2]);
+  doc.setLineWidth(0.7);
+  doc.circle(cx, cy, 10);
+  doc.circle(cx, cy, 8.5);
   doc.setFont("helvetica", "bold");
-  var titleSize = name.length > 28 ? 18 : (name.length > 18 ? 22 : 26);
-  doc.setFontSize(titleSize);
-  var titleLines = doc.splitTextToSize(name.toUpperCase(), pageW - margin * 2);
-  var y = 28;
-  titleLines.forEach(function(line) {
-    doc.text(line, pageW / 2, y, { align: "center" });
-    y += titleSize * 0.45;
+  doc.setFontSize(14);
+  doc.setTextColor(gold[0], gold[1], gold[2]);
+  doc.text("L&R", cx, cy + 2, { align: "center" });
+
+  /* Títulos */
+  var y = 38;
+  doc.setFontSize(11);
+  doc.setTextColor(ink[0], ink[1], ink[2]);
+  doc.text("PERFUMES", cx, y, { align: "center" });
+  y += 9;
+  doc.setFontSize(20);
+  doc.text("CATÁLOGO DE PERFUMES", cx, y, { align: "center" });
+  y += 4;
+  doc.setDrawColor(gold[0], gold[1], gold[2]);
+  doc.setLineWidth(0.4);
+  doc.line(cx - 55, y, cx - 8, y);
+  doc.line(cx + 8, y, cx + 55, y);
+  y += 7;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(100, 90, 60);
+  doc.text("CALIDAD 1.1  ·  ESENCIAS CON CALIDAD AL ORIGINAL", cx, y, { align: "center" });
+  y += 6;
+
+  /* Nombre emprendimiento + WhatsApp del emprendedor */
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.setTextColor(ink[0], ink[1], ink[2]);
+  var nameLines = doc.splitTextToSize(name.toUpperCase(), pageW - 30);
+  nameLines.forEach(function(ln) {
+    doc.text(ln, cx, y, { align: "center" });
+    y += 5.5;
+  });
+  y += 1;
+  doc.setFontSize(11);
+  doc.setTextColor(gold[0], gold[1], gold[2]);
+  doc.text("WhatsApp: +" + wa.replace(/^\+/, ""), cx, y, { align: "center" });
+  y += 8;
+
+  /* 3 columnas */
+  var gap = 3;
+  var side = 10;
+  var colW = (pageW - side * 2 - gap * 2) / 3;
+  var cols = [
+    { title: "CABALLERO", list: cab, x: side },
+    { title: "DAMA", list: dam, x: side + colW + gap },
+    { title: "UNISEX", list: uni, x: side + (colW + gap) * 2 }
+  ];
+
+  var topBox = y;
+  var bottomLimit = pageH - 28;
+
+  /* Calcular altura de caja según la columna más larga */
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  function colContentHeight(list) {
+    var h = 12; /* header */
+    list.forEach(function(p) {
+      var t = "• " + (p.name || "");
+      var lines = doc.splitTextToSize(t, colW - 5);
+      h += lines.length * 3.3 + 0.8;
+    });
+    return Math.max(h, 30);
+  }
+  var maxH = Math.max(colContentHeight(cab), colContentHeight(dam), colContentHeight(uni));
+  maxH = Math.min(maxH, bottomLimit - topBox);
+
+  cols.forEach(function(col) {
+    var x = col.x;
+    /* caja */
+    doc.setDrawColor(gold[0], gold[1], gold[2]);
+    doc.setLineWidth(0.5);
+    doc.setFillColor(255, 252, 245);
+    doc.roundedRect(x, topBox, colW, maxH, 2, 2, "FD");
+    /* título columna */
+    doc.setFillColor(cream[0], cream[1], cream[2]);
+    doc.roundedRect(x + 4, topBox + 3, colW - 8, 7, 1.5, 1.5, "F");
+    doc.setDrawColor(gold[0], gold[1], gold[2]);
+    doc.roundedRect(x + 4, topBox + 3, colW - 8, 7, 1.5, 1.5, "S");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(gold[0], gold[1], gold[2]);
+    doc.text(col.title, x + colW / 2, topBox + 7.8, { align: "center" });
+
+    var ly = topBox + 14;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6.5);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    col.list.forEach(function(p) {
+      var t = "• " + (p.name || "");
+      var lines = doc.splitTextToSize(t, colW - 5);
+      if (ly + lines.length * 3.3 > topBox + maxH - 3) return;
+      lines.forEach(function(ln) {
+        doc.text(ln, x + 2.5, ly);
+        ly += 3.3;
+      });
+      ly += 0.6;
+    });
   });
 
-  /* Línea dorada */
-  y += 4;
-  doc.setDrawColor(201, 162, 39);
-  doc.setLineWidth(0.8);
-  doc.line(margin + 20, y, pageW - margin - 20, y);
-  y += 10;
-
-  /* WhatsApp */
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.setTextColor(90, 70, 20);
-  doc.text("WhatsApp / Contacto", pageW / 2, y, { align: "center" });
-  y += 8;
-  doc.setFontSize(16);
-  doc.setTextColor(20, 20, 20);
-  doc.text("+" + wa.replace(/^\+/, ""), pageW / 2, y, { align: "center" });
-  y += 8;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(100, 90, 70);
-  doc.text("Catálogo de esencias · Calidad 1.1 · 30 · 60 · 120 ml", pageW / 2, y, { align: "center" });
-  y += 10;
-
-  doc.setDrawColor(201, 162, 39);
-  doc.setLineWidth(0.3);
-  doc.line(margin, y, pageW - margin, y);
-  y += 8;
-
-  /* Lista 2 columnas */
+  /* Pie */
+  var fy = Math.min(topBox + maxH + 10, pageH - 16);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.setTextColor(40, 30, 10);
-  doc.text("Lista de perfumes", margin, y);
-  y += 7;
-
-  var colW = (pageW - margin * 2 - 6) / 2;
-  var col1X = margin;
-  var col2X = margin + colW + 6;
-  var rowH = 7;
-  var bottom = pageH - 16;
-  var leftY = y;
-  var rightY = y;
-  var useLeft = true;
-
-  doc.setFont("helvetica", "normal");
+  doc.setTextColor(ink[0], ink[1], ink[2]);
+  doc.text(name + "  ·  Calidad 1.1  ·  30 · 60 · 120 ml", cx, fy, { align: "center" });
+  fy += 6;
   doc.setFontSize(9);
-
-  items.forEach(function(p, idx) {
-    var g = genderLabel(p.gender);
-    var line = (p.name || "") + "  ·  " + g;
-    var lines = doc.splitTextToSize(line, colW - 2);
-    var blockH = lines.length * 4.2 + 1.5;
-    var curY = useLeft ? leftY : rightY;
-    var curX = useLeft ? col1X : col2X;
-
-    if (curY + blockH > bottom) {
-      if (useLeft) {
-        /* pasar a columna derecha si cabe; si no, nueva página */
-        if (rightY + blockH > bottom) {
-          doc.addPage();
-          paintBackground();
-          leftY = 20;
-          rightY = 20;
-          useLeft = true;
-          curY = leftY;
-          curX = col1X;
-        } else {
-          useLeft = false;
-          curY = rightY;
-          curX = col2X;
-        }
-      } else {
-        doc.addPage();
-        paintBackground();
-        leftY = 20;
-        rightY = 20;
-        useLeft = true;
-        curY = leftY;
-        curX = col1X;
-      }
-    }
-
-    doc.setTextColor(30, 25, 15);
-    doc.text(lines, curX, curY);
-    if (useLeft) leftY = curY + blockH;
-    else rightY = curY + blockH;
-    useLeft = !useLeft;
-    /* si la columna izquierda está más abajo, equilibrar un poco: seguir alternando */
-  });
-
-  /* Pie en última página */
-  doc.setFontSize(8);
-  doc.setTextColor(120, 100, 70);
-  doc.text("Presentaciones: 30 ml · 60 ml · 120 ml", pageW / 2, pageH - 12, { align: "center" });
+  doc.setTextColor(gold[0], gold[1], gold[2]);
+  doc.text("WhatsApp / pedidos: +" + wa.replace(/^\+/, ""), cx, fy, { align: "center" });
 
   var safeName = name.replace(/[^\w\u00C0-\u024F\s-]/gi, "").trim().replace(/\s+/g, "_") || "catalogo";
-  return { doc: doc, filename: "Catalogo_" + safeName + ".pdf", name: name, wa: wa, count: items.length };
+  return { doc: doc, filename: "Catalogo_" + safeName + ".pdf" };
 }
 
 function downloadEmpPdf() {
@@ -1517,35 +1607,87 @@ function downloadEmpPdf() {
   toast("PDF descargado");
 }
 
-function shareEmpWhatsApp() {
-  var name = ((document.getElementById("empName") || {}).value || "").trim();
-  var wa = ((document.getElementById("empWa") || {}).value || "").trim();
-  var items = getSelectedEmpProducts();
-  if (!name) return toast("Escribe el nombre de tu emprendimiento");
-  if (!wa) return toast("Escribe tu WhatsApp");
-  if (!items.length) return toast("Selecciona al menos un perfume");
-
-  /* Genera PDF para que lo tengan descargado */
-  var built = buildEmpPdf();
-  if (built) {
-    try { built.doc.save(built.filename); } catch (e) {}
+/* ----- Flyer ----- */
+function refreshFlyerUserView() {
+  var img = document.getElementById("flyerPreviewUser");
+  var hint = document.getElementById("flyerHintUser");
+  var src = (config && config.flyerImage) ? config.flyerImage : "";
+  if (!img) return;
+  if (src) {
+    img.src = src;
+    img.classList.add("show");
+    if (hint) hint.textContent = "Flyer listo para descargar";
+  } else {
+    img.classList.remove("show");
+    img.removeAttribute("src");
+    if (hint) hint.textContent = "Aún no hay flyer cargado. El administrador debe subirlo en Admin.";
   }
+}
 
-  var lines = [];
-  lines.push("Hola, te comparto el catálogo de *" + name + "*");
-  lines.push("WhatsApp: +" + wa.replace(/^\+/, ""));
-  lines.push("");
-  lines.push("Perfumes disponibles (" + items.length + "):");
-  items.slice(0, 25).forEach(function(p) {
-    lines.push("• " + p.name + " (" + genderLabel(p.gender) + ")");
-  });
-  if (items.length > 25) lines.push("… y " + (items.length - 25) + " más (ver PDF)");
-  lines.push("");
-  lines.push("Te envío también el PDF del catálogo.");
-  var texto = lines.join("\n");
-  var url = "https://wa.me/" + wa.replace(/\D/g, "") + "?text=" + encodeURIComponent(texto);
-  window.open(url, "_blank");
-  toast("PDF listo · WhatsApp abierto");
+function downloadFlyer() {
+  var src = (config && config.flyerImage) ? config.flyerImage : "";
+  if (!src) return toast("No hay flyer disponible todavía");
+  var a = document.createElement("a");
+  a.href = src;
+  a.download = "Flyer_Perfumes_LR.png";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast("Flyer descargado");
+}
+
+function onFlyerFile(ev) {
+  var file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  if (!file.type || file.type.indexOf("image") !== 0) {
+    toast("Elige una imagen PNG o JPG");
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function() {
+    compressBanner(reader.result, function(dataUrl) {
+      pendingFlyerData = dataUrl;
+      var prev = document.getElementById("flyerPreviewAdmin");
+      if (prev) {
+        prev.src = dataUrl;
+        prev.classList.add("show");
+      }
+      var hint = document.getElementById("flyerHintAdmin");
+      if (hint) hint.textContent = "Flyer listo · pulsa Guardar flyer";
+      toast("Flyer listo para guardar");
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveFlyerImage() {
+  if (!pendingFlyerData) return toast("Primero elige una imagen");
+  var data = Object.assign({}, config || {});
+  data.wa = (document.getElementById("waNumber").value || data.wa || "").trim() || data.wa;
+  data.flyerImage = pendingFlyerData;
+  db.ref("config").set(data);
+  config = data;
+  pendingFlyerData = null;
+  var ff = document.getElementById("flyerFile");
+  if (ff) ff.value = "";
+  refreshFlyerUserView();
+  toast("Flyer guardado");
+}
+
+function resetFlyerImage() {
+  if (!confirm("¿Quitar el flyer para emprendedores?")) return;
+  var data = Object.assign({}, config || {});
+  data.wa = (document.getElementById("waNumber").value || data.wa || "").trim() || data.wa;
+  delete data.flyerImage;
+  db.ref("config").set(data);
+  config = data;
+  pendingFlyerData = null;
+  var prev = document.getElementById("flyerPreviewAdmin");
+  if (prev) { prev.classList.remove("show"); prev.removeAttribute("src"); }
+  var hint = document.getElementById("flyerHintAdmin");
+  if (hint) hint.textContent = "";
+  refreshFlyerUserView();
+  toast("Flyer eliminado");
 }
 
 
