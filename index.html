@@ -1826,27 +1826,35 @@ function buildEmpPdf() {
   doc.text("L&R", cx, cy + 2, { align: "center" });
 
   /* Títulos */
-  var y = 38;
-  doc.setFontSize(11);
+  var y = 36;
+  doc.setFontSize(10);
   doc.setTextColor(ink[0], ink[1], ink[2]);
   doc.text("PERFUMES", cx, y, { align: "center" });
-  y += 9;
-  doc.setFontSize(20);
+  y += 8;
+  doc.setFontSize(16);
   doc.text("CATÁLOGO DE PERFUMES", cx, y, { align: "center" });
+  y += 6;
+  doc.setFontSize(11);
+  doc.setTextColor(gold[0], gold[1], gold[2]);
+  doc.text("para nuestros emprendedores", cx, y, { align: "center" });
   y += 4;
   doc.setDrawColor(gold[0], gold[1], gold[2]);
   doc.setLineWidth(0.4);
   doc.line(cx - 55, y, cx - 8, y);
   doc.line(cx + 8, y, cx + 55, y);
-  y += 7;
+  y += 6;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(100, 90, 60);
   doc.text("CALIDAD 1.1  ·  ESENCIAS CON CALIDAD AL ORIGINAL", cx, y, { align: "center" });
-  y += 6;
+  y += 7;
 
-  /* Nombre emprendimiento + WhatsApp del emprendedor */
+  /* Nombre y WhatsApp del emprendedor (no es Perfumes L&R) */
   doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(gold[0], gold[1], gold[2]);
+  doc.text("EMPRENDEDOR:", cx, y, { align: "center" });
+  y += 5.5;
   doc.setFontSize(13);
   doc.setTextColor(ink[0], ink[1], ink[2]);
   var nameLines = doc.splitTextToSize(name.toUpperCase(), pageW - 30);
@@ -1854,10 +1862,14 @@ function buildEmpPdf() {
     doc.text(ln, cx, y, { align: "center" });
     y += 5.5;
   });
-  y += 1;
-  doc.setFontSize(11);
+  y += 2;
+  doc.setFontSize(9);
   doc.setTextColor(gold[0], gold[1], gold[2]);
-  doc.text("WhatsApp: +" + wa.replace(/^\+/, ""), cx, y, { align: "center" });
+  doc.text("WHATSAPP DEL EMPRENDEDOR:", cx, y, { align: "center" });
+  y += 5.5;
+  doc.setFontSize(12);
+  doc.setTextColor(ink[0], ink[1], ink[2]);
+  doc.text("+" + wa.replace(/^\+/, ""), cx, y, { align: "center" });
   y += 8;
 
   /* 3 columnas */
@@ -1926,11 +1938,11 @@ function buildEmpPdf() {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.setTextColor(ink[0], ink[1], ink[2]);
-  doc.text(name + "  ·  Calidad 1.1  ·  30 · 60 · 120 ml", cx, fy, { align: "center" });
-  fy += 6;
+  doc.text("Emprendedor: " + name + "  ·  30 · 60 · 120 ml", cx, fy, { align: "center" });
+  fy += 5;
   doc.setFontSize(9);
   doc.setTextColor(gold[0], gold[1], gold[2]);
-  doc.text("WhatsApp / pedidos: +" + wa.replace(/^\+/, ""), cx, fy, { align: "center" });
+  doc.text("WhatsApp del emprendedor: +" + wa.replace(/^\+/, ""), cx, fy, { align: "center" });
 
   var safeName = name.replace(/[^\w\u00C0-\u024F\s-]/gi, "").trim().replace(/\s+/g, "_") || "catalogo";
   return { doc: doc, filename: "Catalogo_" + safeName + ".pdf" };
