@@ -862,6 +862,14 @@ function setFilter(f, btn) {
   renderCatalog();
 }
 
+function imgLabel(img) {
+  if (!img) return "(sin imagen)";
+  if (String(img).indexOf("data:") === 0) return "📷 Imagen subida (en la nube)";
+  if (/^https?:\/\//i.test(String(img))) return "🔗 Imagen por enlace";
+  var s = String(img);
+  if (s.length > 42) return s.slice(0, 40) + "…";
+  return s;
+}
 function imgSrc(img) {
   if (!img) return imgFallback();
   /* URL completa, data URL (subida) o nombre de archivo en la carpeta del repo */
@@ -1240,7 +1248,7 @@ function renderAdminProducts() {
       '<span class="badge ' + p.gender + '">' + p.gender + '</span>' +
       (p.promo ? ' <span class="badge masvendido">MÁS VENDIDO</span>' : '') +
       (p.agotado ? ' <span class="badge agotado">AGOTADO</span>' : '') +
-      '<br><span style="font-size:11px;color:var(--muted);word-break:break-all">' + (p.img || "(sin imagen)") + '</span>' +
+      '<br><span style="font-size:11px;color:var(--muted)">' + imgLabel(p.img) + '</span>' +
       '<div class="admin-quick">' +
         '<button type="button" class="q-promo' + (p.promo ? ' on' : '') + '" onclick="togglePromo(' + p.id + ')">' + (p.promo ? '★ Más vendido' : 'Más vendido') + '</button>' +
         '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(' + p.id + ')">' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
