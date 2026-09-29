@@ -101,6 +101,18 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
   transition:transform .15s;
 }
 .btn-whatsapp:active{transform:scale(.97)}
+.cart-sticky-wa{
+  display:none;position:fixed;left:0;right:0;bottom:56px;z-index:95;
+  padding:10px 14px 12px;
+  background:linear-gradient(180deg,rgba(13,13,13,0),rgba(13,13,13,.95) 28%,#0d0d0d);
+  pointer-events:none;
+}
+.cart-sticky-wa.show{display:block}
+.cart-sticky-wa .btn-whatsapp{pointer-events:auto;margin:0;box-shadow:0 6px 24px rgba(37,211,102,.55)}
+#carrito.has-sticky{padding-bottom:90px}
+#carrito .total{border:none;background:transparent;padding:8px 0 0;margin:8px 0 0}
+#carrito .total p{margin-bottom:0}
+
 @keyframes waPulse{
   0%,100%{box-shadow:0 4px 14px rgba(37,211,102,.35);transform:scale(1);background:#25d366}
   50%{box-shadow:0 6px 24px rgba(37,211,102,.65);transform:scale(1.025);background:#2fe074}
@@ -309,16 +321,18 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 
 
-.header-top{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.header-top{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:nowrap;max-width:100%}
+.header-top .logo{font-size:22px;letter-spacing:1px;white-space:nowrap;flex-shrink:0}
+@media (min-width:400px){.header-top .logo{font-size:26px;letter-spacing:2px}}
 .header-top .logo{margin:0}
-.social-icons{display:flex;align-items:center;gap:8px}
+.social-icons{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .social-icons a{
-  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:#1a1a1a;border:1px solid var(--gold);text-decoration:none;font-size:20px;
+  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:#1a1a1a;border:1px solid var(--gold);text-decoration:none;font-size:16px;
   transition:transform .15s,background .15s;line-height:1;
 }
 .social-icons a:active{transform:scale(.92);background:var(--gold)}
-.social-icons a img{width:26px;height:26px;object-fit:contain;display:block}
+.social-icons a img{width:20px;height:20px;object-fit:contain;display:block}
 .social-admin-row .ico-prev{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px;background:#111;border-radius:6px}
 .social-admin-row .upload-ico{font-size:12px;color:var(--gold);cursor:pointer;margin:6px 0;display:inline-block}
 .social-admin-row{
@@ -336,7 +350,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="logo" id="logoTap" style="cursor:default;user-select:none">PERFUMES <span>L&R</span></div>
     <div class="social-icons" id="socialIcons"></div>
   </div>
-  <div class="tagline">ESENCIAS CON CALIDAD AL ORIGINAL 1.1 · 30 · 60 · 120 ml</div>
+  <div class="tagline">SOMOS FABRIANTES CON CALIDAD AL ORIGINAL 1.1 · 30 · 60 · 120 ml</div>
 </header>
 
 <!-- Publicidad emergente al abrir -->
@@ -360,18 +374,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span>👆 Elige perfume → <strong>Agregar</strong> → <strong>🛒 Carrito</strong> → pide cotización por WhatsApp</span>
     <button type="button" onclick="dismissTip()" aria-label="Cerrar">×</button>
   </div>
-  <div class="maker-bar">
-    <h3>SOMOS FABRICANTES, PRECIOS AL MAYOR O DETAL</h3>
-    <p>Precios para nuestros verdaderos emprendedores · Buenos lotes variados de perfumes calidad 1.1</p>
-    <p style="margin-top:6px">Recibe lo mejor, emprende con nosotros. <strong style="color:var(--gold)">No estás solo.</strong></p>
-    <p style="margin-top:8px"><strong style="color:var(--gold)">Somos los únicos que damos comodidad y un sistema de pagos amplio:</strong></p>
-    <p style="margin-top:4px">· BCV · $ divisa física · Binance USDT</p>
-    <p style="margin-top:6px">Pide tu cotización por WhatsApp y te respondemos a la brevedad</p>
-  </div>
-  <button type="button" class="tools-cta" onclick="showSection('herramientas',document.getElementById('navHerramientas'))">
-    ✨ Herramientas para emprendedores
-    <span>Crea tu propio catálogo con tu nombre y WhatsApp</span>
-  </button>
   <div class="search-bar">
     <input type="text" id="search" placeholder="Buscar perfume..." oninput="renderCatalog()">
   </div>
@@ -388,17 +390,23 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 <section id="carrito" class="section">
   <h2>Tu pedido</h2>
   <div class="maker-bar">
-    <h3>PERFUMES L&R · SOMOS FABRICANTES, PRECIOS AL MAYOR O DETAL</h3>
-    <p>Precios para nuestros verdaderos emprendedores · Buenos lotes variados de perfumes calidad 1.1</p>
-    <p style="margin-top:6px">Recibe lo mejor, emprende con nosotros. <strong style="color:var(--gold)">No estás solo.</strong></p>
-    <p style="margin-top:6px">Línea Premium · Réplicas 1.1 · Envíanos tu lista y te cotizamos</p>
+    <h3>SOMOS FABRICANTES, MAYORISTA Y MINORISTA</h3>
+    <p>Precios emprendedor · Buenos lotes variados de perfumes calidad 1.1</p>
+    <p style="margin-top:6px">Recibe lo mejor. <strong style="color:var(--gold)">No estás solo.</strong></p>
+    <p style="margin-top:6px"><strong style="color:var(--gold)">Sistema de pagos amplio:</strong> BCV · $ divisa física · Binance USDT</p>
   </div>
+  <button type="button" class="tools-cta" onclick="showSection('herramientas',document.getElementById('navHerramientas'))">
+    ✨ Herramientas para emprendedores
+    <span>Crea tu propio catálogo con tu nombre y WhatsApp</span>
+  </button>
   <div id="cartList"></div>
   <div class="total" id="cartTotal" style="display:none">
     <p>Envíanos este pedido por WhatsApp.<br>Te responderemos con la <strong style="color:var(--gold)">cotización</strong> a la brevedad.</p>
-    <button class="btn-whatsapp" onclick="sendWhatsApp()">Pedir cotización por WhatsApp</button>
   </div>
   <div class="empty" id="cartEmpty">Carrito vacío — ve al Catálogo y agrega perfumes</div>
+  <div class="cart-sticky-wa" id="cartStickyWa">
+    <button class="btn-whatsapp" onclick="sendWhatsApp()">Pedir cotización por WhatsApp</button>
+  </div>
 </section>
 
 
@@ -839,6 +847,8 @@ function showSection(id, btn) {
   document.getElementById(id).classList.add("active");
   document.querySelectorAll("nav button").forEach(function(b){ b.classList.remove("active"); });
   if (btn) btn.classList.add("active");
+  var sticky = document.getElementById("cartStickyWa");
+  if (sticky && id !== "carrito") sticky.classList.remove("show");
   if (id === "catalogo") renderCatalog();
   if (id === "carrito") renderCart();
   if (id === "herramientas") renderEmpList();
@@ -1071,14 +1081,20 @@ function renderCart() {
   var list = document.getElementById("cartList");
   var empty = document.getElementById("cartEmpty");
   var totalBox = document.getElementById("cartTotal");
+  var sticky = document.getElementById("cartStickyWa");
+  var sec = document.getElementById("carrito");
   if (!cart.length) {
     list.innerHTML = "";
     empty.style.display = "block";
     totalBox.style.display = "none";
+    if (sticky) sticky.classList.remove("show");
+    if (sec) sec.classList.remove("has-sticky");
     return;
   }
   empty.style.display = "none";
   totalBox.style.display = "block";
+  if (sticky) sticky.classList.add("show");
+  if (sec) sec.classList.add("has-sticky");
   list.innerHTML = cart.map(function(c, i) {
     /* Si el producto aún existe, usa su imagen actualizada; si no, la del carrito */
     var p = products.find(function(x){ return x.id === c.id; });
