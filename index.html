@@ -350,7 +350,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="logo" id="logoTap" style="cursor:default;user-select:none">PERFUMES <span>L&R</span></div>
     <div class="social-icons" id="socialIcons"></div>
   </div>
-  <div class="tagline">SOMOS FABRIANTES CON CALIDAD AL ORIGINAL 1.1 · 30 · 60 · 120 ml</div>
+  <div class="tagline">ESENCIAS CON CALIDAD AL ORIGINAL 1.1 · 30 · 60 · 120 ml</div>
 </header>
 
 <!-- Publicidad emergente al abrir -->
@@ -382,7 +382,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <button onclick="setFilter('dama',this)">Dama</button>
     <button onclick="setFilter('caballero',this)">Caballero</button>
     <button onclick="setFilter('unisex',this)">Unisex</button>
-    <button onclick="setFilter('Lo Mas Vendido',this)">Lo Más Vendido </button>
+    <button onclick="setFilter('promo',this)">Lo Más Vendido</button>
   </div>
   <div class="grid" id="catalogGrid"><div class="loading">Cargando catálogo...</div></div>
 </section>
@@ -730,7 +730,18 @@ function loadFromFirebase() {
   db.ref("products").on("value", function(snap) {
     var val = snap.val();
     products = val ? Object.values(val) : [];
-    if (products.length === 0) seedProducts();
+    /* Normalizar ids (Firebase a veces los devuelve como string) */
+    products.forEach(function(p) {
+      if (p && p.id != null && !isNaN(Number(p.id))) p.id = Number(p.id);
+    });
+    if (products.length === 0) {
+      /* Solo sembrar catálogo por defecto en instalación nueva (sin config de negocio) */
+      db.ref("config").once("value", function(csnap) {
+        var c = csnap.val();
+        var hasBiz = c && (c.wa || c.adminHash || c.welcomeBanner || c.flyerImage || c.socialLinks);
+        if (!hasBiz) seedProducts();
+      });
+    }
     renderCatalog();
     if (document.getElementById("herramientas") && document.getElementById("herramientas").classList.contains("active")) renderEmpList();
     if (sessionStorage.getItem("lr_admin") === "1") renderAdminProducts();
@@ -872,6 +883,17 @@ function setFilter(f, btn) {
   renderCatalog();
 }
 
+function escapeHtml(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+function sameId(a, b) {
+  return String(a) === String(b);
+}
 function imgLabel(img) {
   if (!img) return "(sin imagen)";
   if (String(img).indexOf("data:") === 0) return "📷 Imagen subida (en la nube)";
@@ -941,8 +963,8 @@ function imgFallback() {
 function renderCatalog() {
   var q = (document.getElementById("search").value || "").toLowerCase();
   var list = products.filter(function(p) {
-    var matchQ = p.name.toLowerCase().includes(q);
-    var matchF = currentFilter === "all" || (currentFilter === "promo" || currentFilter === "Lo Mas Vendido" ? p.promo : p.gender === currentFilter);
+    var matchQ = (p.name || "").toLowerCase().includes(q);
+    var matchF = currentFilter === "all" || (currentFilter === "promo" ? !!p.promo : p.gender === currentFilter);
     return matchQ && matchF;
   });
   var grid = document.getElementById("catalogGrid");
@@ -952,18 +974,20 @@ function renderCatalog() {
   }
   grid.innerHTML = list.map(function(p) {
     var seal = p.agotado ? '<div class="soldout-seal"><span>AGOTADO</span></div>' : '';
+    var safeName = escapeHtml(p.name);
+    var safeGender = escapeHtml(p.gender || "");
     var btn = p.agotado
       ? '<button class="disabled-agotado" disabled>Agotado</button>'
-      : '<button onclick="openAddModal(' + p.id + ')">Agregar</button>';
+      : '<button onclick="openAddModal(' + JSON.stringify(String(p.id)) + ')">Agregar</button>';
     return '<div class="card">' +
       '<div class="card-img-wrap">' +
-        '<img src="' + imgSrc(p.img) + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
+        '<img src="' + imgSrc(p.img) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
         seal +
       '</div>' +
       '<div class="card-body">' +
-        '<div class="card-title">' + p.name + '</div>' +
+        '<div class="card-title">' + safeName + '</div>' +
         '<div>' +
-          '<span class="badge ' + p.gender + '">' + p.gender + '</span>' +
+          '<span class="badge ' + safeGender + '">' + safeGender + '</span>' +
           '<span class="badge replica">1.1</span>' +
           '<span class="badge premium">Premium</span>' +
           (p.promo ? '<span class="badge masvendido">MÁS VENDIDO</span>' : '') +
@@ -978,7 +1002,7 @@ function renderCatalog() {
 function openAddModal(id) {
   pendingProductId = id;
   selectedSize = 30;
-  var p = products.find(function(x){ return x.id === id; });
+  var p = products.find(function(x){ return sameId(x.id, id); });
   document.getElementById("modalTitle").textContent = p ? p.name : "Agregar";
   updateModalButtons();
   document.getElementById("addModal").classList.add("show");
@@ -999,7 +1023,7 @@ function updateModalButtons() {
 
 function confirmAdd() {
   if (!pendingProductId) return;
-  var p = products.find(function(x){ return x.id === pendingProductId; });
+  var p = products.find(function(x){ return sameId(x.id, pendingProductId); });
   if (!p) return;
   var key = pendingProductId + "_" + selectedSize;
   var exist = cart.find(function(c){ return c.key === key; });
@@ -1100,8 +1124,8 @@ function renderCart() {
     var p = products.find(function(x){ return x.id === c.id; });
     var img = (p && p.img) ? p.img : (c.img || "");
     return '<div class="cart-item">' +
-      '<img src="' + imgSrc(img) + '" alt="' + c.name + '" onerror="this.src=\'' + imgFallback() + '\'">' +
-      '<div class="info"><strong>' + c.name + '</strong>' +
+      '<img src="' + imgSrc(img) + '" alt="' + escapeHtml(c.name) + '" onerror="this.src=\'' + imgFallback() + '\'">' +
+      '<div class="info"><strong>' + escapeHtml(c.name) + '</strong>' +
       '<span style="color:var(--gold);font-size:13px">' + c.size + ' ml · Premium</span></div>' +
       '<div class="qty"><button onclick="changeQty(' + i + ',-1)">−</button><span>' + c.qty + '</span>' +
       '<button onclick="changeQty(' + i + ',1)">+</button></div></div>';
@@ -1127,9 +1151,14 @@ function sendWhatsApp() {
     lines.push("• " + c.name + " — " + c.size + " ml Premium × " + c.qty);
   });
   lines.push("");
-  lines.push("https://www.tiktok.com/@perfumeslr");
-    lines.push("");
-  lines.push("https://www.instagram.com/perfumeslr26");
+  try {
+    var links = getSocialLinks();
+    links.forEach(function(item) {
+      if (item.isWhatsApp) return;
+      var href = resolveSocialHref(item);
+      if (href && href !== "#") lines.push(href);
+    });
+  } catch (e) {}
   var texto = lines.join("\n");
   var url = "https://wa.me/" + (config.wa || "584120000000") + "?text=" + encodeURIComponent(texto);
   window.open(url, "_blank");
@@ -1260,24 +1289,24 @@ function renderAdminProducts() {
   document.getElementById("adminProducts").innerHTML = list.map(function(p) {
     return '<div class="product-admin' + (p.agotado ? ' agotado-row' : '') + '">' +
       '<img src="' + imgSrc(p.img) + '" alt="" onerror="this.src=\'' + imgFallback() + '\'">' +
-      '<div class="meta"><strong>' + p.name + '</strong><br>' +
+      '<div class="meta"><strong>' + escapeHtml(p.name) + '</strong><br>' +
       '<span class="badge ' + p.gender + '">' + p.gender + '</span>' +
       (p.promo ? ' <span class="badge masvendido">MÁS VENDIDO</span>' : '') +
       (p.agotado ? ' <span class="badge agotado">AGOTADO</span>' : '') +
       '<br><span style="font-size:11px;color:var(--muted)">' + imgLabel(p.img) + '</span>' +
       '<div class="admin-quick">' +
-        '<button type="button" class="q-promo' + (p.promo ? ' on' : '') + '" onclick="togglePromo(' + p.id + ')">' + (p.promo ? '★ Más vendido' : 'Más vendido') + '</button>' +
-        '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(' + p.id + ')">' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
+        '<button type="button" class="q-promo' + (p.promo ? ' on' : '') + '" onclick="togglePromo(" + JSON.stringify(String(p.id)) + ")">' + (p.promo ? '★ Más vendido' : 'Más vendido') + '</button>' +
+        '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(" + JSON.stringify(String(p.id)) + ")">' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
       '</div></div>' +
       '<div class="actions">' +
-        '<button class="btn-secondary" onclick="editProduct(' + p.id + ')">Editar</button>' +
-        '<button class="btn-danger" onclick="deleteProduct(' + p.id + ')">Borrar</button>' +
+        '<button class="btn-secondary" onclick="editProduct(" + JSON.stringify(String(p.id)) + ")">Editar</button>' +
+        '<button class="btn-danger" onclick="deleteProduct(" + JSON.stringify(String(p.id)) + ")">Borrar</button>' +
       '</div></div>';
   }).join("");
 }
 
 function togglePromo(id) {
-  var p = products.find(function(x){ return x.id === id; });
+  var p = products.find(function(x){ return sameId(x.id, id); });
   if (!p) return;
   var next = !p.promo;
   db.ref("products/" + id).update({ promo: next });
@@ -1285,7 +1314,7 @@ function togglePromo(id) {
 }
 
 function toggleAgotado(id) {
-  var p = products.find(function(x){ return x.id === id; });
+  var p = products.find(function(x){ return sameId(x.id, id); });
   if (!p) return;
   var next = !p.agotado;
   db.ref("products/" + id).update({ agotado: next });
@@ -1293,7 +1322,7 @@ function toggleAgotado(id) {
 }
 
 function editProduct(id) {
-  var p = products.find(function(x){ return x.id === id; });
+  var p = products.find(function(x){ return sameId(x.id, id); });
   if (!p) return;
   editingId = id;
   document.getElementById("formTitle").textContent = "Editar perfume";
@@ -1343,13 +1372,13 @@ function saveProduct() {
   if (editingId) {
     if (!img) {
       /* mantener imagen anterior si no subió una nueva */
-      var cur = products.find(function(x){ return x.id === editingId; });
+      var cur = products.find(function(x){ return sameId(x.id, editingId); });
       if (cur && cur.img) payload.img = cur.img;
     }
     db.ref("products/" + editingId).update(payload);
     toast("Producto actualizado");
   } else {
-    var newId = products.length ? Math.max.apply(null, products.map(function(p){ return p.id; })) + 1 : 1;
+    var newId = Date.now();
     payload.id = newId;
     db.ref("products/" + newId).set(payload);
     toast("Producto agregado");
@@ -1358,11 +1387,11 @@ function saveProduct() {
 }
 
 function deleteProduct(id) {
-  var p = products.find(function(x){ return x.id === id; });
+  var p = products.find(function(x){ return sameId(x.id, id); });
   var label = p ? p.name : "este perfume";
   if (!confirm("¿Borrar \"" + label + "\" del catálogo?")) return;
   db.ref("products/" + id).remove();
-  if (editingId === id) clearForm();
+  if (sameId(editingId, id)) clearForm();
   toast("Borrado");
 }
 
@@ -1770,7 +1799,7 @@ function renderEmpList() {
     if (p.promo) extra += ' <span class="badge masvendido">MÁS VENDIDO</span>';
     return '<label class="tools-row">' +
       '<input type="checkbox" data-id="' + p.id + '"' + checked + ' onchange="toggleEmpItem(' + p.id + ',this.checked)">' +
-      '<span class="t-name">' + p.name + extra + '</span>' +
+      '<span class="t-name">' + escapeHtml(p.name) + extra + '</span>' +
       '<span class="t-gender">' + genderLabel(p.gender) + '</span>' +
       '</label>';
   }).join("");
