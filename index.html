@@ -729,11 +729,17 @@ if (localStorage.getItem("lr_tip_dismissed") === "1") {
 function loadFromFirebase() {
   db.ref("products").on("value", function(snap) {
     var val = snap.val();
-    products = val ? Object.values(val) : [];
-    /* Normalizar ids (Firebase a veces los devuelve como string) */
-    products.forEach(function(p) {
-      if (p && p.id != null && !isNaN(Number(p.id))) p.id = Number(p.id);
-    });
+    products = [];
+    if (val) {
+      Object.keys(val).forEach(function(k) {
+        var p = val[k] || {};
+        if (typeof p !== "object") return;
+        /* Usar id interno o la clave de Firebase */
+        if (p.id == null || p.id === "") p.id = k;
+        if (!isNaN(Number(p.id))) p.id = Number(p.id);
+        products.push(p);
+      });
+    }
     if (products.length === 0) {
       /* Solo sembrar catálogo por defecto en instalación nueva (sin config de negocio) */
       db.ref("config").once("value", function(csnap) {
@@ -978,7 +984,7 @@ function renderCatalog() {
     var safeGender = escapeHtml(p.gender || "");
     var btn = p.agotado
       ? '<button class="disabled-agotado" disabled>Agotado</button>'
-      : '<button onclick="openAddModal(' + JSON.stringify(String(p.id)) + ')">Agregar</button>';
+      : '<button type="button" onclick="openAddModal(\'' + String(p.id).replace(/'/g, '') + '\')">Agregar</button>';
     return '<div class="card">' +
       '<div class="card-img-wrap">' +
         '<img src="' + imgSrc(p.img) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
@@ -1000,12 +1006,18 @@ function renderCatalog() {
 }
 
 function openAddModal(id) {
+  if (id == null || id === "") return;
   pendingProductId = id;
   selectedSize = 30;
   var p = products.find(function(x){ return sameId(x.id, id); });
-  document.getElementById("modalTitle").textContent = p ? p.name : "Agregar";
+  if (!p) {
+    toast("No se encontró el perfume");
+    return;
+  }
+  document.getElementById("modalTitle").textContent = p.name || "Agregar";
   updateModalButtons();
-  document.getElementById("addModal").classList.add("show");
+  var modal = document.getElementById("addModal");
+  if (modal) modal.classList.add("show");
 }
 function closeModal() {
   document.getElementById("addModal").classList.remove("show");
@@ -1295,12 +1307,12 @@ function renderAdminProducts() {
       (p.agotado ? ' <span class="badge agotado">AGOTADO</span>' : '') +
       '<br><span style="font-size:11px;color:var(--muted)">' + imgLabel(p.img) + '</span>' +
       '<div class="admin-quick">' +
-        '<button type="button" class="q-promo' + (p.promo ? ' on' : '') + '" onclick="togglePromo(" + JSON.stringify(String(p.id)) + ")">' + (p.promo ? '★ Más vendido' : 'Más vendido') + '</button>' +
-        '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(" + JSON.stringify(String(p.id)) + ")">' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
+        '<button type="button" class="q-promo' + (p.promo ? ' on' : '') + '" onclick="togglePromo(\'' + String(p.id).replace(/'/g, '') + '\')" >' + (p.promo ? '★ Más vendido' : 'Más vendido') + '</button>' +
+        '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(\'' + String(p.id).replace(/'/g, '') + '\')" >' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
       '</div></div>' +
       '<div class="actions">' +
-        '<button class="btn-secondary" onclick="editProduct(" + JSON.stringify(String(p.id)) + ")">Editar</button>' +
-        '<button class="btn-danger" onclick="deleteProduct(" + JSON.stringify(String(p.id)) + ")">Borrar</button>' +
+        '<button class="btn-secondary" onclick="editProduct(\'' + String(p.id).replace(/'/g, '') + '\')" >Editar</button>' +
+        '<button class="btn-danger" onclick="deleteProduct(\'' + String(p.id).replace(/'/g, '') + '\')" >Borrar</button>' +
       '</div></div>';
   }).join("");
 }
