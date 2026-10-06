@@ -267,7 +267,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 
 
-/* Herramientas para emprendedores */
+/* Herramientas pa’ emprendedores */
 .tools-cta{
   display:block;width:100%;margin:0 0 14px;padding:16px 14px;border:none;border-radius:14px;
   font-size:15px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:#1a1200;
@@ -362,7 +362,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
       <h2>PERFUMES L&R</h2>
       <p><strong style="color:#c9a227">SOMOS FABRICANTES, PRECIOS AL MAYOR O DETAL</strong></p>
       <p>PRECIOS, PARA NUESTROS VERDADEROS EMPRENDEDORES <br>BUENOS LOTES VARIADOS DE PERFUMES CALIDAD 1.1<br>RECIBE LO MEJOR, EMPRENDE CON NOSOTROS, NO ESTÁS SOLO.</p>
-      <p style="margin-top:12px;font-size:12px;color:#666">Toca × para ver el catálogo</p>
+      <p style="margin-top:12px;font-size:12px;color:#666">Toca la × pa’ ver el catálogo</p>
     </div>
   </div>
 </div>
@@ -371,7 +371,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 <section id="catalogo" class="section active">
   <div class="tip-bar" id="tipBar">
-    <span>👆 Elige perfume → <strong>Agregar</strong> → <strong>🛒 Carrito</strong> → pide cotización por WhatsApp</span>
+    <span>👆 Escoge el perfume → <strong>Agregar</strong> → <strong>🛒 Carrito</strong> → pide los precios por WhatsApp</span>
     <button type="button" onclick="dismissTip()" aria-label="Cerrar">×</button>
   </div>
   <div class="search-bar">
@@ -388,30 +388,30 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 </section>
 
 <section id="carrito" class="section">
-  <h2>Tu pedido</h2>
+  <h2>Tu lista</h2>
   <div class="maker-bar">
-    <h3>SOMOS FABRICANTES, MAYORISTA Y MINORISTA</h3>
-    <p>Precios emprendedor · Buenos lotes variados de perfumes calidad 1.1</p>
-    <p style="margin-top:6px">Recibe lo mejor. <strong style="color:var(--gold)">No estás solo.</strong></p>
-    <p style="margin-top:6px"><strong style="color:var(--gold)">Sistema de pagos amplio:</strong> BCV · $ divisa física · Binance USDT</p>
+    <h3>SOMOS FABRICANTES · MAYOR Y DETAL</h3>
+    <p>Precios pa’ emprendedores · Buenos lotes de perfumes calidad 1.1</p>
+    <p style="margin-top:6px">Te llevas lo mejor. <strong style="color:var(--gold)">Aquí no estás solo.</strong></p>
+    <p style="margin-top:6px"><strong style="color:var(--gold)">Formas de pago:</strong> BCV · $ divisa física · Binance USDT</p>
   </div>
   <button type="button" class="tools-cta" onclick="showSection('herramientas',document.getElementById('navHerramientas'))">
-    ✨ Herramientas para emprendedores
-    <span>Crea tu propio catálogo con tu nombre y WhatsApp</span>
+    ✨ Herramientas pa’ emprendedores
+    <span>Arma tu catálogo con tu nombre y tu WhatsApp</span>
   </button>
   <div id="cartList"></div>
   <div class="total" id="cartTotal" style="display:none">
-    <p>Envíanos este pedido por WhatsApp.<br>Te responderemos con la <strong style="color:var(--gold)">cotización</strong> a la brevedad.</p>
+    <p>Mándanos esta lista por WhatsApp.<br>Te pasamos los <strong style="color:var(--gold)">precios</strong> rapidito.</p>
   </div>
-  <div class="empty" id="cartEmpty">Carrito vacío — ve al Catálogo y agrega perfumes</div>
+  <div class="empty" id="cartEmpty">Carrito vacío — ve al Catálogo y mete perfumes</div>
   <div class="cart-sticky-wa" id="cartStickyWa">
-    <button class="btn-whatsapp" onclick="sendWhatsApp()">Pedir cotización por WhatsApp</button>
+    <button class="btn-whatsapp" onclick="sendWhatsApp()">Pedir precios por WhatsApp</button>
   </div>
 </section>
 
 
 <section id="herramientas" class="section">
-  <h2>Herramientas para emprendedores</h2>
+  <h2>Herramientas pa’ emprendedores</h2>
   <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.45">
     Elige una herramienta. Toca el título para abrir o cerrar cada apartado.
   </p>
@@ -419,15 +419,15 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <!-- 1. Crear catálogo PDF -->
   <div class="tool-item" id="toolCatalogo">
     <button type="button" class="tool-item-head" onclick="toggleTool('toolCatalogo')">
-      <span>📄 Crear catálogo PDF elegante para emprender
-        <small>PDF con tu nombre y WhatsApp · eliges los perfumes y lo compartes para empezar a vender</small>
+      <span>📄 Crear catálogo PDF pa’ emprender
+        <small>PDF con tu nombre y WhatsApp · escoges los perfumes y lo compartes pa’ vender</small>
       </span>
       <span class="chev">›</span>
     </button>
     <div class="tool-item-body">
-      <label>Nombre de tu emprendimiento</label>
+      <label>Nombre de tu negocio</label>
       <input type="text" id="empName" placeholder="Ej: Aromas del Valle">
-      <label>WhatsApp para que te contacten (código país, sin +)</label>
+      <label>WhatsApp pa’ que te escriban (código del país, sin +)</label>
       <input type="text" id="empWa" placeholder="Ej: 584121234567">
       <label>Buscar en la lista</label>
       <input type="text" id="empSearch" placeholder="Filtrar perfumes..." oninput="renderEmpList()">
@@ -437,21 +437,21 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
       </div>
       <div class="tools-count">Seleccionados: <strong id="empCount">0</strong></div>
       <div class="tools-list" id="empList"><div class="loading">Cargando lista...</div></div>
-      <button class="btn" onclick="downloadEmpPdf()">📄 Descargar catálogo PDF</button>
+      <button class="btn" onclick="downloadEmpPdf()">📄 Bajar catálogo PDF</button>
     </div>
   </div>
 
   <!-- 2. Descargar flyer -->
   <div class="tool-item" id="toolFlyer">
     <button type="button" class="tool-item-head" onclick="toggleTool('toolFlyer')">
-      <span>🖼️ Descargar flyer (foto lista elegante)
-        <small>Imagen con la lista de perfumes para compartir por WhatsApp o redes y empezar a vender</small>
+      <span>🖼️ Descargar flyer (foto con la lista)
+        <small>Foto con la lista de perfumes pa’ mandar por WhatsApp o redes y empezar a vender</small>
       </span>
       <span class="chev">›</span>
     </button>
     <div class="tool-item-body">
       <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.4">
-        Descarga el flyer oficial para compartirlo con tus clientes.
+        Baja el flyer oficial pa’ compartirlo con tus clientes.
       </p>
       <img id="flyerPreviewUser" class="flyer-preview" alt="Flyer">
       <div class="img-hint" id="flyerHintUser">Cargando flyer...</div>
@@ -468,14 +468,14 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <button class="btn" onclick="loginAdmin()">Entrar</button>
   </div>
   <div id="adminPanel" class="admin-panel" style="display:none">
-    <h2>Panel Admin</h2>
+    <h2>Panel de gestión</h2>
     <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Toca cada título para abrir o cerrar el apartado.</p>
 
     <!-- 1. WhatsApp -->
     <div class="tool-item" id="admWa">
       <button type="button" class="tool-item-head" onclick="toggleAdminTool('admWa')">
         <span>📱 Número de WhatsApp
-          <small>Pedidos y botón de contacto del encabezado</small>
+          <small>Número pa’ los pedidos y el botón de contacto</small>
         </span>
         <span class="chev">›</span>
       </button>
@@ -490,7 +490,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="tool-item" id="admBanner">
       <button type="button" class="tool-item-head" onclick="toggleAdminTool('admBanner')">
         <span>🖼️ Banner al abrir la web
-          <small>Imagen emergente de bienvenida</small>
+          <small>Imagen que sale al abrir la web</small>
         </span>
         <span class="chev">›</span>
       </button>
@@ -588,8 +588,8 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
         <img id="adminPreview" class="admin-preview" alt="Vista previa">
         <div class="img-hint" id="imgHint"></div>
         <input type="hidden" id="pImg" value="">
-        <label class="admin-check"><input type="checkbox" id="pPromo"> Más vendido / tendencia</label>
-        <label class="admin-check"><input type="checkbox" id="pAgotado"> Agotado (sello en catálogo)</label>
+        <label class="admin-check"><input type="checkbox" id="pPromo"> Más vendido</label>
+        <label class="admin-check"><input type="checkbox" id="pAgotado"> Agotado (sello en el catálogo)</label>
         <button class="btn" onclick="saveProduct()">Guardar perfume</button>
         <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
 
@@ -630,14 +630,14 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 <div class="modal-overlay" id="addModal">
   <div class="modal">
-    <h3 id="modalTitle">Agregar al pedido</h3>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Línea <strong style="color:var(--gold)">Premium</strong> · elige presentación</p>
+    <h3 id="modalTitle">Meter al pedido</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Línea <strong style="color:var(--gold)">Premium</strong> · escoge el tamaño</p>
     <div class="size-btns">
       <button type="button" data-size="30" onclick="selectSize(30)">30 ml</button>
       <button type="button" data-size="60" onclick="selectSize(60)">60 ml</button>
       <button type="button" data-size="120" onclick="selectSize(120)">120 ml</button>
     </div>
-    <button class="confirm" id="confirmAddBtn" onclick="confirmAdd()">Agregar al carrito</button>
+    <button class="confirm" id="confirmAddBtn" onclick="confirmAdd()">Meter al carrito</button>
     <button class="btn btn-secondary" style="margin-top:8px;width:100%" onclick="closeModal()">Cancelar</button>
   </div>
 </div>
@@ -1011,7 +1011,7 @@ function openAddModal(id) {
   selectedSize = 30;
   var p = products.find(function(x){ return sameId(x.id, id); });
   if (!p) {
-    toast("No se encontró el perfume");
+    toast("No aparece ese perfume");
     return;
   }
   document.getElementById("modalTitle").textContent = p.name || "Agregar";
@@ -1052,7 +1052,7 @@ function confirmAdd() {
   var btn = document.getElementById("confirmAddBtn");
   flyToCart(btn);
   closeModal();
-  toast("Agregado → mira el 🛒 Carrito");
+  toast("Listo → mira el 🛒 Carrito");
   updateCartBadge();
 }
 
@@ -1178,7 +1178,7 @@ function sendWhatsApp() {
   cart = [];
   updateCartBadge();
   renderCart();
-  toast("Pedido enviado · carrito vacío");
+  toast("Lista enviada · carrito vacío");
 }
 
 /* ---------- Admin: agregar / editar / borrar con imagen ---------- */
@@ -1193,9 +1193,9 @@ function loginAdmin() {
       document.getElementById("waNumber").value = config.wa || "";
       revealAdminNav(true);
       renderAdminProducts();
-      toast("Acceso correcto");
+      toast("Listo, entraste");
     } else {
-      toast("Contraseña incorrecta");
+      toast("Clave incorrecta");
     }
   });
 }
@@ -1322,7 +1322,7 @@ function togglePromo(id) {
   if (!p) return;
   var next = !p.promo;
   db.ref("products/" + id).update({ promo: next });
-  toast(next ? "Marcado como más vendido" : "Quitado de más vendido");
+  toast(next ? "Quedó como más vendido" : "Ya no es más vendido");
 }
 
 function toggleAgotado(id) {
@@ -1330,7 +1330,7 @@ function toggleAgotado(id) {
   if (!p) return;
   var next = !p.agotado;
   db.ref("products/" + id).update({ agotado: next });
-  toast(next ? "Marcado AGOTADO" : "Ya no está agotado");
+  toast(next ? "Quedó AGOTADO" : "Ya no está agotado");
 }
 
 function editProduct(id) {
@@ -1373,10 +1373,10 @@ function clearForm() {
 
 function saveProduct() {
   var name = document.getElementById("pName").value.trim();
-  if (!name) return toast("Nombre requerido");
+  if (!name) return toast("Falta el nombre");
   var gender = document.getElementById("pGender").value;
   var img = pendingImageData || document.getElementById("pImg").value.trim();
-  if (!img && !editingId) return toast("Sube una imagen del perfume");
+  if (!img && !editingId) return toast("Sube una foto del perfume");
   var promo = document.getElementById("pPromo").checked;
   var agotado = !!(document.getElementById("pAgotado") && document.getElementById("pAgotado").checked);
   var payload = { name: name, gender: gender, promo: promo, agotado: agotado };
@@ -1388,12 +1388,12 @@ function saveProduct() {
       if (cur && cur.img) payload.img = cur.img;
     }
     db.ref("products/" + editingId).update(payload);
-    toast("Producto actualizado");
+    toast("Perfume actualizado");
   } else {
     var newId = Date.now();
     payload.id = newId;
     db.ref("products/" + newId).set(payload);
-    toast("Producto agregado");
+    toast("Perfume agregado");
   }
   clearForm();
 }
@@ -1404,7 +1404,7 @@ function deleteProduct(id) {
   if (!confirm("¿Borrar \"" + label + "\" del catálogo?")) return;
   db.ref("products/" + id).remove();
   if (sameId(editingId, id)) clearForm();
-  toast("Borrado");
+  toast("Eliminado");
 }
 
 var pendingBannerData = null;
@@ -1510,7 +1510,7 @@ function resetWelcomeBanner() {
 
 function saveConfig() {
   var wa = document.getElementById("waNumber").value.trim();
-  if (!wa) return toast("Número requerido");
+  if (!wa) return toast("Falta el número");
   var data = { wa: wa };
   if (config && config.welcomeBanner) data.welcomeBanner = config.welcomeBanner;
   if (config && config.adminHash) data.adminHash = config.adminHash;
@@ -1563,7 +1563,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-/* ========== Herramientas para emprendedores ========== */
+/* ========== Herramientas pa’ emprendedores ========== */
 var empSelected = {};
 var pendingFlyerData = null;
 
@@ -1853,11 +1853,11 @@ function buildEmpPdf() {
   var name = ((document.getElementById("empName") || {}).value || "").trim();
   var wa = ((document.getElementById("empWa") || {}).value || "").trim();
   var items = getSelectedEmpProducts();
-  if (!name) { toast("Escribe el nombre de tu emprendimiento"); return null; }
+  if (!name) { toast("Escribe el nombre de tu negocio"); return null; }
   if (!wa) { toast("Escribe tu WhatsApp"); return null; }
-  if (!items.length) { toast("Selecciona al menos un perfume"); return null; }
+  if (!items.length) { toast("Escoge por lo menos un perfume"); return null; }
   if (!window.jspdf || !window.jspdf.jsPDF) {
-    toast("No se pudo cargar el generador de PDF");
+    toast("No se pudo armar el PDF");
     return null;
   }
 
@@ -2017,7 +2017,7 @@ function downloadEmpPdf() {
   var built = buildEmpPdf();
   if (!built) return;
   built.doc.save(built.filename);
-  toast("PDF descargado");
+  toast("PDF listo");
 }
 
 /* ----- Flyer ----- */
@@ -2039,14 +2039,14 @@ function refreshFlyerUserView() {
 
 function downloadFlyer() {
   var src = (config && config.flyerImage) ? config.flyerImage : "";
-  if (!src) return toast("No hay flyer disponible todavía");
+  if (!src) return toast("Todavía no hay flyer");
   var a = document.createElement("a");
   a.href = src;
   a.download = "Flyer_Perfumes_LR.png";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  toast("Flyer descargado");
+  toast("Flyer listo");
 }
 
 function onFlyerFile(ev) {
