@@ -42,7 +42,7 @@ nav button.has-items{color:var(--gold)}
   80%{transform:rotate(4deg) scale(1.04)}
 }
 
-.section{display:none;padding:16px}
+.section{display:none;padding:10px 8px;max-width:1400px;margin:0 auto}
 .section.active{display:block}
 h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #333;padding-bottom:6px}
 
@@ -60,18 +60,22 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 .filters button{background:var(--card);border:1px solid #333;color:var(--muted);padding:6px 12px;border-radius:20px;font-size:13px;white-space:nowrap;cursor:pointer}
 .filters button.active{background:var(--gold);color:#000;border-color:var(--gold)}
 
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,1fr);gap:12px}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(5,1fr);gap:14px}}
+@media(min-width:1200px){.grid{grid-template-columns:repeat(6,1fr);gap:16px}}
+.page-wrap{max-width:1400px;margin:0 auto}
 .card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid #2a2a2a;display:flex;flex-direction:column}
-.card img{width:100%;height:200px;object-fit:contain;background:#111;padding:4px}
-.card-body{padding:10px;flex:1;display:flex;flex-direction:column}
-.card-title{font-size:12px;font-weight:600;line-height:1.3;margin-bottom:4px;min-height:32px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-bottom:4px;margin-right:4px}
+.card img{width:100%;height:110px;object-fit:contain;background:#111;padding:2px}
+.card-body{padding:6px;flex:1;display:flex;flex-direction:column}
+.card-title{font-size:10px;font-weight:600;line-height:1.25;margin-bottom:3px;min-height:26px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;margin-bottom:2px;margin-right:3px}
 .badge.dama{background:#9b59b6}.badge.caballero{background:#2980b9}.badge.unisex{background:#16a085}
 .badge.promo{background:var(--danger)}.badge.replica{background:#8e44ad}.badge.premium{background:var(--gold);color:#000}
-.sizes-hint{font-size:11px;color:var(--muted);margin-bottom:6px}
+.sizes-hint{font-size:9px;color:var(--muted);margin-bottom:4px}
 .btns{margin-top:auto;display:flex;gap:6px;align-items:stretch}
 .btns button.btn-pedir{
-  flex:1;border:none;padding:12px 6px;border-radius:8px;font-size:16px;font-weight:800;
+  flex:1;border:none;padding:9px 4px;border-radius:7px;font-size:13px;font-weight:800;
   cursor:pointer;background:var(--gold);color:#000;letter-spacing:.3px;
   animation:addPulse 2s ease-in-out infinite;
   box-shadow:0 2px 10px rgba(201,162,39,.35);
@@ -79,7 +83,7 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 }
 .btns button.btn-pedir:active{transform:scale(.96)}
 .btns button.btn-share{
-  flex:0 0 44px;border:none;border-radius:8px;background:#222;color:var(--text);
+  flex:0 0 36px;border:none;border-radius:8px;background:#222;color:var(--text);
   font-size:18px;cursor:pointer;border:1px solid #444;
   transition:transform .15s,background .15s,border-color .15s;
 }
@@ -99,6 +103,17 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 .cart-item .info strong{display:block;font-size:13px;line-height:1.3;margin-bottom:2px}
 .cart-item .qty{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .cart-item .qty button{background:#333;border:none;color:var(--text);width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer}
+.cart-size-sel{
+  display:block;width:100%;margin-top:6px;padding:6px 8px;font-size:12px;
+  background:#222;border:1px solid var(--gold);color:var(--gold);border-radius:6px;cursor:pointer;
+}
+.cart-item{flex-wrap:wrap}
+.cart-item .info{flex:1;min-width:0}
+@media(min-width:700px){
+  .cart-item img{width:80px;height:80px}
+  .section{padding:20px 24px}
+  header{padding:14px 24px}
+}
 
 .total{background:var(--card);padding:16px;border-radius:12px;text-align:center;margin:16px 0;border:1px solid var(--gold)}
 .total p{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.4}
@@ -250,7 +265,15 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .badge.masvendido{background:var(--gold);color:#000}
 
 .card-img-wrap{position:relative;background:#111}
-.card-img-wrap img{width:100%;height:200px;object-fit:contain;background:#111;padding:4px;display:block}
+.card-img-wrap img{width:100%;height:110px;object-fit:contain;background:#111;padding:2px;display:block}
+@media(min-width:600px){
+  .card img,.card-img-wrap img{height:160px;padding:4px}
+  .card-title{font-size:12px;min-height:32px}
+  .btns button.btn-pedir{font-size:15px;padding:11px 6px}
+}
+@media(min-width:900px){
+  .card img,.card-img-wrap img{height:190px}
+}
 .soldout-seal{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   pointer-events:none;z-index:2;
@@ -267,8 +290,8 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 }
 @keyframes inCartPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .soldout-seal span{
-  background:#c0392b;color:#fff;font-weight:800;font-size:15px;
-  letter-spacing:2px;padding:8px 14px;border:3px solid #fff;
+  background:#c0392b;color:#fff;font-weight:800;font-size:11px;
+  letter-spacing:1px;padding:5px 8px;border:2px solid #fff;
   transform:rotate(-18deg);box-shadow:0 4px 14px rgba(0,0,0,.5);
   text-transform:uppercase;
 }
@@ -400,12 +423,12 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <div class="search-bar">
     <input type="text" id="search" placeholder="Buscar perfume..." oninput="renderCatalog()">
   </div>
-  <div class="filters">
-    <button class="active" onclick="setFilter('all',this)">Todos</button>
-    <button onclick="setFilter('dama',this)">Dama</button>
-    <button onclick="setFilter('caballero',this)">Caballero</button>
-    <button onclick="setFilter('unisex',this)">Unisex</button>
-    <button onclick="setFilter('promo',this)">Lo Más Vendido</button>
+  <div class="filters" id="filterBar">
+    <button class="active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
+    <button data-filter="dama" onclick="setFilter('dama',this)">Dama</button>
+    <button data-filter="caballero" onclick="setFilter('caballero',this)">Caballero</button>
+    <button data-filter="unisex" onclick="setFilter('unisex',this)">Unisex</button>
+    <button data-filter="promo" onclick="setFilter('promo',this)">Lo Más Vendido</button>
   </div>
   <div class="grid" id="catalogGrid"><div class="loading">Cargando catálogo...</div></div>
 </section>
@@ -617,7 +640,28 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     </div>
 
     <!-- 5. Productos -->
-    <div class="tool-item" id="admProducts">
+    <div class="tool-item" id="admTags">
+    <button type="button" class="tool-item-head" onclick="toggleAdminTool('admTags')">
+      <span>🏷️ Etiquetas del catálogo
+        <small>Más vendido + ediciones, fechas, etc.</small>
+      </span>
+      <span class="chev">›</span>
+    </button>
+    <div class="tool-item-body">
+      <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.45">
+        Crea etiquetas como <strong>Edición especial</strong>, <strong>Amor y amistad</strong>, <strong>Cumpleaños</strong>…
+        Luego se las pones a cada perfume y aparecen como filtro en el catálogo.
+      </p>
+      <div id="tagsAdminList"></div>
+      <label>Nueva etiqueta</label>
+      <input type="text" id="tagNewLabel" placeholder="Ej: Amor y amistad">
+      <label>Color</label>
+      <input type="color" id="tagNewColor" value="#e91e63" style="height:42px;padding:4px">
+      <button type="button" class="btn" onclick="addExtraTag()">Agregar etiqueta</button>
+    </div>
+  </div>
+
+  <div class="tool-item" id="admProducts">
       <button type="button" class="tool-item-head" onclick="toggleAdminTool('admProducts')">
         <span>🧴 Agregar perfume y catálogo
           <small>Stock y gestión del inventario</small>
@@ -647,6 +691,8 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
         <input type="hidden" id="pImg" value="">
         <label class="admin-check"><input type="checkbox" id="pPromo"> Más vendido</label>
         <label class="admin-check"><input type="checkbox" id="pAgotado"> Agotado (sello en el catálogo)</label>
+        <label style="color:var(--gold);margin:10px 0 6px">Etiquetas del perfume</label>
+        <div id="pTagsBox" style="margin-bottom:10px"></div>
         <button class="btn" onclick="saveProduct()">Guardar perfume</button>
         <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
 
@@ -816,6 +862,9 @@ function loadFromFirebase() {
     refreshFlyerUserView();
     renderSocialIcons();
     applyCatalogOptionsUI();
+    renderFilterBar();
+    renderTagsAdmin();
+    renderProductTagsUI();
     if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) {
       try { renderCatalog(); } catch (e) {}
     }
@@ -932,6 +981,11 @@ function showSection(id, btn) {
   if (id === "herramientas") renderEmpList();
   if (id === "admin") {
     applyCatalogOptionsUI();
+    renderTagsAdmin();
+    renderProductTagsUI();
+    renderFilterBar();
+    renderTagsAdmin();
+    renderProductTagsUI();
     document.getElementById("waNumber").value = config.wa || "";
     if (sessionStorage.getItem("lr_admin") === "1") {
       document.getElementById("adminLogin").style.display = "none";
@@ -1047,6 +1101,18 @@ function shareCatalog(ev) {
   }
   prompt("Copia este link de tu catálogo:", url);
 }
+function tagBadgesHtml(p) {
+  var tags = Array.isArray(p.tags) ? p.tags : [];
+  if (!tags.length) return "";
+  var map = {};
+  getExtraTags().forEach(function(t){ map[t.id] = t; });
+  return tags.map(function(id) {
+    var t = map[id];
+    if (!t) return "";
+    var col = t.color || "#c9a227";
+    return '<span class="badge" style="background:' + col + ';color:#fff">' + escapeHtml(t.label) + '</span>';
+  }).join("");
+}
 function productInCart(id) {
   return (cart || []).some(function(c){ return sameId(c.id, id); });
 }
@@ -1054,7 +1120,15 @@ function renderCatalog() {
   var q = (document.getElementById("search").value || "").toLowerCase();
   var list = products.filter(function(p) {
     var matchQ = (p.name || "").toLowerCase().includes(q);
-    var matchF = currentFilter === "all" || (currentFilter === "promo" ? !!p.promo : p.gender === currentFilter);
+    var matchF = true;
+    if (currentFilter === "all") matchF = true;
+    else if (currentFilter === "promo") matchF = !!p.promo;
+    else if (currentFilter.indexOf("tag:") === 0) {
+      var tid = currentFilter.slice(4);
+      matchF = Array.isArray(p.tags) && p.tags.indexOf(tid) !== -1;
+    } else {
+      matchF = p.gender === currentFilter;
+    }
     return matchQ && matchF;
   });
   var grid = document.getElementById("catalogGrid");
@@ -1081,6 +1155,7 @@ function renderCatalog() {
         '<div>' +
           '<span class="badge ' + safeGender + '">' + safeGender + '</span>' +
           (p.promo ? '<span class="badge masvendido">MÁS VENDIDO</span>' : '') +
+          tagBadgesHtml(p) +
           (p.agotado ? '<span class="badge agotado">AGOTADO</span>' : '') +
         '</div>' +
         '<div class="sizes-hint">' + sizesHintText() + '</div>' +
@@ -1257,19 +1332,52 @@ function renderCart() {
   totalBox.style.display = "block";
   if (sticky) sticky.classList.add("show");
   if (sec) sec.classList.add("has-sticky");
+  var sizes = getAvailableSizes();
   list.innerHTML = cart.map(function(c, i) {
-    /* Si el producto aún existe, usa su imagen actualizada; si no, la del carrito */
-    var p = products.find(function(x){ return x.id === c.id; });
+    var p = products.find(function(x){ return sameId(x.id, c.id); });
     var img = (p && p.img) ? p.img : (c.img || "");
+    var sizeOpts = sizes.map(function(s) {
+      return '<option value="' + s + '"' + (Number(c.size) === Number(s) ? " selected" : "") + ">" + s + " ml</option>";
+    }).join("");
+    /* si el tamaño actual no está en disponibles, igual mostrarlo */
+    if (sizes.indexOf(Number(c.size)) === -1 && c.size) {
+      sizeOpts = '<option value="' + c.size + '" selected>' + c.size + " ml</option>" + sizeOpts;
+    }
     return '<div class="cart-item">' +
       '<img src="' + imgSrc(img) + '" alt="' + escapeHtml(c.name) + '" onerror="this.src=\'' + imgFallback() + '\'">' +
       '<div class="info"><strong>' + escapeHtml(c.name) + '</strong>' +
-      '<span style="color:var(--gold);font-size:13px">' + c.size + ' ml · Premium</span></div>' +
-      '<div class="qty"><button onclick="changeQty(' + i + ',-1)">−</button><span>' + c.qty + '</span>' +
-      '<button onclick="changeQty(' + i + ',1)">+</button></div></div>';
+      '<select class="cart-size-sel" onchange="changeCartSize(' + i + ', this.value)" title="Cambiar capacidad">' + sizeOpts + '</select>' +
+      '</div>' +
+      '<div class="qty">' +
+        '<button type="button" onclick="changeQty(' + i + ',-1)">−</button>' +
+        '<span>' + c.qty + '</span>' +
+        '<button type="button" onclick="changeQty(' + i + ',1)">+</button>' +
+      '</div></div>';
   }).join("");
 }
 
+function changeCartSize(i, newSize) {
+  newSize = Number(newSize);
+  if (!cart[i] || isNaN(newSize)) return;
+  var item = cart[i];
+  var key = item.id + "_" + newSize;
+  /* si ya hay otro ítem con mismo perfume+tamaño, fusionar */
+  var other = -1;
+  cart.forEach(function(c, idx) {
+    if (idx !== i && c.key === key) other = idx;
+  });
+  if (other !== -1) {
+    cart[other].qty += item.qty;
+    cart.splice(i, 1);
+  } else {
+    item.size = newSize;
+    item.key = key;
+  }
+  renderCart();
+  updateCartBadge();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
+  toast("Capacidad: " + newSize + " ml");
+}
 function changeQty(i, d) {
   cart[i].qty += d;
   if (cart[i].qty <= 0) cart.splice(i, 1);
@@ -1471,6 +1579,7 @@ function editProduct(id) {
   document.getElementById("pImg").value = p.img || "";
   var pf = document.getElementById("pFile"); if (pf) pf.value = "";
   document.getElementById("pPromo").checked = !!p.promo;
+  renderProductTagsUI(Array.isArray(p.tags) ? p.tags : []);
   var ag = document.getElementById("pAgotado"); if (ag) ag.checked = !!p.agotado;
   previewAdminImg();
   /* Abrir apartado de productos y bajar al formulario */
@@ -1496,6 +1605,7 @@ function clearForm() {
   prev.removeAttribute("src");
   var hint = document.getElementById("imgHint");
   if (hint) hint.textContent = "";
+  renderProductTagsUI([]);
 }
 
 function saveProduct() {
@@ -1506,7 +1616,8 @@ function saveProduct() {
   if (!img && !editingId) return toast("Sube una foto del perfume");
   var promo = document.getElementById("pPromo").checked;
   var agotado = !!(document.getElementById("pAgotado") && document.getElementById("pAgotado").checked);
-  var payload = { name: name, gender: gender, promo: promo, agotado: agotado };
+  var tags = getSelectedProductTags();
+  var payload = { name: name, gender: gender, promo: promo, agotado: agotado, tags: tags };
   if (img) payload.img = img;
   if (editingId) {
     if (!img) {
@@ -1613,6 +1724,7 @@ function saveWelcomeBanner() {
   if (config && config.addMode) data.addMode = config.addMode;
   if (config && config.availableSizes) data.availableSizes = config.availableSizes;
   if (config && config.defaultSize) data.defaultSize = config.defaultSize;
+  if (config && config.extraTags) data.extraTags = config.extraTags;
   db.ref("config").set(data);
   config = data;
   pendingBannerData = null;
@@ -1657,6 +1769,109 @@ function getDefaultSize() {
   if (sizes.indexOf(d) === -1) d = sizes[0];
   return d;
 }
+
+function getExtraTags() {
+  var list = (config && Array.isArray(config.extraTags)) ? config.extraTags : [];
+  return list.filter(function(t){ return t && t.id && t.label; });
+}
+function defaultExtraTags() {
+  return [
+    { id: "especial", label: "Edición especial", color: "#e67e22" },
+    { id: "amor", label: "Amor y amistad", color: "#e91e63" },
+    { id: "cumple", label: "Cumpleaños", color: "#9b59b6" }
+  ];
+}
+function renderFilterBar() {
+  var bar = document.getElementById("filterBar");
+  if (!bar) return;
+  var active = currentFilter || "all";
+  var base = [
+    { f: "all", label: "Todos" },
+    { f: "dama", label: "Dama" },
+    { f: "caballero", label: "Caballero" },
+    { f: "unisex", label: "Unisex" },
+    { f: "promo", label: "Lo Más Vendido" }
+  ];
+  var html = base.map(function(b) {
+    return '<button data-filter="' + b.f + '" class="' + (active === b.f ? "active" : "") + '" onclick="setFilter(\'' + b.f + '\',this)">' + b.label + '</button>';
+  }).join("");
+  getExtraTags().forEach(function(t) {
+    var isOn = active === ("tag:" + t.id);
+    html += '<button data-filter="tag:' + t.id + '" class="' + (isOn ? "active" : "") + '" onclick="setFilter(\'tag:' + t.id + '\',this)" style="' + (isOn ? "background:" + (t.color||"#c9a227") + ";color:#fff;border-color:" + (t.color||"#c9a227") : "") + '">' + escapeHtml(t.label) + '</button>';
+  });
+  bar.innerHTML = html;
+}
+function renderTagsAdmin() {
+  var box = document.getElementById("tagsAdminList");
+  if (!box) return;
+  var list = getExtraTags();
+  if (!list.length) {
+    box.innerHTML = '<div class="empty" style="padding:10px">Sin etiquetas extra. Agrega la primera abajo.</div>';
+    return;
+  }
+  box.innerHTML = list.map(function(t, i) {
+    return '<div class="social-admin-row" style="margin-bottom:8px">' +
+      '<span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:' + (t.color||"#c9a227") + ';margin-right:8px;vertical-align:middle"></span>' +
+      '<strong style="color:var(--gold)">' + escapeHtml(t.label) + '</strong>' +
+      '<div class="row-actions" style="margin-top:6px">' +
+        '<button type="button" class="btn-danger" style="background:var(--danger);color:#fff;padding:6px 10px;font-size:12px" onclick="removeExtraTag(' + i + ')">Borrar</button>' +
+      '</div></div>';
+  }).join("");
+}
+function addExtraTag() {
+  var label = ((document.getElementById("tagNewLabel") || {}).value || "").trim();
+  if (!label) return toast("Escribe el nombre de la etiqueta");
+  var color = ((document.getElementById("tagNewColor") || {}).value || "#e91e63");
+  var id = label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"") || ("tag_" + Date.now());
+  var list = getExtraTags().map(function(x){ return Object.assign({}, x); });
+  if (list.some(function(t){ return t.id === id; })) id = id + "_" + Date.now();
+  list.push({ id: id, label: label, color: color });
+  var data = Object.assign({}, config || {});
+  data.extraTags = list;
+  data.wa = data.wa || (config && config.wa) || "";
+  db.ref("config").set(data);
+  config = data;
+  document.getElementById("tagNewLabel").value = "";
+  renderTagsAdmin();
+  renderFilterBar();
+  renderProductTagsUI();
+  toast("Etiqueta agregada");
+}
+function removeExtraTag(i) {
+  if (!confirm("¿Borrar esta etiqueta? Los perfumes la perderán al filtrar.")) return;
+  var list = getExtraTags().slice();
+  list.splice(i, 1);
+  var data = Object.assign({}, config || {});
+  data.extraTags = list;
+  data.wa = data.wa || (config && config.wa) || "";
+  db.ref("config").set(data);
+  config = data;
+  renderTagsAdmin();
+  renderFilterBar();
+  renderProductTagsUI();
+  toast("Etiqueta eliminada");
+}
+function renderProductTagsUI(selected) {
+  var box = document.getElementById("pTagsBox");
+  if (!box) return;
+  selected = selected || [];
+  var list = getExtraTags();
+  if (!list.length) {
+    box.innerHTML = '<span style="font-size:12px;color:var(--muted)">Crea etiquetas en “Etiquetas del catálogo”</span>';
+    return;
+  }
+  box.innerHTML = list.map(function(t) {
+    var on = selected.indexOf(t.id) !== -1 ? " checked" : "";
+    return '<label class="admin-check"><input type="checkbox" class="pTagCb" value="' + t.id + '"' + on + '> ' + escapeHtml(t.label) + '</label>';
+  }).join("");
+}
+function getSelectedProductTags() {
+  var out = [];
+  document.querySelectorAll(".pTagCb:checked").forEach(function(cb){ out.push(cb.value); });
+  return out;
+}
+
+
 function getAddMode() {
   return (config && config.addMode === "direct") ? "direct" : "modal";
 }
@@ -1679,6 +1894,9 @@ function saveCatalogOptions() {
   if (!sizes.length) {
     toast("Debe quedar al menos una capacidad");
     applyCatalogOptionsUI();
+    renderFilterBar();
+    renderTagsAdmin();
+    renderProductTagsUI();
     return;
   }
   data.availableSizes = sizes;
@@ -1764,6 +1982,7 @@ function saveConfig() {
   if (config && config.addMode) data.addMode = config.addMode;
   if (config && config.availableSizes) data.availableSizes = config.availableSizes;
   if (config && config.defaultSize) data.defaultSize = config.defaultSize;
+  if (config && config.extraTags) data.extraTags = config.extraTags;
   db.ref("config").set(data);
   config = data;
   renderSocialIcons();
