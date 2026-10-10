@@ -96,9 +96,10 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 .btn-whatsapp{
   display:block;width:100%;background:#25d366;color:#fff;border:none;padding:16px;
   border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px;
-  animation:waPulse 1.8s ease-in-out infinite;
+  animation:waPulse 1.2s ease-in-out infinite;
   box-shadow:0 4px 18px rgba(37,211,102,.4);
   transition:transform .15s;
+  letter-spacing:.2px;
 }
 .btn-whatsapp:active{transform:scale(.97)}
 .cart-sticky-wa{
@@ -114,8 +115,11 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 #carrito .total p{margin-bottom:0}
 
 @keyframes waPulse{
-  0%,100%{box-shadow:0 4px 14px rgba(37,211,102,.35);transform:scale(1);background:#25d366}
-  50%{box-shadow:0 6px 24px rgba(37,211,102,.65);transform:scale(1.025);background:#2fe074}
+  0%{box-shadow:0 4px 14px rgba(37,211,102,.4);transform:scale(1);background:#25d366}
+  25%{box-shadow:0 8px 28px rgba(37,211,102,.75);transform:scale(1.06);background:#2fe074}
+  50%{box-shadow:0 4px 16px rgba(37,211,102,.45);transform:scale(0.97);background:#25d366}
+  75%{box-shadow:0 10px 32px rgba(37,211,102,.85);transform:scale(1.08);background:#34e07f}
+  100%{box-shadow:0 4px 14px rgba(37,211,102,.4);transform:scale(1);background:#25d366}
 }
 
 .admin-login,.admin-panel{max-width:400px;margin:0 auto}
@@ -500,18 +504,37 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="tool-item" id="admOptions">
     <button type="button" class="tool-item-head" onclick="toggleAdminTool('admOptions')">
       <span>⚙️ Opciones del catálogo
-        <small>Mensaje al pedir · textos del modal</small>
+        <small>Cómo pedir · capacidades disponibles</small>
       </span>
       <span class="chev">›</span>
     </button>
     <div class="tool-item-body">
+      <label style="color:var(--gold);margin-bottom:8px">1) Al tocar “Pedir”</label>
       <label class="admin-check">
-        <input type="checkbox" id="optShowModalHint" onchange="saveCatalogOptions()">
-        Mostrar mensaje al pedir (“Línea Premium · escoge el tamaño…”)
+        <input type="radio" name="optAddMode" id="optModeModal" value="modal" onchange="saveCatalogOptions()">
+        <strong>Modal completo</strong> — mensaje + el cliente escoge el tamaño
       </label>
-      <p style="font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.4">
-        Si lo desactivas, al tocar <strong>Pedir</strong> solo salen los tamaños 30 · 60 · 120 ml, sin el texto explicativo.
+      <label class="admin-check">
+        <input type="radio" name="optAddMode" id="optModeDirect" value="direct" onchange="saveCatalogOptions()">
+        <strong>Directo al carrito</strong> — sin modal ni mensajes (de una, con la capacidad por defecto)
+      </label>
+      <label class="admin-check" style="margin-top:6px">
+        <input type="checkbox" id="optShowModalHint" onchange="saveCatalogOptions()">
+        En el modal, mostrar el texto “Línea Premium · escoge el tamaño…”
+      </label>
+
+      <label style="color:var(--gold);margin:16px 0 8px">2) Capacidades disponibles</label>
+      <p style="font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.45">
+        Marca las que tienes en stock. Si se agotan los de 30 ml, quítalos y el cliente solo ve las que queden. También puedes agregar otras (ej. 50, 100).
       </p>
+      <div id="optSizesList" style="margin-bottom:8px"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+        <input type="number" id="optNewSize" min="1" max="9999" placeholder="Otra capacidad (ml)" style="margin:0;flex:1">
+        <button type="button" class="btn" style="width:auto;margin:0;padding:12px 14px;white-space:nowrap" onclick="addCustomSize()">+ Agregar</button>
+      </div>
+
+      <label style="color:var(--gold);margin:8px 0 6px">3) Capacidad por defecto (modo directo)</label>
+      <select id="optDefaultSize" onchange="saveCatalogOptions()" style="margin-bottom:12px"></select>
       <button type="button" class="btn" onclick="saveCatalogOptions()">Guardar opciones</button>
     </div>
   </div>
@@ -788,6 +811,9 @@ function loadFromFirebase() {
     refreshFlyerUserView();
     renderSocialIcons();
     applyCatalogOptionsUI();
+    if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) {
+      try { renderCatalog(); } catch (e) {}
+    }
     var waEl = document.getElementById("waNumber");
     if (waEl && sessionStorage.getItem("lr_admin") === "1") {
       waEl.value = (config && config.wa) || "";
@@ -1034,27 +1060,64 @@ function renderCatalog() {
           (p.promo ? '<span class="badge masvendido">MÁS VENDIDO</span>' : '') +
           (p.agotado ? '<span class="badge agotado">AGOTADO</span>' : '') +
         '</div>' +
-        '<div class="sizes-hint">30 · 60 · 120 ml</div>' +
+        '<div class="sizes-hint">' + sizesHintText() + '</div>' +
         '<div class="btns">' + btn + '</div>' +
       '</div></div>';
   }).join("");
 }
 
+function addToCartDirect(productId, size) {
+  var p = products.find(function(x){ return sameId(x.id, productId); });
+  if (!p || p.agotado) return;
+  var key = productId + "_" + size;
+  var exist = cart.find(function(c){ return c.key === key; });
+  if (exist) exist.qty++;
+  else cart.push({
+    key: key,
+    id: productId,
+    name: p.name,
+    size: size,
+    img: p.img || "",
+    qty: 1
+  });
+  updateCartBadge();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
+  toast("Listo → mira el 🛒 Carrito");
+}
+function rebuildSizeButtons() {
+  var box = document.querySelector("#addModal .size-btns");
+  if (!box) return;
+  var sizes = getAvailableSizes();
+  if (sizes.indexOf(selectedSize) === -1) selectedSize = sizes[0];
+  box.innerHTML = sizes.map(function(s) {
+    return '<button type="button" data-size="' + s + '" onclick="selectSize(' + s + ')">' + s + ' ml</button>';
+  }).join("");
+  updateModalButtons();
+}
 function openAddModal(id) {
   if (id == null || id === "") return;
-  pendingProductId = id;
-  selectedSize = 30;
   var p = products.find(function(x){ return sameId(x.id, id); });
   if (!p) {
     toast("No aparece ese perfume");
     return;
   }
+  if (p.agotado) return;
+  /* Modo directo: sin modal, mete al carrito de una */
+  if (getAddMode() === "direct") {
+    addToCartDirect(id, getDefaultSize());
+    var nav = document.getElementById("navCarrito");
+    if (nav) pulseCart();
+    return;
+  }
+  pendingProductId = id;
+  selectedSize = getDefaultSize();
   document.getElementById("modalTitle").textContent = p.name || "Pedir";
-  updateModalButtons();
+  rebuildSizeButtons();
   var hint = document.getElementById("modalHint");
   if (hint) {
     var show = !(config && config.hideModalHint);
     hint.style.display = show ? "block" : "none";
+    hint.innerHTML = 'Línea <strong style="color:var(--gold)">Premium</strong> · escoge el tamaño (' + sizesHintText() + ')';
   }
   var modal = document.getElementById("addModal");
   if (modal) modal.classList.add("show");
@@ -1525,6 +1588,9 @@ function saveWelcomeBanner() {
   if (config && config.flyerImage) data.flyerImage = config.flyerImage;
   if (config && config.socialLinks) data.socialLinks = config.socialLinks;
   if (config && config.hideModalHint) data.hideModalHint = config.hideModalHint;
+  if (config && config.addMode) data.addMode = config.addMode;
+  if (config && config.availableSizes) data.availableSizes = config.availableSizes;
+  if (config && config.defaultSize) data.defaultSize = config.defaultSize;
   db.ref("config").set(data);
   config = data;
   pendingBannerData = null;
@@ -1552,19 +1618,119 @@ function resetWelcomeBanner() {
 }
 
 
+function getAvailableSizes() {
+  var sizes = (config && Array.isArray(config.availableSizes) && config.availableSizes.length)
+    ? config.availableSizes.map(Number)
+    : [30, 60, 120];
+  sizes = sizes.filter(function(s){ return !isNaN(s) && s > 0; });
+  /* únicos y ordenados */
+  var seen = {};
+  sizes = sizes.filter(function(s){ if (seen[s]) return false; seen[s] = true; return true; });
+  sizes.sort(function(a,b){ return a - b; });
+  return sizes.length ? sizes : [30, 60, 120];
+}
+function getDefaultSize() {
+  var sizes = getAvailableSizes();
+  var d = (config && config.defaultSize) ? Number(config.defaultSize) : sizes[0];
+  if (sizes.indexOf(d) === -1) d = sizes[0];
+  return d;
+}
+function getAddMode() {
+  return (config && config.addMode === "direct") ? "direct" : "modal";
+}
+function sizesHintText() {
+  return getAvailableSizes().join(" · ") + " ml";
+}
 function saveCatalogOptions() {
-  var show = !!(document.getElementById("optShowModalHint") && document.getElementById("optShowModalHint").checked);
   var data = Object.assign({}, config || {});
-  data.wa = (document.getElementById("waNumber") && document.getElementById("waNumber").value.trim()) || data.wa || data.wa;
-  data.hideModalHint = !show;
+  data.wa = (document.getElementById("waNumber") && document.getElementById("waNumber").value.trim()) || data.wa || "";
+  var modeEl = document.getElementById("optModeDirect");
+  data.addMode = (modeEl && modeEl.checked) ? "direct" : "modal";
+  data.hideModalHint = !(document.getElementById("optShowModalHint") && document.getElementById("optShowModalHint").checked);
+  var sizes = [];
+  document.querySelectorAll("#optSizesList input[type=checkbox]").forEach(function(cb) {
+    if (cb.checked) {
+      var n = Number(cb.value);
+      if (!isNaN(n) && n > 0) sizes.push(n);
+    }
+  });
+  sizes.sort(function(a,b){ return a - b; });
+  if (!sizes.length) {
+    toast("Debe quedar al menos una capacidad");
+    applyCatalogOptionsUI();
+    return;
+  }
+  data.availableSizes = sizes;
+  var def = Number((document.getElementById("optDefaultSize") || {}).value || sizes[0]);
+  if (sizes.indexOf(def) === -1) def = sizes[0];
+  data.defaultSize = def;
   db.ref("config").set(data);
   config = data;
-  toast(show ? "Mensaje del modal activado" : "Mensaje del modal oculto");
+  applyCatalogOptionsUI();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
+  toast("Opciones del catálogo guardadas");
+}
+function addCustomSize() {
+  var el = document.getElementById("optNewSize");
+  var n = Number(el && el.value);
+  if (!n || n < 1) return toast("Escribe una capacidad válida (ml)");
+  n = Math.round(n);
+  var sizes = getAvailableSizes();
+  if (sizes.indexOf(n) !== -1) return toast("Esa capacidad ya está");
+  sizes.push(n);
+  sizes.sort(function(a,b){ return a - b; });
+  var data = Object.assign({}, config || {});
+  data.availableSizes = sizes;
+  if (!data.defaultSize) data.defaultSize = sizes[0];
+  data.addMode = getAddMode();
+  data.hideModalHint = !!(config && config.hideModalHint);
+  data.wa = (config && config.wa) || data.wa || "";
+  db.ref("config").set(data);
+  config = data;
+  if (el) el.value = "";
+  applyCatalogOptionsUI();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
+  toast(n + " ml agregado");
+}
+function removeSize(n) {
+  var sizes = getAvailableSizes().filter(function(s){ return s !== n; });
+  if (!sizes.length) return toast("Debe quedar al menos una capacidad");
+  var data = Object.assign({}, config || {});
+  data.availableSizes = sizes;
+  if (sizes.indexOf(Number(data.defaultSize)) === -1) data.defaultSize = sizes[0];
+  data.addMode = getAddMode();
+  data.hideModalHint = !!(config && config.hideModalHint);
+  data.wa = (config && config.wa) || data.wa || "";
+  db.ref("config").set(data);
+  config = data;
+  applyCatalogOptionsUI();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
+  toast(n + " ml quitado");
 }
 function applyCatalogOptionsUI() {
-  var el = document.getElementById("optShowModalHint");
-  if (!el) return;
-  el.checked = !(config && config.hideModalHint);
+  var mode = getAddMode();
+  var m1 = document.getElementById("optModeModal");
+  var m2 = document.getElementById("optModeDirect");
+  if (m1) m1.checked = mode === "modal";
+  if (m2) m2.checked = mode === "direct";
+  var hint = document.getElementById("optShowModalHint");
+  if (hint) hint.checked = !(config && config.hideModalHint);
+  var sizes = getAvailableSizes();
+  var box = document.getElementById("optSizesList");
+  if (box) {
+    box.innerHTML = sizes.map(function(s) {
+      return '<label class="admin-check"><input type="checkbox" value="' + s + '" checked onchange="saveCatalogOptions()"> ' + s + ' ml' +
+        (sizes.length > 1 ? ' <button type="button" style="margin-left:8px;background:#333;color:#aaa;border:none;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer" onclick="event.preventDefault();removeSize(' + s + ')">Quitar</button>' : '') +
+        '</label>';
+    }).join("");
+  }
+  var sel = document.getElementById("optDefaultSize");
+  if (sel) {
+    sel.innerHTML = sizes.map(function(s) {
+      return '<option value="' + s + '">' + s + ' ml</option>';
+    }).join("");
+    sel.value = String(getDefaultSize());
+  }
 }
 
 function saveConfig() {
@@ -1576,6 +1742,9 @@ function saveConfig() {
   if (config && config.flyerImage) data.flyerImage = config.flyerImage;
   if (config && config.socialLinks) data.socialLinks = config.socialLinks;
   if (config && config.hideModalHint) data.hideModalHint = config.hideModalHint;
+  if (config && config.addMode) data.addMode = config.addMode;
+  if (config && config.availableSizes) data.availableSizes = config.availableSizes;
+  if (config && config.defaultSize) data.defaultSize = config.defaultSize;
   db.ref("config").set(data);
   config = data;
   renderSocialIcons();
