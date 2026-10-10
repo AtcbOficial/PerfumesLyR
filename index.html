@@ -162,7 +162,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .modal button.selected{background:var(--gold);color:#000;border-color:var(--gold)}
 .modal .confirm{width:100%;margin-top:4px;background:var(--gold);color:#000;border:none;font-weight:700;padding:12px;border-radius:8px;font-size:14px;cursor:pointer}
 
-.fly-dot{position:fixed;z-index:999;width:22px;height:22px;border-radius:50%;background:var(--gold);pointer-events:none;box-shadow:0 0 12px rgba(201,162,39,.8);display:flex;align-items:center;justify-content:center;font-size:12px;color:#000;font-weight:700;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s ease}
+.fly-dot{position:fixed;z-index:999;width:28px;height:28px;border-radius:50%;background:var(--gold);pointer-events:none;box-shadow:0 0 16px rgba(201,162,39,.95),0 0 4px #fff;display:flex;align-items:center;justify-content:center;font-size:13px;color:#000;font-weight:800;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s ease}
 
 /* Pantalla de bienvenida */
 .welcome-layer{
@@ -1045,7 +1045,7 @@ function renderCatalog() {
     var safeGender = escapeHtml(p.gender || "");
     var btn = p.agotado
       ? '<button class="disabled-agotado" disabled>Agotado</button>'
-      : '<button type="button" onclick="openAddModal(\'' + String(p.id).replace(/'/g, '') + '\')">Pedir</button>';
+      : '<button type="button" onclick="openAddModal(\'' + String(p.id).replace(/'/g, '') + '\', this)">Pedir</button>';
     return '<div class="card">' +
       '<div class="card-img-wrap">' +
         '<img src="' + imgSrc(p.img) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
@@ -1066,7 +1066,7 @@ function renderCatalog() {
   }).join("");
 }
 
-function addToCartDirect(productId, size) {
+function addToCartDirect(productId, size, fromEl) {
   var p = products.find(function(x){ return sameId(x.id, productId); });
   if (!p || p.agotado) return;
   var key = productId + "_" + size;
@@ -1080,6 +1080,8 @@ function addToCartDirect(productId, size) {
     img: p.img || "",
     qty: 1
   });
+  /* Animación visible: el +1 vuela hacia el ícono del carrito */
+  flyToCart(fromEl || document.getElementById("navCarrito"));
   updateCartBadge();
   if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
   toast("Listo → mira el 🛒 Carrito");
@@ -1094,7 +1096,7 @@ function rebuildSizeButtons() {
   }).join("");
   updateModalButtons();
 }
-function openAddModal(id) {
+function openAddModal(id, fromBtn) {
   if (id == null || id === "") return;
   var p = products.find(function(x){ return sameId(x.id, id); });
   if (!p) {
@@ -1102,11 +1104,9 @@ function openAddModal(id) {
     return;
   }
   if (p.agotado) return;
-  /* Modo directo: sin modal, mete al carrito de una */
+  /* Modo directo: sin modal, mete al carrito de una + animación al carrito */
   if (getAddMode() === "direct") {
-    addToCartDirect(id, getDefaultSize());
-    var nav = document.getElementById("navCarrito");
-    if (nav) pulseCart();
+    addToCartDirect(id, getDefaultSize(), fromBtn || null);
     return;
   }
   pendingProductId = id;
