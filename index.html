@@ -243,6 +243,16 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   pointer-events:none;z-index:2;
   background:rgba(0,0,0,.35);
 }
+.in-cart-seal{
+  position:absolute;top:8px;right:8px;z-index:3;
+  width:34px;height:34px;border-radius:50%;
+  background:var(--gold);color:#000;font-size:16px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.45);border:2px solid #fff;
+  pointer-events:none;
+  animation:inCartPop .35s ease;
+}
+@keyframes inCartPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .soldout-seal span{
   background:#c0392b;color:#fff;font-weight:800;font-size:15px;
   letter-spacing:2px;padding:8px 14px;border:3px solid #fff;
@@ -371,7 +381,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 <section id="catalogo" class="section active">
   <div class="tip-bar" id="tipBar">
-    <span>👆 Escoge el perfume → <strong>Agregar</strong> → <strong>🛒 Carrito</strong> → pide los precios por WhatsApp</span>
+    <span>👆 Escoge el perfume → <strong>Pedir</strong> → <strong>🛒 Carrito</strong> → envía el pedido por WhatsApp</span>
     <button type="button" onclick="dismissTip()" aria-label="Cerrar">×</button>
   </div>
   <div class="search-bar">
@@ -405,7 +415,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   </div>
   <div class="empty" id="cartEmpty">Carrito vacío — ve al Catálogo y mete perfumes</div>
   <div class="cart-sticky-wa" id="cartStickyWa">
-    <button class="btn-whatsapp" onclick="sendWhatsApp()">Pedir precios por WhatsApp</button>
+    <button class="btn-whatsapp" onclick="sendWhatsApp()">📲 Enviar pedido por WhatsApp</button>
   </div>
 </section>
 
@@ -487,7 +497,26 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     </div>
 
     <!-- 2. Banner -->
-    <div class="tool-item" id="admBanner">
+    <div class="tool-item" id="admOptions">
+    <button type="button" class="tool-item-head" onclick="toggleAdminTool('admOptions')">
+      <span>⚙️ Opciones del catálogo
+        <small>Mensaje al pedir · textos del modal</small>
+      </span>
+      <span class="chev">›</span>
+    </button>
+    <div class="tool-item-body">
+      <label class="admin-check">
+        <input type="checkbox" id="optShowModalHint" onchange="saveCatalogOptions()">
+        Mostrar mensaje al pedir (“Línea Premium · escoge el tamaño…”)
+      </label>
+      <p style="font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.4">
+        Si lo desactivas, al tocar <strong>Pedir</strong> solo salen los tamaños 30 · 60 · 120 ml, sin el texto explicativo.
+      </p>
+      <button type="button" class="btn" onclick="saveCatalogOptions()">Guardar opciones</button>
+    </div>
+  </div>
+
+  <div class="tool-item" id="admBanner">
       <button type="button" class="tool-item-head" onclick="toggleAdminTool('admBanner')">
         <span>🖼️ Banner al abrir la web
           <small>Imagen que sale al abrir la web</small>
@@ -630,14 +659,14 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 <div class="modal-overlay" id="addModal">
   <div class="modal">
-    <h3 id="modalTitle">Meter al pedido</h3>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Línea <strong style="color:var(--gold)">Premium</strong> · escoge el tamaño</p>
+    <h3 id="modalTitle">Pedir</h3>
+    <p id="modalHint" style="font-size:12px;color:var(--muted);margin-bottom:10px">Línea <strong style="color:var(--gold)">Premium</strong> · escoge el tamaño (30 · 60 · 120 ml)</p>
     <div class="size-btns">
       <button type="button" data-size="30" onclick="selectSize(30)">30 ml</button>
       <button type="button" data-size="60" onclick="selectSize(60)">60 ml</button>
       <button type="button" data-size="120" onclick="selectSize(120)">120 ml</button>
     </div>
-    <button class="confirm" id="confirmAddBtn" onclick="confirmAdd()">Meter al carrito</button>
+    <button class="confirm" id="confirmAddBtn" onclick="confirmAdd()">Pedir · meter al carrito</button>
     <button class="btn btn-secondary" style="margin-top:8px;width:100%" onclick="closeModal()">Cancelar</button>
   </div>
 </div>
@@ -758,6 +787,7 @@ function loadFromFirebase() {
     applyWelcomeBanner();
     refreshFlyerUserView();
     renderSocialIcons();
+    applyCatalogOptionsUI();
     var waEl = document.getElementById("waNumber");
     if (waEl && sessionStorage.getItem("lr_admin") === "1") {
       waEl.value = (config && config.wa) || "";
@@ -870,6 +900,7 @@ function showSection(id, btn) {
   if (id === "carrito") renderCart();
   if (id === "herramientas") renderEmpList();
   if (id === "admin") {
+    applyCatalogOptionsUI();
     document.getElementById("waNumber").value = config.wa || "";
     if (sessionStorage.getItem("lr_admin") === "1") {
       document.getElementById("adminLogin").style.display = "none";
@@ -966,6 +997,9 @@ function imgFallback() {
   return "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#222" width="100" height="100"/><text x="50" y="55" fill="#666" text-anchor="middle" font-size="12">L&R</text></svg>');
 }
 
+function productInCart(id) {
+  return (cart || []).some(function(c){ return sameId(c.id, id); });
+}
 function renderCatalog() {
   var q = (document.getElementById("search").value || "").toLowerCase();
   var list = products.filter(function(p) {
@@ -980,15 +1014,16 @@ function renderCatalog() {
   }
   grid.innerHTML = list.map(function(p) {
     var seal = p.agotado ? '<div class="soldout-seal"><span>AGOTADO</span></div>' : '';
+    var cartMark = (!p.agotado && productInCart(p.id)) ? '<div class="in-cart-seal" title="Ya está en el carrito">🛒</div>' : '';
     var safeName = escapeHtml(p.name);
     var safeGender = escapeHtml(p.gender || "");
     var btn = p.agotado
       ? '<button class="disabled-agotado" disabled>Agotado</button>'
-      : '<button type="button" onclick="openAddModal(\'' + String(p.id).replace(/'/g, '') + '\')">Agregar</button>';
+      : '<button type="button" onclick="openAddModal(\'' + String(p.id).replace(/'/g, '') + '\')">Pedir</button>';
     return '<div class="card">' +
       '<div class="card-img-wrap">' +
         '<img src="' + imgSrc(p.img) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
-        seal +
+        seal + cartMark +
       '</div>' +
       '<div class="card-body">' +
         '<div class="card-title">' + safeName + '</div>' +
@@ -1014,8 +1049,13 @@ function openAddModal(id) {
     toast("No aparece ese perfume");
     return;
   }
-  document.getElementById("modalTitle").textContent = p.name || "Agregar";
+  document.getElementById("modalTitle").textContent = p.name || "Pedir";
   updateModalButtons();
+  var hint = document.getElementById("modalHint");
+  if (hint) {
+    var show = !(config && config.hideModalHint);
+    hint.style.display = show ? "block" : "none";
+  }
   var modal = document.getElementById("addModal");
   if (modal) modal.classList.add("show");
 }
@@ -1054,6 +1094,7 @@ function confirmAdd() {
   closeModal();
   toast("Listo → mira el 🛒 Carrito");
   updateCartBadge();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
 }
 
 function flyToCart(fromEl) {
@@ -1149,6 +1190,7 @@ function changeQty(i, d) {
   if (cart[i].qty <= 0) cart.splice(i, 1);
   renderCart();
   updateCartBadge();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
 }
 
 function sendWhatsApp() {
@@ -1482,6 +1524,7 @@ function saveWelcomeBanner() {
   if (config && config.adminHash) data.adminHash = config.adminHash;
   if (config && config.flyerImage) data.flyerImage = config.flyerImage;
   if (config && config.socialLinks) data.socialLinks = config.socialLinks;
+  if (config && config.hideModalHint) data.hideModalHint = config.hideModalHint;
   db.ref("config").set(data);
   config = data;
   pendingBannerData = null;
@@ -1508,6 +1551,22 @@ function resetWelcomeBanner() {
   toast("Banner original restaurado");
 }
 
+
+function saveCatalogOptions() {
+  var show = !!(document.getElementById("optShowModalHint") && document.getElementById("optShowModalHint").checked);
+  var data = Object.assign({}, config || {});
+  data.wa = (document.getElementById("waNumber") && document.getElementById("waNumber").value.trim()) || data.wa || data.wa;
+  data.hideModalHint = !show;
+  db.ref("config").set(data);
+  config = data;
+  toast(show ? "Mensaje del modal activado" : "Mensaje del modal oculto");
+}
+function applyCatalogOptionsUI() {
+  var el = document.getElementById("optShowModalHint");
+  if (!el) return;
+  el.checked = !(config && config.hideModalHint);
+}
+
 function saveConfig() {
   var wa = document.getElementById("waNumber").value.trim();
   if (!wa) return toast("Falta el número");
@@ -1516,6 +1575,7 @@ function saveConfig() {
   if (config && config.adminHash) data.adminHash = config.adminHash;
   if (config && config.flyerImage) data.flyerImage = config.flyerImage;
   if (config && config.socialLinks) data.socialLinks = config.socialLinks;
+  if (config && config.hideModalHint) data.hideModalHint = config.hideModalHint;
   db.ref("config").set(data);
   config = data;
   renderSocialIcons();
