@@ -17,8 +17,17 @@ header{background:linear-gradient(180deg,#1a1a1a,#0d0d0d);padding:12px 16px;text
 .tagline{font-size:11px;color:var(--muted);margin-top:2px}
 
 nav{display:flex;justify-content:space-around;background:#111;position:fixed;bottom:0;left:0;right:0;border-top:1px solid #333;z-index:100;padding:8px 0 env(safe-area-inset-bottom)}
-nav button{background:none;border:none;color:var(--muted);font-size:11px;padding:6px 4px;flex:1;cursor:pointer;position:relative;transition:color .2s}
+nav button{background:none;border:none;color:var(--muted);font-size:10px;padding:6px 2px;flex:1;cursor:pointer;position:relative;transition:color .2s;min-width:0}
 nav button.active{color:var(--gold)}
+nav button.nav-share{
+  color:#1a1200;font-weight:800;
+  animation:shareNavPulse 1.6s ease-in-out infinite;
+}
+nav button.nav-share span.icon{filter:none}
+@keyframes shareNavPulse{
+  0%,100%{color:var(--gold);transform:scale(1)}
+  50%{color:#e8c84a;transform:scale(1.06)}
+}
 nav button span.icon{display:block;font-size:22px;margin-bottom:2px;transition:transform .25s}
 nav button.pulse span.icon{animation:navPulse .6s ease}
 @keyframes navPulse{0%{transform:scale(1)}30%{transform:scale(1.35)}60%{transform:scale(0.95)}100%{transform:scale(1)}}
@@ -59,6 +68,12 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 .filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;-webkit-overflow-scrolling:touch}
 .filters button{background:var(--card);border:1px solid #333;color:var(--muted);padding:6px 12px;border-radius:20px;font-size:13px;white-space:nowrap;cursor:pointer}
 .filters button.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.filter-select{
+  background:var(--card);border:1px solid #333;color:var(--muted);
+  padding:6px 10px;border-radius:20px;font-size:13px;cursor:pointer;
+  max-width:160px;outline:none;
+}
+.filter-select.active-tag{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
 
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 @media(min-width:600px){.grid{grid-template-columns:repeat(4,1fr);gap:12px}}
@@ -73,23 +88,17 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 .badge.dama{background:#9b59b6}.badge.caballero{background:#2980b9}.badge.unisex{background:#16a085}
 .badge.promo{background:var(--danger)}.badge.replica{background:#8e44ad}.badge.premium{background:var(--gold);color:#000}
 .sizes-hint{font-size:9px;color:var(--muted);margin-bottom:4px}
-.btns{margin-top:auto;display:flex;gap:6px;align-items:stretch}
+.btns{margin-top:auto}
 .btns button.btn-pedir{
-  flex:1;border:none;padding:9px 4px;border-radius:7px;font-size:13px;font-weight:800;
+  width:100%;border:none;padding:9px 4px;border-radius:7px;font-size:13px;font-weight:800;
   cursor:pointer;background:var(--gold);color:#000;letter-spacing:.3px;
   animation:addPulse 2s ease-in-out infinite;
   box-shadow:0 2px 10px rgba(201,162,39,.35);
   transition:transform .15s,box-shadow .15s;
 }
 .btns button.btn-pedir:active{transform:scale(.96)}
-.btns button.btn-share{
-  flex:0 0 36px;border:none;border-radius:8px;background:#222;color:var(--text);
-  font-size:18px;cursor:pointer;border:1px solid #444;
-  transition:transform .15s,background .15s,border-color .15s;
-}
-.btns button.btn-share:active{transform:scale(.94);background:var(--gold);color:#000;border-color:var(--gold)}
 .btns button.disabled-agotado{
-  flex:1;border:none;padding:12px 6px;border-radius:8px;font-size:15px;font-weight:700;
+  width:100%;border:none;padding:12px 6px;border-radius:8px;font-size:15px;font-weight:700;
 }
 @keyframes addPulse{
   0%,100%{box-shadow:0 2px 8px rgba(201,162,39,.3);transform:scale(1)}
@@ -97,11 +106,18 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 }
 
 /* Carrito con imagen */
-.cart-item{background:var(--card);border-radius:10px;padding:10px;margin-bottom:10px;display:flex;align-items:center;gap:12px;animation:fadeIn .3s ease}
-.cart-item img{width:64px;height:64px;object-fit:contain;background:#111;border-radius:8px;flex-shrink:0}
+.cart-list-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+@media(min-width:600px){.cart-list-grid{grid-template-columns:repeat(3,1fr);gap:12px}}
+@media(min-width:900px){.cart-list-grid{grid-template-columns:repeat(4,1fr)}}
+.cart-item{background:var(--card);border-radius:10px;padding:8px;margin-bottom:0;display:flex;flex-direction:column;align-items:stretch;gap:6px;animation:fadeIn .3s ease;border:1px solid #2a2a2a}
+.cart-item img{width:100%;height:90px;object-fit:contain;background:#111;border-radius:8px;flex-shrink:0}
 .cart-item .info{flex:1;min-width:0}
-.cart-item .info strong{display:block;font-size:13px;line-height:1.3;margin-bottom:2px}
-.cart-item .qty{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cart-item .info strong{display:block;font-size:11px;line-height:1.25;margin-bottom:2px;min-height:28px}
+.cart-item .qty{display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0}
+@media(min-width:600px){
+  .cart-item img{height:120px}
+  .cart-item .info strong{font-size:13px}
+}
 .cart-item .qty button{background:#333;border:none;color:var(--text);width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer}
 .cart-size-sel{
   display:block;width:100%;margin-top:6px;padding:6px 8px;font-size:12px;
@@ -146,7 +162,12 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
   100%{box-shadow:0 4px 14px rgba(37,211,102,.4);transform:scale(1);background:#25d366}
 }
 
-.admin-login,.admin-panel{max-width:400px;margin:0 auto}
+.admin-login{max-width:400px;margin:0 auto}
+.admin-panel{max-width:900px;margin:0 auto}
+@media(min-width:700px){
+  .admin-panel .tool-item-body{padding:12px 14px}
+  .admin-products-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+}
 input,select,textarea{width:100%;background:var(--card);border:1px solid #333;color:var(--text);padding:12px;border-radius:8px;margin-bottom:10px;font-size:15px}
 .admin-panel label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
 .btn{background:var(--gold);color:#000;border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px}
@@ -309,6 +330,16 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .admin-quick .q-promo{background:var(--gold);color:#000}
 .admin-quick .q-agotado{background:#c0392b;color:#fff}
 .admin-quick .q-promo.on,.admin-quick .q-agotado.on{outline:2px solid #fff;outline-offset:1px}
+.admin-quick{flex-direction:column}
+.admin-quick select{width:100%}
+.tag-chip{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:14px;
+  font-size:11px;font-weight:700;color:#fff;background:var(--gold);
+}
+.tag-chip button{
+  border:none;background:rgba(0,0,0,.25);color:#fff;width:18px;height:18px;border-radius:50%;
+  font-size:12px;line-height:1;cursor:pointer;padding:0;
+}
 .product-admin.agotado-row{opacity:.75;border:1px solid #c0392b55}
 
 
@@ -425,10 +456,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   </div>
   <div class="filters" id="filterBar">
     <button class="active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
-    <button data-filter="dama" onclick="setFilter('dama',this)">Dama</button>
-    <button data-filter="caballero" onclick="setFilter('caballero',this)">Caballero</button>
-    <button data-filter="unisex" onclick="setFilter('unisex',this)">Unisex</button>
-    <button data-filter="promo" onclick="setFilter('promo',this)">Lo Más Vendido</button>
   </div>
   <div class="grid" id="catalogGrid"><div class="loading">Cargando catálogo...</div></div>
 </section>
@@ -445,7 +472,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     ✨ Herramientas pa’ emprendedores
     <span>Arma tu catálogo con tu nombre y tu WhatsApp</span>
   </button>
-  <div id="cartList"></div>
+  <div id="cartList" class="cart-list-grid"></div>
   <div class="total" id="cartTotal" style="display:none">
     <p>Mándanos esta lista por WhatsApp.<br>Te pasamos los <strong style="color:var(--gold)">precios</strong> rapidito.</p>
   </div>
@@ -643,14 +670,14 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="tool-item" id="admTags">
     <button type="button" class="tool-item-head" onclick="toggleAdminTool('admTags')">
       <span>🏷️ Etiquetas del catálogo
-        <small>Más vendido + ediciones, fechas, etc.</small>
+        <small>Género + más vendido + fechas + ediciones</small>
       </span>
       <span class="chev">›</span>
     </button>
     <div class="tool-item-body">
       <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.45">
-        Crea etiquetas como <strong>Edición especial</strong>, <strong>Amor y amistad</strong>, <strong>Cumpleaños</strong>…
-        Luego se las pones a cada perfume y aparecen como filtro en el catálogo.
+        Todo es etiqueta editable: <strong>Dama</strong>, <strong>Caballero</strong>, <strong>Unisex</strong>, Más vendido, fechas, ediciones…
+        Un perfume puede tener varias a la vez.
       </p>
       <div id="tagsAdminList"></div>
       <label>Nueva etiqueta</label>
@@ -675,11 +702,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
           Sube la imagen con el botón 📷 (PNG o JPG).
         </div>
         <input type="text" id="pName" placeholder="Nombre del perfume">
-        <select id="pGender">
-          <option value="dama">Dama</option>
-          <option value="caballero">Caballero</option>
-          <option value="unisex">Unisex</option>
-        </select>
         <label>Imagen del perfume</label>
         <div class="upload-box" id="uploadBox" onclick="document.getElementById('pFile').click()">
           <strong>📷 Toca para subir imagen PNG / JPG</strong>
@@ -689,10 +711,20 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
         <img id="adminPreview" class="admin-preview" alt="Vista previa">
         <div class="img-hint" id="imgHint"></div>
         <input type="hidden" id="pImg" value="">
-        <label class="admin-check"><input type="checkbox" id="pPromo"> Más vendido</label>
         <label class="admin-check"><input type="checkbox" id="pAgotado"> Agotado (sello en el catálogo)</label>
-        <label style="color:var(--gold);margin:10px 0 6px">Etiquetas del perfume</label>
-        <div id="pTagsBox" style="margin-bottom:10px"></div>
+        <label style="color:var(--gold);margin:10px 0 6px">Etiquetas (puedes varias)</label>
+        <div id="pTagsChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:28px"></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+          <select id="pTagSelect" style="margin:0;flex:1">
+            <option value="">Agregar etiqueta…</option>
+          </select>
+          <button type="button" class="btn" style="width:auto;margin:0;padding:10px 12px;white-space:nowrap" onclick="addSelectedTagToProduct()">Agregar</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+          <input type="text" id="pNewTag" placeholder="Crear etiqueta nueva…" style="margin:0;flex:1">
+          <button type="button" class="btn-secondary btn" style="width:auto;margin:0;padding:10px 12px;white-space:nowrap;background:#333;color:#fff" onclick="addTagFromProductForm()">+ Crear</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin:-2px 0 10px">Ejemplo: Dama + Más vendido + Cumpleaños. El género del perfume también es una etiqueta.</p>
         <button class="btn" onclick="saveProduct()">Guardar perfume</button>
         <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
 
@@ -707,7 +739,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
         <div class="admin-search">
           <input type="text" id="adminSearch" placeholder="Buscar perfume para editar o borrar..." oninput="renderAdminProducts()">
         </div>
-        <div id="adminProducts"></div>
+        <div id="adminProducts" class="admin-products-grid"></div>
       </div>
     </div>
 
@@ -752,6 +784,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span class="cart-badge" id="cartBadge">0</span>
   </button>
   <button id="navHerramientas" onclick="showSection('herramientas',this)"><span class="icon">✨</span>Herramientas</button>
+  <button type="button" class="nav-share" id="navShare" onclick="shareCatalog(event)"><span class="icon">📤</span>Compartir</button>
   <button id="navAdmin" onclick="showSection('admin',this)" style="display:none"><span class="icon">⚙️</span>Panel</button>
 </nav>
 
@@ -837,9 +870,9 @@ function loadFromFirebase() {
       Object.keys(val).forEach(function(k) {
         var p = val[k] || {};
         if (typeof p !== "object") return;
-        /* Usar id interno o la clave de Firebase */
         if (p.id == null || p.id === "") p.id = k;
         if (!isNaN(Number(p.id))) p.id = Number(p.id);
+        normalizeProductTags(p);
         products.push(p);
       });
     }
@@ -858,6 +891,16 @@ function loadFromFirebase() {
   db.ref("config").on("value", function(snap) {
     var val = snap.val();
     if (val) config = val;
+    else config = config || {};
+    /* Solo la primera vez: si no hay etiquetas guardadas, cargar las de fábrica */
+    if (!config.extraTags || !Array.isArray(config.extraTags) || !config.extraTags.length) {
+      if (!config._tagsSeeded) {
+        config.extraTags = defaultExtraTags();
+        config._tagsSeeded = true;
+        var seedData = Object.assign({}, config);
+        db.ref("config").update({ extraTags: seedData.extraTags, _tagsSeeded: true });
+      }
+    }
     applyWelcomeBanner();
     refreshFlyerUserView();
     renderSocialIcons();
@@ -998,12 +1041,7 @@ function showSection(id, btn) {
   }
 }
 
-function setFilter(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll(".filters button").forEach(function(b){ b.classList.remove("active"); });
-  btn.classList.add("active");
-  renderCatalog();
-}
+
 
 function escapeHtml(str) {
   return String(str == null ? "" : str)
@@ -1102,17 +1140,123 @@ function shareCatalog(ev) {
   prompt("Copia este link de tu catálogo:", url);
 }
 function tagBadgesHtml(p) {
-  var tags = Array.isArray(p.tags) ? p.tags : [];
+  var tags = Array.isArray(p.tags) ? p.tags.slice() : [];
+  if (p.promo && tags.indexOf("masvendido") === -1 && tags.indexOf("promo") === -1) tags.unshift("masvendido");
   if (!tags.length) return "";
   var map = {};
-  getExtraTags().forEach(function(t){ map[t.id] = t; });
+  getExtraTags().forEach(function(t){ map[t.id] = t; map["promo"] = map["promo"] || { id: "promo", label: "Lo Más Vendido", color: "#c9a227" }; });
+  if (!map.masvendido) map.masvendido = { id: "masvendido", label: "Lo Más Vendido", color: "#c9a227" };
   return tags.map(function(id) {
-    var t = map[id];
+    var t = map[id] || (id === "promo" ? map.masvendido : null);
     if (!t) return "";
     var col = t.color || "#c9a227";
     return '<span class="badge" style="background:' + col + ';color:#fff">' + escapeHtml(t.label) + '</span>';
   }).join("");
 }
+
+
+
+
+
+
+function renderProductTagsUI(selected) {
+  pendingTags = Array.isArray(selected) ? selected.slice() : (selected ? [selected] : []);
+  renderPendingTagChips();
+  fillTagSelectOptions("pTagSelect", pendingTags);
+}
+function renderPendingTagChips() {
+  var box = document.getElementById("pTagsChips");
+  if (!box) return;
+  var map = {};
+  getExtraTags().forEach(function(t){ map[t.id] = t; });
+  if (!pendingTags.length) {
+    box.innerHTML = '<span style="font-size:12px;color:var(--muted)">Ninguna etiqueta aún</span>';
+    return;
+  }
+  box.innerHTML = pendingTags.map(function(id) {
+    var t = map[id] || { id: id, label: id, color: "#666" };
+    return '<span class="tag-chip" style="background:' + (t.color||"#c9a227") + '">' + escapeHtml(t.label) +
+      '<button type="button" title="Quitar" onclick="removePendingTag(\'' + id + '\')">×</button></span>';
+  }).join("");
+}
+function fillTagSelectOptions(selectId, excludeIds) {
+  var sel = document.getElementById(selectId);
+  if (!sel) return;
+  excludeIds = excludeIds || [];
+  var list = getExtraTags().filter(function(t){ return excludeIds.indexOf(t.id) === -1; });
+  sel.innerHTML = '<option value="">Agregar etiqueta…</option>' + list.map(function(t) {
+    return '<option value="' + t.id + '">' + escapeHtml(t.label) + '</option>';
+  }).join("");
+}
+function addSelectedTagToProduct() {
+  var sel = document.getElementById("pTagSelect");
+  var id = sel && sel.value;
+  if (!id) return toast("Escoge una etiqueta de la lista");
+  if (pendingTags.indexOf(id) === -1) pendingTags.push(id);
+  renderPendingTagChips();
+  fillTagSelectOptions("pTagSelect", pendingTags);
+}
+function removePendingTag(id) {
+  pendingTags = pendingTags.filter(function(t){ return t !== id; });
+  renderPendingTagChips();
+  fillTagSelectOptions("pTagSelect", pendingTags);
+}
+function getSelectedProductTags() {
+  return pendingTags.slice();
+}
+function addTagFromProductForm() {
+  var el = document.getElementById("pNewTag");
+  var label = ((el && el.value) || "").trim();
+  if (!label) return toast("Escribe el nombre de la etiqueta");
+  var id = label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"") || ("tag_" + Date.now());
+  var list = getExtraTags().map(function(x){ return Object.assign({}, x); });
+  if (list.some(function(t){ return t.id === id; })) {
+    if (pendingTags.indexOf(id) === -1) pendingTags.push(id);
+    if (el) el.value = "";
+    renderPendingTagChips();
+    fillTagSelectOptions("pTagSelect", pendingTags);
+    toast("Esa etiqueta ya existía · la agregamos al perfume");
+    return;
+  }
+  var colors = ["#c9a227", "#e91e63", "#e67e22", "#9b59b6", "#3498db", "#1abc9c"];
+  list.push({ id: id, label: label, color: colors[list.length % colors.length] });
+  var data = Object.assign({}, config || {});
+  data.extraTags = list;
+  data.wa = data.wa || (config && config.wa) || "";
+  db.ref("config").set(data);
+  config = data;
+  if (el) el.value = "";
+  if (pendingTags.indexOf(id) === -1) pendingTags.push(id);
+  renderPendingTagChips();
+  fillTagSelectOptions("pTagSelect", pendingTags);
+  renderFilterBar();
+  renderTagsAdmin();
+  toast("Etiqueta creada y agregada");
+}
+function setProductTagsQuick(id, tagId) {
+  /* Agrega etiqueta (multi) desde lista admin; vacío = no hace nada especial */
+  var p = products.find(function(x){ return sameId(x.id, id); });
+  if (!p) return;
+  normalizeProductTags(p);
+  var tags = Array.isArray(p.tags) ? p.tags.slice() : [];
+  if (!tagId) return;
+  if (tags.indexOf(tagId) === -1) tags.push(tagId);
+  var promo = tags.indexOf("masvendido") !== -1 || tags.indexOf("promo") !== -1;
+  var gender = genderFromTags(tags);
+  db.ref("products/" + id).update({ tags: tags, promo: promo, gender: gender });
+  toast("Etiqueta agregada");
+}
+function removeProductTagQuick(id, tagId) {
+  var p = products.find(function(x){ return sameId(x.id, id); });
+  if (!p) return;
+  normalizeProductTags(p);
+  var tags = (p.tags || []).filter(function(t){ return t !== tagId; });
+  var promo = tags.indexOf("masvendido") !== -1 || tags.indexOf("promo") !== -1;
+  var gender = genderFromTags(tags);
+  db.ref("products/" + id).update({ tags: tags, promo: promo, gender: gender });
+  toast("Etiqueta quitada");
+}
+
 function productInCart(id) {
   return (cart || []).some(function(c){ return sameId(c.id, id); });
 }
@@ -1122,13 +1266,9 @@ function renderCatalog() {
     var matchQ = (p.name || "").toLowerCase().includes(q);
     var matchF = true;
     if (currentFilter === "all") matchF = true;
-    else if (currentFilter === "promo") matchF = !!p.promo;
-    else if (currentFilter.indexOf("tag:") === 0) {
-      var tid = currentFilter.slice(4);
-      matchF = Array.isArray(p.tags) && p.tags.indexOf(tid) !== -1;
-    } else {
-      matchF = p.gender === currentFilter;
-    }
+    else if (currentFilter === "promo") matchF = productHasTag(p, "masvendido");
+    else if (currentFilter.indexOf("tag:") === 0) matchF = productHasTag(p, currentFilter.slice(4));
+    else matchF = productHasTag(p, currentFilter) || p.gender === currentFilter;
     return matchQ && matchF;
   });
   var grid = document.getElementById("catalogGrid");
@@ -1143,8 +1283,7 @@ function renderCatalog() {
     var safeGender = escapeHtml(p.gender || "");
     var btn = p.agotado
       ? '<button class="disabled-agotado" disabled>Agotado</button>'
-      : '<button type="button" class="btn-pedir" onclick="openAddModal(\'' + String(p.id).replace(/'/g, '') + '\', this)">Pedir</button>' +
-        '<button type="button" class="btn-share" title="Compartir catálogo" onclick="shareCatalog(event)">📤</button>';
+      : '<button type="button" class="btn-pedir" onclick="openAddModal(\'' + String(p.id).replace(/'/g, '') + '\', this)">Pedir</button>';
     return '<div class="card">' +
       '<div class="card-img-wrap">' +
         '<img src="' + imgSrc(p.img) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'' + imgFallback() + '\'">' +
@@ -1153,8 +1292,6 @@ function renderCatalog() {
       '<div class="card-body">' +
         '<div class="card-title">' + safeName + '</div>' +
         '<div>' +
-          '<span class="badge ' + safeGender + '">' + safeGender + '</span>' +
-          (p.promo ? '<span class="badge masvendido">MÁS VENDIDO</span>' : '') +
           tagBadgesHtml(p) +
           (p.agotado ? '<span class="badge agotado">AGOTADO</span>' : '') +
         '</div>' +
@@ -1533,21 +1670,35 @@ function renderAdminProducts() {
     document.getElementById("adminProducts").innerHTML = '<div class="empty">No hay resultados</div>';
     return;
   }
+  var allTags = getExtraTags();
   document.getElementById("adminProducts").innerHTML = list.map(function(p) {
+    normalizeProductTags(p);
+    var tags = p.tags || [];
+    var map = {};
+    allTags.forEach(function(t){ map[t.id] = t; });
+    var chips = tags.map(function(id) {
+      var t = map[id] || { label: id, color: "#666" };
+      return '<span class="tag-chip" style="background:' + (t.color||"#c9a227") + ';margin:2px">' + escapeHtml(t.label) +
+        '<button type="button" title="Quitar" onclick="removeProductTagQuick(\'' + String(p.id).replace(/'/g, '') + '\',\'' + id + '\')">×</button></span>';
+    }).join("") || '<span style="font-size:11px;color:var(--muted)">Sin etiquetas</span>';
+    var opts = '<option value="">+ Agregar etiqueta…</option>' + allTags.filter(function(t) {
+      return tags.indexOf(t.id) === -1;
+    }).map(function(t) {
+      return '<option value="' + t.id + '">' + escapeHtml(t.label) + '</option>';
+    }).join("");
     return '<div class="product-admin' + (p.agotado ? ' agotado-row' : '') + '">' +
       '<img src="' + imgSrc(p.img) + '" alt="" onerror="this.src=\'' + imgFallback() + '\'">' +
       '<div class="meta"><strong>' + escapeHtml(p.name) + '</strong><br>' +
-      '<span class="badge ' + p.gender + '">' + p.gender + '</span>' +
-      (p.promo ? ' <span class="badge masvendido">MÁS VENDIDO</span>' : '') +
-      (p.agotado ? ' <span class="badge agotado">AGOTADO</span>' : '') +
-      '<br><span style="font-size:11px;color:var(--muted)">' + imgLabel(p.img) + '</span>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:4px 0">' + chips + '</div>' +
+      (p.agotado ? '<span class="badge agotado">AGOTADO</span> ' : '') +
+      '<span style="font-size:11px;color:var(--muted)">' + imgLabel(p.img) + '</span>' +
       '<div class="admin-quick">' +
-        '<button type="button" class="q-promo' + (p.promo ? ' on' : '') + '" onclick="togglePromo(\'' + String(p.id).replace(/'/g, '') + '\')" >' + (p.promo ? '★ Más vendido' : 'Más vendido') + '</button>' +
-        '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(\'' + String(p.id).replace(/'/g, '') + '\')" >' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
+        '<select class="filter-select" style="max-width:100%;width:100%;margin-bottom:4px;border-radius:8px" onchange="if(this.value){setProductTagsQuick(\'' + String(p.id).replace(/'/g, '') + '\', this.value); this.value=\'\';}">' + opts + '</select>' +
+        '<button type="button" class="q-agotado' + (p.agotado ? ' on' : '') + '" onclick="toggleAgotado(\'' + String(p.id).replace(/'/g, '') + '\')">' + (p.agotado ? '✕ Agotado' : 'Agotado') + '</button>' +
       '</div></div>' +
       '<div class="actions">' +
-        '<button class="btn-secondary" onclick="editProduct(\'' + String(p.id).replace(/'/g, '') + '\')" >Editar</button>' +
-        '<button class="btn-danger" onclick="deleteProduct(\'' + String(p.id).replace(/'/g, '') + '\')" >Borrar</button>' +
+        '<button class="btn-secondary" onclick="editProduct(\'' + String(p.id).replace(/'/g, '') + '\')">Editar</button>' +
+        '<button class="btn-danger" onclick="deleteProduct(\'' + String(p.id).replace(/'/g, '') + '\')">Borrar</button>' +
       '</div></div>';
   }).join("");
 }
@@ -1574,12 +1725,11 @@ function editProduct(id) {
   editingId = id;
   document.getElementById("formTitle").textContent = "Editar perfume";
   document.getElementById("pName").value = p.name;
-  document.getElementById("pGender").value = p.gender;
   pendingImageData = null;
   document.getElementById("pImg").value = p.img || "";
   var pf = document.getElementById("pFile"); if (pf) pf.value = "";
-  document.getElementById("pPromo").checked = !!p.promo;
-  renderProductTagsUI(Array.isArray(p.tags) ? p.tags : []);
+  normalizeProductTags(p);
+  renderProductTagsUI(p.tags || []);
   var ag = document.getElementById("pAgotado"); if (ag) ag.checked = !!p.agotado;
   previewAdminImg();
   /* Abrir apartado de productos y bajar al formulario */
@@ -1597,26 +1747,27 @@ function clearForm() {
   document.getElementById("pName").value = "";
   document.getElementById("pImg").value = "";
   var pf = document.getElementById("pFile"); if (pf) pf.value = "";
-  document.getElementById("pPromo").checked = false;
   var ag = document.getElementById("pAgotado"); if (ag) ag.checked = false;
-  document.getElementById("pGender").value = "dama";
   var prev = document.getElementById("adminPreview");
   prev.classList.remove("show");
   prev.removeAttribute("src");
   var hint = document.getElementById("imgHint");
   if (hint) hint.textContent = "";
   renderProductTagsUI([]);
+  pendingTags = [];
+  renderProductTagsUI([]);
 }
 
 function saveProduct() {
   var name = document.getElementById("pName").value.trim();
   if (!name) return toast("Falta el nombre");
-  var gender = document.getElementById("pGender").value;
   var img = pendingImageData || document.getElementById("pImg").value.trim();
   if (!img && !editingId) return toast("Sube una foto del perfume");
-  var promo = document.getElementById("pPromo").checked;
   var agotado = !!(document.getElementById("pAgotado") && document.getElementById("pAgotado").checked);
   var tags = getSelectedProductTags();
+  if (!tags.length) return toast("Agrega al menos una etiqueta (ej: Dama, Caballero…)");
+  var promo = tags.indexOf("masvendido") !== -1 || tags.indexOf("promo") !== -1;
+  var gender = genderFromTags(tags);
   var payload = { name: name, gender: gender, promo: promo, agotado: agotado, tags: tags };
   if (img) payload.img = img;
   if (editingId) {
@@ -1771,52 +1922,132 @@ function getDefaultSize() {
 }
 
 function getExtraTags() {
-  var list = (config && Array.isArray(config.extraTags)) ? config.extraTags : [];
+  var list = (config && Array.isArray(config.extraTags)) ? config.extraTags.slice() : [];
   return list.filter(function(t){ return t && t.id && t.label; });
 }
 function defaultExtraTags() {
   return [
+    { id: "dama", label: "Dama", color: "#9b59b6" },
+    { id: "caballero", label: "Caballero", color: "#2980b9" },
+    { id: "unisex", label: "Unisex", color: "#16a085" },
+    { id: "masvendido", label: "Lo Más Vendido", color: "#c9a227" },
     { id: "especial", label: "Edición especial", color: "#e67e22" },
     { id: "amor", label: "Amor y amistad", color: "#e91e63" },
-    { id: "cumple", label: "Cumpleaños", color: "#9b59b6" }
+    { id: "cumple", label: "Cumpleaños", color: "#8e44ad" }
   ];
+}
+function genderFromTags(tags) {
+  tags = tags || [];
+  if (tags.indexOf("dama") !== -1) return "dama";
+  if (tags.indexOf("caballero") !== -1) return "caballero";
+  if (tags.indexOf("unisex") !== -1) return "unisex";
+  return "unisex";
+}
+function normalizeProductTags(p) {
+  var tags = Array.isArray(p.tags) ? p.tags.slice() : [];
+  if (p.gender && tags.indexOf(p.gender) === -1) tags.push(p.gender);
+  if (p.promo && tags.indexOf("masvendido") === -1 && tags.indexOf("promo") === -1) tags.push("masvendido");
+  /* únicos */
+  var seen = {};
+  tags = tags.filter(function(t){ if (!t || seen[t]) return false; seen[t] = true; return true; });
+  p.tags = tags;
+  p.gender = genderFromTags(tags);
+  p.promo = tags.indexOf("masvendido") !== -1 || tags.indexOf("promo") !== -1;
+  return p;
+}
+function productHasTag(p, tagId) {
+  if (!p) return false;
+  if (tagId === "promo" || tagId === "masvendido") {
+    if (p.promo) return true;
+    return Array.isArray(p.tags) && (p.tags.indexOf("masvendido") !== -1 || p.tags.indexOf("promo") !== -1);
+  }
+  return Array.isArray(p.tags) && p.tags.indexOf(tagId) !== -1;
 }
 function renderFilterBar() {
   var bar = document.getElementById("filterBar");
   if (!bar) return;
   var active = currentFilter || "all";
-  var base = [
-    { f: "all", label: "Todos" },
-    { f: "dama", label: "Dama" },
-    { f: "caballero", label: "Caballero" },
-    { f: "unisex", label: "Unisex" },
-    { f: "promo", label: "Lo Más Vendido" }
-  ];
-  var html = base.map(function(b) {
-    return '<button data-filter="' + b.f + '" class="' + (active === b.f ? "active" : "") + '" onclick="setFilter(\'' + b.f + '\',this)">' + b.label + '</button>';
-  }).join("");
+  var items = [{ f: "all", label: "Todos" }];
   getExtraTags().forEach(function(t) {
-    var isOn = active === ("tag:" + t.id);
-    html += '<button data-filter="tag:' + t.id + '" class="' + (isOn ? "active" : "") + '" onclick="setFilter(\'tag:' + t.id + '\',this)" style="' + (isOn ? "background:" + (t.color||"#c9a227") + ";color:#fff;border-color:" + (t.color||"#c9a227") : "") + '">' + escapeHtml(t.label) + '</button>';
+    items.push({ f: "tag:" + t.id, label: t.label, color: t.color });
   });
-  bar.innerHTML = html;
+  bar.innerHTML = items.map(function(b) {
+    var on = active === b.f;
+    var style = "";
+    if (on && b.color) {
+      style = ' style="background:' + b.color + ';color:#fff;border-color:' + b.color + '"';
+    }
+    return '<button type="button" data-filter="' + b.f + '" class="' + (on ? "active" : "") + '"' + style +
+      ' onclick="setFilter(\'' + b.f + '\',this)">' + escapeHtml(b.label) + '</button>';
+  }).join("");
+}
+function onFilterTagChange(sel) {
+  var v = (sel && sel.value) || "";
+  if (!v) {
+    setFilter("all", document.querySelector('#filterBar button[data-filter="all"]'));
+    return;
+  }
+  currentFilter = "tag:" + v;
+  document.querySelectorAll("#filterBar button").forEach(function(b){ b.classList.remove("active"); });
+  sel.classList.add("active-tag");
+  renderCatalog();
+}
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll("#filterBar button").forEach(function(b) {
+    b.classList.remove("active");
+    b.style.background = "";
+    b.style.color = "";
+    b.style.borderColor = "";
+  });
+  if (btn) {
+    btn.classList.add("active");
+    if (f && f.indexOf("tag:") === 0) {
+      var tid = f.slice(4);
+      var tag = getExtraTags().find(function(t){ return t.id === tid; });
+      if (tag && tag.color) {
+        btn.style.background = tag.color;
+        btn.style.color = "#fff";
+        btn.style.borderColor = tag.color;
+      }
+    }
+  }
+  renderCatalog();
 }
 function renderTagsAdmin() {
   var box = document.getElementById("tagsAdminList");
   if (!box) return;
   var list = getExtraTags();
   if (!list.length) {
-    box.innerHTML = '<div class="empty" style="padding:10px">Sin etiquetas extra. Agrega la primera abajo.</div>';
+    box.innerHTML = '<div class="empty" style="padding:10px">Sin etiquetas. Agrega la primera abajo (o restaura las de fábrica).</div>' +
+      '<button type="button" class="btn btn-secondary" style="background:#333;color:#fff" onclick="restoreDefaultTags()">Restaurar etiquetas de fábrica</button>';
     return;
   }
   box.innerHTML = list.map(function(t, i) {
     return '<div class="social-admin-row" style="margin-bottom:8px">' +
       '<span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:' + (t.color||"#c9a227") + ';margin-right:8px;vertical-align:middle"></span>' +
-      '<strong style="color:var(--gold)">' + escapeHtml(t.label) + '</strong>' +
-      '<div class="row-actions" style="margin-top:6px">' +
+      '<input type="text" value="' + escapeHtml(t.label).replace(/"/g, "&quot;") + '" style="margin:0 0 6px;width:calc(100% - 30px)" onchange="renameExtraTag(' + i + ', this.value)">' +
+      '<div class="row-actions">' +
         '<button type="button" class="btn-danger" style="background:var(--danger);color:#fff;padding:6px 10px;font-size:12px" onclick="removeExtraTag(' + i + ')">Borrar</button>' +
       '</div></div>';
-  }).join("");
+  }).join("") +
+  '<button type="button" class="btn btn-secondary" style="background:#333;color:#fff;margin-top:8px" onclick="restoreDefaultTags()">Restaurar etiquetas de fábrica</button>';
+}
+function renameExtraTag(i, label) {
+  label = (label || "").trim();
+  if (!label) return toast("Nombre requerido");
+  var list = getExtraTags().map(function(x){ return Object.assign({}, x); });
+  if (!list[i]) return;
+  list[i].label = label;
+  var data = Object.assign({}, config || {});
+  data.extraTags = list;
+  data.wa = data.wa || (config && config.wa) || "";
+  db.ref("config").set(data);
+  config = data;
+  renderTagsAdmin();
+  renderFilterBar();
+  renderProductTagsUI();
+  toast("Etiqueta actualizada");
 }
 function addExtraTag() {
   var label = ((document.getElementById("tagNewLabel") || {}).value || "").trim();
@@ -1837,39 +2068,47 @@ function addExtraTag() {
   renderProductTagsUI();
   toast("Etiqueta agregada");
 }
-function removeExtraTag(i) {
-  if (!confirm("¿Borrar esta etiqueta? Los perfumes la perderán al filtrar.")) return;
-  var list = getExtraTags().slice();
-  list.splice(i, 1);
+function restoreDefaultTags() {
+  if (!confirm("¿Volver a poner Dama, Caballero, Unisex, Más vendido, etc.?")) return;
   var data = Object.assign({}, config || {});
-  data.extraTags = list;
-  data.wa = data.wa || (config && config.wa) || "";
+  data.extraTags = defaultExtraTags();
+  data._tagsSeeded = true;
+  data.wa = data.wa || "";
   db.ref("config").set(data);
   config = data;
   renderTagsAdmin();
   renderFilterBar();
-  renderProductTagsUI();
+  renderProductTagsUI(typeof pendingTags !== "undefined" ? pendingTags : []);
+  toast("Etiquetas de fábrica restauradas");
+}
+function removeExtraTag(i) {
+  var list = getExtraTags().slice();
+  var t = list[i];
+  if (!t) return;
+  var msg = "¿Borrar la etiqueta “" + t.label + "”? Los perfumes la perderán al filtrar (puedes crearla de nuevo después).";
+  if (!confirm(msg)) return;
+  list.splice(i, 1);
+  var data = Object.assign({}, config || {});
+  data.extraTags = list;
+  data.wa = data.wa || (config && config.wa) || "";
+  if (config && config.availableSizes) data.availableSizes = config.availableSizes;
+  if (config && config.addMode) data.addMode = config.addMode;
+  if (config && config.defaultSize) data.defaultSize = config.defaultSize;
+  db.ref("config").set(data);
+  config = data;
+  renderTagsAdmin();
+  renderFilterBar();
+  if (typeof pendingTags !== "undefined") {
+    pendingTags = (pendingTags || []).filter(function(id){ return id !== t.id; });
+  }
+  renderProductTagsUI(typeof pendingTags !== "undefined" ? pendingTags : []);
+  if (document.getElementById("adminProducts")) renderAdminProducts();
   toast("Etiqueta eliminada");
 }
-function renderProductTagsUI(selected) {
-  var box = document.getElementById("pTagsBox");
-  if (!box) return;
-  selected = selected || [];
-  var list = getExtraTags();
-  if (!list.length) {
-    box.innerHTML = '<span style="font-size:12px;color:var(--muted)">Crea etiquetas en “Etiquetas del catálogo”</span>';
-    return;
-  }
-  box.innerHTML = list.map(function(t) {
-    var on = selected.indexOf(t.id) !== -1 ? " checked" : "";
-    return '<label class="admin-check"><input type="checkbox" class="pTagCb" value="' + t.id + '"' + on + '> ' + escapeHtml(t.label) + '</label>';
-  }).join("");
-}
-function getSelectedProductTags() {
-  var out = [];
-  document.querySelectorAll(".pTagCb:checked").forEach(function(cb){ out.push(cb.value); });
-  return out;
-}
+
+
+
+
 
 
 function getAddMode() {
