@@ -462,16 +462,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 <section id="carrito" class="section">
   <h2>Tu lista</h2>
-  <div class="maker-bar">
-    <h3>SOMOS FABRICANTES · MAYOR Y DETAL</h3>
-    <p>Precios pa’ emprendedores · Buenos lotes de perfumes calidad 1.1</p>
-    <p style="margin-top:6px">Te llevas lo mejor. <strong style="color:var(--gold)">Aquí no estás solo.</strong></p>
-    <p style="margin-top:6px"><strong style="color:var(--gold)">Formas de pago:</strong> BCV · $ divisa física · Binance USDT</p>
-  </div>
-  <button type="button" class="tools-cta" onclick="showSection('herramientas',document.getElementById('navHerramientas'))">
-    ✨ Herramientas pa’ emprendedores
-    <span>Arma tu catálogo con tu nombre y tu WhatsApp</span>
-  </button>
   <div id="cartList" class="cart-list-grid"></div>
   <div class="total" id="cartTotal" style="display:none">
     <p>Mándanos esta lista por WhatsApp.<br>Te pasamos los <strong style="color:var(--gold)">precios</strong> rapidito.</p>
@@ -479,57 +469,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   <div class="empty" id="cartEmpty">Carrito vacío — ve al Catálogo y mete perfumes</div>
   <div class="cart-sticky-wa" id="cartStickyWa">
     <button class="btn-whatsapp" onclick="sendWhatsApp()">📲 Enviar pedido por WhatsApp</button>
-  </div>
-</section>
-
-
-<section id="herramientas" class="section">
-  <h2>Herramientas pa’ emprendedores</h2>
-  <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.45">
-    Elige una herramienta. Toca el título para abrir o cerrar cada apartado.
-  </p>
-
-  <!-- 1. Crear catálogo PDF -->
-  <div class="tool-item" id="toolCatalogo">
-    <button type="button" class="tool-item-head" onclick="toggleTool('toolCatalogo')">
-      <span>📄 Crear catálogo PDF pa’ emprender
-        <small>PDF con tu nombre y WhatsApp · escoges los perfumes y lo compartes pa’ vender</small>
-      </span>
-      <span class="chev">›</span>
-    </button>
-    <div class="tool-item-body">
-      <label>Nombre de tu negocio</label>
-      <input type="text" id="empName" placeholder="Ej: Aromas del Valle">
-      <label>WhatsApp pa’ que te escriban (código del país, sin +)</label>
-      <input type="text" id="empWa" placeholder="Ej: 584121234567">
-      <label>Buscar en la lista</label>
-      <input type="text" id="empSearch" placeholder="Filtrar perfumes..." oninput="renderEmpList()">
-      <div class="tools-actions">
-        <button type="button" onclick="empSelectAll(true)">Marcar todos</button>
-        <button type="button" onclick="empSelectAll(false)">Quitar todos</button>
-      </div>
-      <div class="tools-count">Seleccionados: <strong id="empCount">0</strong></div>
-      <div class="tools-list" id="empList"><div class="loading">Cargando lista...</div></div>
-      <button class="btn" onclick="downloadEmpPdf()">📄 Bajar catálogo PDF</button>
-    </div>
-  </div>
-
-  <!-- 2. Descargar flyer -->
-  <div class="tool-item" id="toolFlyer">
-    <button type="button" class="tool-item-head" onclick="toggleTool('toolFlyer')">
-      <span>🖼️ Descargar flyer (foto con la lista)
-        <small>Foto con la lista de perfumes pa’ mandar por WhatsApp o redes y empezar a vender</small>
-      </span>
-      <span class="chev">›</span>
-    </button>
-    <div class="tool-item-body">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.4">
-        Baja el flyer oficial pa’ compartirlo con tus clientes.
-      </p>
-      <img id="flyerPreviewUser" class="flyer-preview" alt="Flyer">
-      <div class="img-hint" id="flyerHintUser">Cargando flyer...</div>
-      <button class="btn" onclick="downloadFlyer()">⬇️ Descargar flyer</button>
-    </div>
   </div>
 </section>
 
@@ -616,28 +555,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     </div>
 
     <!-- 3. Flyer -->
-    <div class="tool-item" id="admFlyer">
-      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admFlyer')">
-        <span>📥 Flyer para emprendedores
-          <small>Imagen descargable en Herramientas</small>
-        </span>
-        <span class="chev">›</span>
-      </button>
-      <div class="tool-item-body">
-        <div class="info-box">La ven en <strong style="color:var(--gold)">Herramientas → Descargar imagen Flyer</strong>.</div>
-        <div class="upload-box" onclick="document.getElementById('flyerFile').click()">
-          <strong>🖼️ Subir imagen flyer (PNG / JPG)</strong>
-          <p>Toca aquí y elige el archivo</p>
-          <input type="file" id="flyerFile" accept="image/png,image/jpeg,image/webp,image/*" onchange="onFlyerFile(event)">
-        </div>
-        <img id="flyerPreviewAdmin" class="admin-preview" alt="Vista previa flyer">
-        <div class="img-hint" id="flyerHintAdmin"></div>
-        <button class="btn" onclick="saveFlyerImage()">Guardar flyer</button>
-        <button class="btn btn-secondary" onclick="resetFlyerImage()">Quitar flyer</button>
-      </div>
-    </div>
-
-    <!-- 4. Redes / iconos -->
     <div class="tool-item" id="admSocial">
       <button type="button" class="tool-item-head" onclick="toggleAdminTool('admSocial')">
         <span>🔗 Iconos y enlaces del encabezado
@@ -783,7 +700,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span class="icon">🛒</span>Carrito
     <span class="cart-badge" id="cartBadge">0</span>
   </button>
-  <button id="navHerramientas" onclick="showSection('herramientas',this)"><span class="icon">✨</span>Herramientas</button>
   <button type="button" class="nav-share" id="navShare" onclick="shareCatalog(event)"><span class="icon">📤</span>Compartir</button>
   <button id="navAdmin" onclick="showSection('admin',this)" style="display:none"><span class="icon">⚙️</span>Panel</button>
 </nav>
