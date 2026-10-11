@@ -27,10 +27,10 @@
 :root{--bg:#0d0d0d;--card:#1a1a1a;--gold:#c9a227;--text:#f5f5f5;--muted:#aaa;--danger:#e74c3c;--success:#27ae60}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:70px;overscroll-behavior:none}
-header{background:linear-gradient(180deg,#1a1a1a,#0d0d0d);padding:12px 16px;text-align:center;border-bottom:1px solid #333;position:sticky;top:0;z-index:100}
-.logo{font-size:28px;font-weight:700;color:var(--gold);letter-spacing:2px}
+header{background:linear-gradient(180deg,#1a1a1a,#0d0d0d);padding:8px 12px 6px;text-align:center;border-bottom:1px solid #333;position:sticky;top:0;z-index:10050}
+.logo{font-size:22px;font-weight:700;color:var(--gold);letter-spacing:1.5px;line-height:1.15}
 .logo span{color:var(--text);font-weight:300}
-.tagline{font-size:11px;color:var(--muted);margin-top:2px}
+.tagline{font-size:10px;color:var(--muted);margin-top:1px;line-height:1.2}
 
 nav{display:flex;justify-content:space-around;background:#111;position:fixed;bottom:0;left:0;right:0;border-top:1px solid #333;z-index:100;padding:8px 0 env(safe-area-inset-bottom)}
 nav button{background:none;border:none;color:var(--muted);font-size:10px;padding:6px 2px;flex:1;cursor:pointer;position:relative;transition:color .2s;min-width:0}
@@ -40,9 +40,17 @@ nav button.nav-share{
   animation:shareNavPulse 1.6s ease-in-out infinite;
 }
 nav button.nav-share span.icon{filter:none}
+nav button.nav-flyer{
+  color:var(--gold);font-weight:800;
+  animation:flyerNavPulse 1.8s ease-in-out infinite;
+}
 @keyframes shareNavPulse{
   0%,100%{color:var(--gold);transform:scale(1)}
   50%{color:#e8c84a;transform:scale(1.06)}
+}
+@keyframes flyerNavPulse{
+  0%,100%{color:var(--gold);transform:scale(1)}
+  50%{color:#fff;transform:scale(1.05)}
 }
 nav button span.icon{display:block;font-size:22px;margin-bottom:2px;transition:transform .25s}
 nav button.pulse span.icon{animation:navPulse .6s ease}
@@ -67,11 +75,11 @@ nav button.has-items{color:var(--gold)}
   80%{transform:rotate(4deg) scale(1.04)}
 }
 
-.section{display:none;padding:10px 8px;max-width:1400px;margin:0 auto}
+.section{display:none;padding:8px 8px;max-width:1400px;margin:0 auto}
 .section.active{display:block}
 h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #333;padding-bottom:6px}
 
-.tip-bar{background:linear-gradient(90deg,#1a2a1a,#1a1a1a);border:1px solid #2a4a2a;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px;animation:fadeIn .4s ease}
+.tip-bar{background:linear-gradient(90deg,#1a2a1a,#1a1a1a);border:1px solid #2a4a2a;border-radius:8px;padding:5px 8px;margin-bottom:6px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;animation:fadeIn .4s ease;line-height:1.25}
 .tip-bar strong{color:var(--gold)}
 .tip-bar button{margin-left:auto;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
@@ -79,11 +87,40 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
 .note-bar{background:var(--card);border:1px solid #333;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--muted);line-height:1.45;text-align:center}
 .note-bar strong{color:var(--gold)}
 
-.search-bar{display:flex;gap:8px;margin-bottom:12px}
-.search-bar input{flex:1;background:var(--card);border:1px solid #333;color:var(--text);padding:10px 12px;border-radius:8px;font-size:15px}
-.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;-webkit-overflow-scrolling:touch}
-.filters button{background:var(--card);border:1px solid #333;color:var(--muted);padding:6px 12px;border-radius:20px;font-size:13px;white-space:nowrap;cursor:pointer}
-.filters button.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.catalog-sticky{
+  position:-webkit-sticky;position:sticky;
+  top:72px;z-index:10040;
+  background:#0d0d0d;
+  padding:8px 8px 10px;
+  margin:0 -8px 6px;
+  border-bottom:1px solid #333;
+  /* solo ~12px hacia arriba para cerrar el hueco, sin tapar el logo */
+  box-shadow:0 -14px 0 0 #0d0d0d,0 8px 16px rgba(0,0,0,.75);
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+}
+.search-bar{display:flex;gap:6px;margin-bottom:5px}
+.search-bar input{
+  flex:1;background:#1a1a1a;border:1px solid #3a3a3a;color:var(--text);
+  padding:7px 12px;border-radius:18px;font-size:13px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.search-bar input:focus{
+  outline:none;border-color:var(--gold);
+  box-shadow:0 0 0 2px rgba(201,162,39,.28);
+}
+.filters{display:flex;gap:5px;overflow-x:auto;overflow-y:hidden;padding-bottom:1px;margin-bottom:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-webkit-transform:translateZ(0)}
+.filters::-webkit-scrollbar{display:none}
+.filters button{
+  background:#1a1a1a;border:1px solid #333;color:var(--muted);
+  padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600;
+  white-space:nowrap;cursor:pointer;flex-shrink:0;
+  transition:transform .12s,background .15s,border-color .15s,color .15s;
+}
+.filters button:active{transform:scale(.95)}
+.filters button.active{
+  background:var(--gold);color:#000;border-color:var(--gold);
+}
 .filter-select{
   background:var(--card);border:1px solid #333;color:var(--muted);
   padding:6px 10px;border-radius:20px;font-size:13px;cursor:pointer;
@@ -117,8 +154,8 @@ h2{color:var(--gold);font-size:18px;margin-bottom:12px;border-bottom:1px solid #
   width:100%;border:none;padding:12px 6px;border-radius:8px;font-size:15px;font-weight:700;
 }
 @keyframes addPulse{
-  0%,100%{box-shadow:0 2px 8px rgba(201,162,39,.3);transform:scale(1)}
-  50%{box-shadow:0 4px 16px rgba(201,162,39,.55);transform:scale(1.03)}
+  0%,100%{box-shadow:0 2px 8px rgba(201,162,39,.3)}
+  50%{box-shadow:0 4px 16px rgba(201,162,39,.55)}
 }
 
 /* Carrito con imagen */
@@ -434,18 +471,19 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 
 
 
-.header-top{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:nowrap;max-width:100%}
+.header-top{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap;max-width:100%}
 .header-top .logo{font-size:22px;letter-spacing:1px;white-space:nowrap;flex-shrink:0}
 @media (min-width:400px){.header-top .logo{font-size:26px;letter-spacing:2px}}
 .header-top .logo{margin:0}
 .social-icons{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .social-icons a{
-  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:#1a1a1a;border:1px solid var(--gold);text-decoration:none;font-size:16px;
-  transition:transform .15s,background .15s;line-height:1;
+  width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:#1a1a1a;border:1px solid var(--gold);text-decoration:none;font-size:13px;
+  transition:transform .15s,background .15s;line-height:1;overflow:hidden;
 }
+.social-icons a img{width:100%;height:100%;object-fit:cover;display:block}
 .social-icons a:active{transform:scale(.92);background:var(--gold)}
-.social-icons a img{width:20px;height:20px;object-fit:contain;display:block}
+#socialIcons a img{width:22px;height:22px;border-radius:50%;object-fit:cover;display:block}
 .social-admin-row .ico-prev{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px;background:#111;border-radius:6px}
 .social-admin-row .upload-ico{font-size:12px;color:var(--gold);cursor:pointer;margin:6px 0;display:inline-block}
 .social-admin-row{
@@ -487,11 +525,13 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span>👆 Escoge el perfume → <strong>Pedir</strong> → <strong>🛒 Carrito</strong> → envía el pedido por WhatsApp</span>
     <button type="button" onclick="dismissTip()" aria-label="Cerrar">×</button>
   </div>
-  <div class="search-bar">
-    <input type="text" id="search" placeholder="Buscar perfume..." oninput="renderCatalog()">
-  </div>
-  <div class="filters" id="filterBar">
-    <button class="active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
+  <div class="catalog-sticky" id="catalogSticky">
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="🔍 Buscar perfume..." oninput="renderCatalog()">
+    </div>
+    <div class="filters" id="filterBar">
+      <button class="active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
+    </div>
   </div>
   <div class="grid" id="catalogGrid"><div class="loading">Cargando catálogo...</div></div>
 </section>
@@ -725,6 +765,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <span class="icon">🛒</span>Carrito
     <span class="cart-badge" id="cartBadge">0</span>
   </button>
+  <button type="button" class="nav-flyer" id="navFlyer" onclick="downloadCatalogFlyer()"><span class="icon">🖼️</span>Flyer</button>
   <button type="button" class="nav-share" id="navShare" onclick="shareCatalog(event)"><span class="icon">📤</span>Compartir</button>
   <button id="navAdmin" onclick="showSection('admin',this)" style="display:none"><span class="icon">⚙️</span>Panel</button>
 </nav>
@@ -2758,6 +2799,215 @@ function resetFlyerImage() {
   if (hint) hint.textContent = "";
   refreshFlyerUserView();
   toast("Flyer eliminado");
+}
+
+
+function syncStickyTop() {
+  var h = document.querySelector("header");
+  var s = document.getElementById("catalogSticky");
+  if (h && s) {
+    var hh = h.offsetHeight;
+    /* 2px de solape con el header = cero hueco */
+    s.style.top = Math.max(0, hh - 2) + "px";
+    s.style.boxShadow = "0 -16px 0 0 #0d0d0d, 0 8px 16px rgba(0,0,0,.75)";
+  }
+}
+window.addEventListener("resize", syncStickyTop);
+window.addEventListener("load", syncStickyTop);
+setTimeout(syncStickyTop, 100);
+setTimeout(syncStickyTop, 500);
+
+
+/* ===== Flyer automático (imagen PNG) de todo el catálogo por género ===== */
+function downloadCatalogFlyer() {
+  try {
+    toast("Generando flyer…");
+    setTimeout(function() {
+      var ok = buildAndDownloadFlyer();
+      if (!ok) toast("No se pudo crear el flyer");
+    }, 80);
+  } catch (e) {
+    console.error(e);
+    toast("Error al crear el flyer");
+  }
+}
+
+function buildAndDownloadFlyer() {
+  var list = (products || []).slice();
+  if (!list.length) {
+    toast("No hay perfumes en el catálogo");
+    return false;
+  }
+  list.sort(function(a, b) {
+    return (a.name || "").localeCompare(b.name || "", "es");
+  });
+
+  function gOf(p) {
+    if (typeof genderFromTags === "function") {
+      normalizeProductTags(p);
+      return genderFromTags(p.tags || []) || p.gender || "unisex";
+    }
+    return p.gender || "unisex";
+  }
+
+  var cab = list.filter(function(p){ return gOf(p) === "caballero"; });
+  var dam = list.filter(function(p){ return gOf(p) === "dama"; });
+  var uni = list.filter(function(p){ return gOf(p) === "unisex"; });
+
+  var W = 1080;
+  var margin = 48;
+  var colGap = 28;
+  var colW = (W - margin * 2 - colGap * 2) / 3;
+  var headerH = 220;
+  var footerH = 90;
+  var lineH = 22;
+  var titleH = 36;
+  var maxRows = Math.max(cab.length, dam.length, uni.length, 1);
+  var bodyH = titleH + 12 + maxRows * lineH + 24;
+  var H = headerH + bodyH + footerH;
+
+  var canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  var ctx = canvas.getContext("2d");
+
+  /* Fondo crema */
+  ctx.fillStyle = "#fcf7ec";
+  ctx.fillRect(0, 0, W, H);
+
+  /* Bordes dorados decorativos */
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(18, 18, W - 36, H - 36);
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(28, 28, W - 56, H - 56);
+
+  /* Logo circular L&R */
+  var cx = W / 2, cy = 95;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 52, 0, Math.PI * 2);
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 44, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "#c9a227";
+  ctx.font = "bold 36px Helvetica, Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("L&R", cx, cy + 2);
+
+  /* Títulos */
+  ctx.fillStyle = "#2d281e";
+  ctx.font = "bold 22px Helvetica, Arial, sans-serif";
+  ctx.fillText("PERFUMES L&R", cx, 168);
+  ctx.fillStyle = "#c9a227";
+  ctx.font = "bold 28px Helvetica, Arial, sans-serif";
+  ctx.fillText("SOMOS FABRICANTES", cx, 200);
+  ctx.fillStyle = "#6b5e45";
+  ctx.font = "14px Helvetica, Arial, sans-serif";
+  ctx.fillText("Réplicas 1.1 Premium  ·  30 · 60 · 120 ml  ·  Catálogo completo", cx, 222);
+
+  /* Línea separadora */
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(margin, headerH - 8);
+  ctx.lineTo(W - margin, headerH - 8);
+  ctx.stroke();
+
+  /* 3 columnas */
+  var cols = [
+    { title: "CABALLERO", items: cab, x: margin, color: "#2980b9" },
+    { title: "DAMA", items: dam, x: margin + colW + colGap, color: "#9b59b6" },
+    { title: "UNISEX", items: uni, x: margin + (colW + colGap) * 2, color: "#16a085" }
+  ];
+
+  var boxTop = headerH + 8;
+  var boxH = bodyH - 16;
+
+  cols.forEach(function(col) {
+    var x = col.x;
+    /* caja */
+    ctx.fillStyle = "#fffef9";
+    ctx.strokeStyle = "#c9a227";
+    ctx.lineWidth = 2;
+    roundRect(ctx, x, boxTop, colW, boxH, 12);
+    ctx.fill();
+    ctx.stroke();
+
+    /* título columna */
+    ctx.fillStyle = col.color;
+    ctx.font = "bold 16px Helvetica, Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(col.title, x + colW / 2, boxTop + 26);
+
+    ctx.strokeStyle = "#e8d9a8";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + 16, boxTop + 36);
+    ctx.lineTo(x + colW - 16, boxTop + 36);
+    ctx.stroke();
+
+    var y = boxTop + 56;
+    ctx.textAlign = "left";
+    ctx.font = "13px Helvetica, Arial, sans-serif";
+    col.items.forEach(function(p) {
+      var name = (p.name || "").toUpperCase();
+      var agot = !!p.agotado;
+      /* bullet */
+      ctx.fillStyle = "#c9a227";
+      ctx.beginPath();
+      ctx.arc(x + 14, y - 4, 3, 0, Math.PI * 2);
+      ctx.fill();
+      /* nombre */
+      ctx.fillStyle = agot ? "#999" : "#2d281e";
+      var maxW = colW - 28;
+      var label = name;
+      if (agot) label = name + "  · AGOTADO";
+      /* truncate if needed */
+      while (ctx.measureText(label).width > maxW && label.length > 4) {
+        label = label.slice(0, -1);
+      }
+      if (label !== name && label !== name + "  · AGOTADO") label = label.slice(0, -1) + "…";
+      ctx.fillText(label, x + 22, y);
+      y += lineH;
+    });
+  });
+
+  /* Pie */
+  var fy = H - 50;
+  ctx.fillStyle = "#c9a227";
+  ctx.font = "bold 16px Helvetica, Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("PERFUMES L&R  ·  Fabricantes de esencias 1.1", cx, fy);
+  ctx.fillStyle = "#6b5e45";
+  ctx.font = "13px Helvetica, Arial, sans-serif";
+  var wa = (config && config.wa) ? ("WhatsApp: +" + String(config.wa).replace(/^\+/, "")) : "";
+  var total = list.length;
+  ctx.fillText((wa ? wa + "  ·  " : "") + total + " aromas en catálogo", cx, fy + 24);
+
+  /* Descargar */
+  var dataUrl = canvas.toDataURL("image/png");
+  var a = document.createElement("a");
+  a.href = dataUrl;
+  a.download = "Flyer_Catalogo_Perfumes_LR.png";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast("Flyer listo · " + total + " perfumes");
+  return true;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
 }
 
 
