@@ -650,11 +650,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
           </select>
           <button type="button" class="btn" style="width:auto;margin:0;padding:10px 12px;white-space:nowrap" onclick="addSelectedTagToProduct()">Agregar</button>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-          <input type="text" id="pNewTag" placeholder="Crear etiqueta nueva…" style="margin:0;flex:1">
-          <button type="button" class="btn-secondary btn" style="width:auto;margin:0;padding:10px 12px;white-space:nowrap;background:#333;color:#fff" onclick="addTagFromProductForm()">+ Crear</button>
-        </div>
-        <p style="font-size:11px;color:var(--muted);margin:-2px 0 10px">Ejemplo: Dama + Más vendido + Cumpleaños. El género del perfume también es una etiqueta.</p>
+        <p style="font-size:11px;color:var(--muted);margin:0 0 10px">Elige de la lista (puedes varias). Para crear o cambiar colores ve a <strong>Etiquetas del catálogo</strong>.</p>
         <button class="btn" onclick="saveProduct()">Guardar perfume</button>
         <button class="btn btn-secondary" onclick="clearForm()">Limpiar / Nuevo</button>
 
@@ -1133,35 +1129,7 @@ function removePendingTag(id) {
 function getSelectedProductTags() {
   return pendingTags.slice();
 }
-function addTagFromProductForm() {
-  var el = document.getElementById("pNewTag");
-  var label = ((el && el.value) || "").trim();
-  if (!label) return toast("Escribe el nombre de la etiqueta");
-  var id = label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"") || ("tag_" + Date.now());
-  var list = getExtraTags().map(function(x){ return Object.assign({}, x); });
-  if (list.some(function(t){ return t.id === id; })) {
-    if (pendingTags.indexOf(id) === -1) pendingTags.push(id);
-    if (el) el.value = "";
-    renderPendingTagChips();
-    fillTagSelectOptions("pTagSelect", pendingTags);
-    toast("Esa etiqueta ya existía · la agregamos al perfume");
-    return;
-  }
-  var colors = ["#c9a227", "#e91e63", "#e67e22", "#9b59b6", "#3498db", "#1abc9c"];
-  list.push({ id: id, label: label, color: colors[list.length % colors.length] });
-  var data = Object.assign({}, config || {});
-  data.extraTags = list;
-  data.wa = data.wa || (config && config.wa) || "";
-  db.ref("config").set(data);
-  config = data;
-  if (el) el.value = "";
-  if (pendingTags.indexOf(id) === -1) pendingTags.push(id);
-  renderPendingTagChips();
-  fillTagSelectOptions("pTagSelect", pendingTags);
-  renderFilterBar();
-  renderTagsAdmin();
-  toast("Etiqueta creada y agregada");
-}
+
 function setProductTagsQuick(id, tagId) {
   /* Agrega etiqueta (multi) desde lista admin; vacío = no hace nada especial */
   var p = products.find(function(x){ return sameId(x.id, id); });
@@ -1971,14 +1939,39 @@ function renderTagsAdmin() {
     return;
   }
   box.innerHTML = list.map(function(t, i) {
-    return '<div class="social-admin-row" style="margin-bottom:8px">' +
-      '<span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:' + (t.color||"#c9a227") + ';margin-right:8px;vertical-align:middle"></span>' +
-      '<input type="text" value="' + escapeHtml(t.label).replace(/"/g, "&quot;") + '" style="margin:0 0 6px;width:calc(100% - 30px)" onchange="renameExtraTag(' + i + ', this.value)">' +
+    var col = t.color || "#c9a227";
+    return '<div class="social-admin-row" style="margin-bottom:10px">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+        '<input type="color" value="' + col + '" title="Color" style="width:42px;height:36px;padding:2px;border:1px solid #333;border-radius:6px;background:#111;cursor:pointer;flex-shrink:0" onchange="recolorExtraTag(' + i + ', this.value)">' +
+        '<input type="text" value="' + escapeHtml(t.label).replace(/"/g, "&quot;") + '" style="margin:0;flex:1" onchange="renameExtraTag(' + i + ', this.value)" placeholder="Nombre">' +
+      '</div>' +
       '<div class="row-actions">' +
         '<button type="button" class="btn-danger" style="background:var(--danger);color:#fff;padding:6px 10px;font-size:12px" onclick="removeExtraTag(' + i + ')">Borrar</button>' +
       '</div></div>';
   }).join("") +
   '<button type="button" class="btn btn-secondary" style="background:#333;color:#fff;margin-top:8px" onclick="restoreDefaultTags()">Restaurar etiquetas de fábrica</button>';
+}
+function recolorExtraTag(i, color) {
+  color = (color || "").trim() || "#c9a227";
+  var list = getExtraTags().map(function(x){ return Object.assign({}, x); });
+  if (!list[i]) return;
+  list[i].color = color;
+  var data = Object.assign({}, config || {});
+  data.extraTags = list;
+  data.wa = data.wa || (config && config.wa) || "";
+  if (config && config.availableSizes) data.availableSizes = config.availableSizes;
+  if (config && config.addMode) data.addMode = config.addMode;
+  if (config && config.defaultSize) data.defaultSize = config.defaultSize;
+  if (config && config.socialLinks) data.socialLinks = config.socialLinks;
+  db.ref("config").set(data);
+  config = data;
+  renderTagsAdmin();
+  renderFilterBar();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) {
+    try { renderCatalog(); } catch (e) {}
+  }
+  if (document.getElementById("adminProducts")) renderAdminProducts();
+  toast("Color actualizado");
 }
 function renameExtraTag(i, label) {
   label = (label || "").trim();
