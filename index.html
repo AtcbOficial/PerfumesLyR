@@ -300,6 +300,26 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
   pointer-events:none;z-index:2;
   background:rgba(0,0,0,.35);
 }
+.in-cart-qty{
+  position:absolute;bottom:8px;left:8px;z-index:3;
+  background:var(--gold);color:#000;font-size:11px;font-weight:800;
+  padding:3px 8px;border-radius:10px;border:2px solid #fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);pointer-events:none;
+}
+.card-remove{
+  position:absolute;top:8px;left:8px;z-index:4;
+  width:28px;height:28px;border-radius:50%;border:2px solid #fff;
+  background:var(--danger);color:#fff;font-size:16px;font-weight:800;
+  line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.45);padding:0;
+}
+.card-remove:active{transform:scale(.9)}
+.cart-remove{
+  width:28px;height:28px;border-radius:50%;border:none;
+  background:var(--danger);color:#fff;font-size:16px;font-weight:800;
+  cursor:pointer;flex-shrink:0;line-height:1;padding:0;
+}
+.cart-remove:active{transform:scale(.9)}
 .in-cart-seal{
   position:absolute;top:8px;right:8px;z-index:3;
   width:34px;height:34px;border-radius:50%;
@@ -502,24 +522,14 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     <div class="tool-item" id="admOptions">
     <button type="button" class="tool-item-head" onclick="toggleAdminTool('admOptions')">
       <span>⚙️ Opciones del catálogo
-        <small>Cómo pedir · capacidades disponibles</small>
+        <small>Capacidades disponibles</small>
       </span>
       <span class="chev">›</span>
     </button>
     <div class="tool-item-body">
-      <label style="color:var(--gold);margin-bottom:8px">1) Al tocar “Pedir”</label>
-      <label class="admin-check">
-        <input type="radio" name="optAddMode" id="optModeModal" value="modal" onchange="saveCatalogOptions()">
-        <strong>Modal completo</strong> — mensaje + el cliente escoge el tamaño
-      </label>
-      <label class="admin-check">
-        <input type="radio" name="optAddMode" id="optModeDirect" value="direct" onchange="saveCatalogOptions()">
-        <strong>Directo al carrito</strong> — sin modal ni mensajes (de una, con la capacidad por defecto)
-      </label>
-
-      <label style="color:var(--gold);margin:16px 0 8px">2) Capacidades disponibles</label>
+      <label style="color:var(--gold);margin-bottom:8px">Capacidades disponibles</label>
       <p style="font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.45">
-        Marca las que tienes en stock. Si se agotan los de 30 ml, quítalos y el cliente solo ve las que queden. También puedes agregar otras (ej. 50, 100).
+        Marca las que tienes en stock. Si se agotan los de 30 ml, quítalos y el cliente solo verá las que queden en el carrito. También puedes agregar otras (ej. 50, 100).
       </p>
       <div id="optSizesList" style="margin-bottom:8px"></div>
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
@@ -527,7 +537,10 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
         <button type="button" class="btn" style="width:auto;margin:0;padding:12px 14px;white-space:nowrap" onclick="addCustomSize()">+ Agregar</button>
       </div>
 
-      <label style="color:var(--gold);margin:8px 0 6px">3) Capacidad por defecto (modo directo)</label>
+      <label style="color:var(--gold);margin:8px 0 6px">Capacidad al pedir (por defecto)</label>
+      <p style="font-size:11px;color:var(--muted);margin:0 0 6px;line-height:1.4">
+        Cuando el cliente toca <strong>Pedir</strong>, entra al carrito con este tamaño. Luego puede cambiarlo en el carrito.
+      </p>
       <select id="optDefaultSize" onchange="saveCatalogOptions()" style="margin-bottom:12px"></select>
       <button type="button" class="btn" onclick="saveCatalogOptions()">Guardar opciones</button>
     </div>
@@ -1173,6 +1186,30 @@ function removeProductTagQuick(id, tagId) {
   toast("Etiqueta quitada");
 }
 
+function cartQtyForProduct(id) {
+  var n = 0;
+  (cart || []).forEach(function(c) {
+    if (sameId(c.id, id)) n += Number(c.qty) || 0;
+  });
+  return n;
+}
+function removeProductFromCart(id) {
+  cart = (cart || []).filter(function(c){ return !sameId(c.id, id); });
+  if (typeof saveCart === "function") saveCart();
+  updateCartBadge();
+  renderCart();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
+  toast("Quitado del carrito");
+}
+function removeCartItem(i) {
+  if (!cart[i]) return;
+  cart.splice(i, 1);
+  if (typeof saveCart === "function") saveCart();
+  updateCartBadge();
+  renderCart();
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) renderCatalog();
+  toast("Perfume eliminado");
+}
 function productInCart(id) {
   return (cart || []).some(function(c){ return sameId(c.id, id); });
 }
@@ -1194,7 +1231,11 @@ function renderCatalog() {
   }
   grid.innerHTML = list.map(function(p) {
     var seal = p.agotado ? '<div class="soldout-seal"><span>AGOTADO</span></div>' : '';
-    var cartMark = (!p.agotado && productInCart(p.id)) ? '<div class="in-cart-seal" title="Ya está en el carrito">🛒</div>' : '';
+    var qtyIn = cartQtyForProduct(p.id);
+    var cartMark = (!p.agotado && qtyIn > 0)
+      ? '<div class="in-cart-seal" title="En el carrito">🛒</div><div class="in-cart-qty">x' + qtyIn + '</div>' +
+        '<button type="button" class="card-remove" title="Quitar del carrito" onclick="event.stopPropagation();removeProductFromCart(\'' + String(p.id).replace(/'/g, '') + '\')">×</button>'
+      : '';
     var safeName = escapeHtml(p.name);
     var safeGender = escapeHtml(p.gender || "");
     var btn = p.agotado
@@ -1255,22 +1296,8 @@ function openAddModal(id, fromBtn) {
     return;
   }
   if (p.agotado) return;
-  /* Modo directo: sin modal, mete al carrito de una + animación al carrito */
-  if (getAddMode() === "direct") {
-    addToCartDirect(id, getDefaultSize(), fromBtn || null);
-    return;
-  }
-  pendingProductId = id;
-  selectedSize = getDefaultSize();
-  document.getElementById("modalTitle").textContent = p.name || "Pedir";
-  rebuildSizeButtons();
-  var hint = document.getElementById("modalHint");
-  if (hint) {
-    hint.style.display = "block";
-    hint.textContent = "Escoge el tamaño (" + sizesHintText() + ")";
-  }
-  var modal = document.getElementById("addModal");
-  if (modal) modal.classList.add("show");
+  /* Siempre directo al carrito; el cliente cambia ml en el carrito */
+  addToCartDirect(id, getDefaultSize(), fromBtn || null);
 }
 function closeModal() {
   document.getElementById("addModal").classList.remove("show");
@@ -1392,11 +1419,11 @@ function renderCart() {
     var sizeOpts = sizes.map(function(s) {
       return '<option value="' + s + '"' + (Number(c.size) === Number(s) ? " selected" : "") + ">" + s + " ml</option>";
     }).join("");
-    /* si el tamaño actual no está en disponibles, igual mostrarlo */
     if (sizes.indexOf(Number(c.size)) === -1 && c.size) {
       sizeOpts = '<option value="' + c.size + '" selected>' + c.size + " ml</option>" + sizeOpts;
     }
-    return '<div class="cart-item">' +
+    return '<div class="cart-item" style="position:relative">' +
+      '<button type="button" class="cart-remove" style="position:absolute;top:6px;right:6px;z-index:2" title="Eliminar" onclick="removeCartItem(' + i + ')">×</button>' +
       '<img src="' + imgSrc(img) + '" alt="' + escapeHtml(c.name) + '" onerror="this.src=\'' + imgFallback() + '\'">' +
       '<div class="info"><strong>' + escapeHtml(c.name) + '</strong>' +
       '<select class="cart-size-sel" onchange="changeCartSize(' + i + ', this.value)" title="Cambiar capacidad">' + sizeOpts + '</select>' +
@@ -2028,7 +2055,7 @@ function removeExtraTag(i) {
 
 
 function getAddMode() {
-  return (config && config.addMode === "direct") ? "direct" : "modal";
+  return "direct";
 }
 function sizesHintText() {
   return getAvailableSizes().join(" · ") + " ml";
@@ -2036,8 +2063,7 @@ function sizesHintText() {
 function saveCatalogOptions() {
   var data = Object.assign({}, config || {});
   data.wa = (document.getElementById("waNumber") && document.getElementById("waNumber").value.trim()) || data.wa || "";
-  var modeEl = document.getElementById("optModeDirect");
-  data.addMode = (modeEl && modeEl.checked) ? "direct" : "modal";
+  data.addMode = "direct";
   var sizes = [];
   document.querySelectorAll("#optSizesList input[type=checkbox]").forEach(function(cb) {
     if (cb.checked) {
@@ -2049,15 +2075,16 @@ function saveCatalogOptions() {
   if (!sizes.length) {
     toast("Debe quedar al menos una capacidad");
     applyCatalogOptionsUI();
-    renderFilterBar();
-    renderTagsAdmin();
-    renderProductTagsUI();
     return;
   }
   data.availableSizes = sizes;
   var def = Number((document.getElementById("optDefaultSize") || {}).value || sizes[0]);
   if (sizes.indexOf(def) === -1) def = sizes[0];
   data.defaultSize = def;
+  if (config && config.extraTags) data.extraTags = config.extraTags;
+  if (config && config.socialLinks) data.socialLinks = config.socialLinks;
+  if (config && config.bannerImage) data.bannerImage = config.bannerImage;
+  if (config && config.adminPassHash) data.adminPassHash = config.adminPassHash;
   db.ref("config").set(data);
   config = data;
   applyCatalogOptionsUI();
@@ -2102,11 +2129,6 @@ function removeSize(n) {
   toast(n + " ml quitado");
 }
 function applyCatalogOptionsUI() {
-  var mode = getAddMode();
-  var m1 = document.getElementById("optModeModal");
-  var m2 = document.getElementById("optModeDirect");
-  if (m1) m1.checked = mode === "modal";
-  if (m2) m2.checked = mode === "direct";
   var sizes = getAvailableSizes();
   var box = document.getElementById("optSizesList");
   if (box) {
