@@ -1472,12 +1472,13 @@ function sendWhatsApp() {
     return;
   }
   var lines = [];
-  lines.push("LISTA DE PERFUMES:");
+  lines.push("PEDIDO:");
   lines.push("");
   cart.forEach(function(c) {
-    lines.push("• " + c.name + " — " + c.size + " ml Premium × " + c.qty);
+    var sizeStr = String(c.size).replace(/\s*ml$/i, "") + "ml";
+    lines.push("• " + c.qty + " " + c.name + " " + sizeStr);
+    lines.push("");
   });
-  lines.push("");
   try {
     var links = getSocialLinks();
     links.forEach(function(item) {
@@ -1486,14 +1487,17 @@ function sendWhatsApp() {
       if (href && href !== "#") lines.push(href);
     });
   } catch (e) {}
-  var texto = lines.join("\n");
+  var texto = lines.join("\n").replace(/\n+$/, "");
   var url = "https://wa.me/" + (config.wa || "584120000000") + "?text=" + encodeURIComponent(texto);
   window.open(url, "_blank");
 
   cart = [];
   updateCartBadge();
   renderCart();
-  toast("Lista enviada · carrito vacío");
+  if (document.getElementById("catalogo") && document.getElementById("catalogo").classList.contains("active")) {
+    try { renderCatalog(); } catch (e2) {}
+  }
+  toast("Pedido enviado · carrito vacío");
 }
 
 /* ---------- Admin: agregar / editar / borrar con imagen ---------- */
