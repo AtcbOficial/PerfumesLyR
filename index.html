@@ -521,10 +521,6 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 <div id="toast" class="toast"></div>
 
 <section id="catalogo" class="section active">
-  <div class="tip-bar" id="tipBar">
-    <span>👆 Escoge el perfume → <strong>Pedir</strong> → <strong>🛒 Carrito</strong> → envía el pedido por WhatsApp</span>
-    <button type="button" onclick="dismissTip()" aria-label="Cerrar">×</button>
-  </div>
   <div class="catalog-sticky" id="catalogSticky">
     <div class="search-bar">
       <input type="text" id="search" placeholder="🔍 Buscar perfume..." oninput="renderCatalog()">
@@ -833,16 +829,6 @@ let config = { wa: "584120000000" };
 
 let pendingProductId = null;
 let selectedSize = 30;
-
-function dismissTip() {
-  var el = document.getElementById("tipBar");
-  if (el) el.style.display = "none";
-  localStorage.setItem("lr_tip_dismissed", "1");
-}
-if (localStorage.getItem("lr_tip_dismissed") === "1") {
-  var tip = document.getElementById("tipBar");
-  if (tip) tip.style.display = "none";
-}
 
 function loadFromFirebase() {
   db.ref("products").on("value", function(snap) {
