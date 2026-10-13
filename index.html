@@ -508,7 +508,7 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 <div class="welcome-layer" id="welcomeLayer" role="dialog" aria-label="Bienvenida">
   <div class="welcome-card">
     <button type="button" class="welcome-close" onclick="closeWelcome(event)" ontouchend="closeWelcome(event)" aria-label="Cerrar">✕</button>
-    <img id="welcomeImg" src="images/banner_bienvenida.png" alt="Perfumes L&R Fabricantes — BUENOS LOTES VARIADOS DE PERFUMES CALIDAD 1.1 para revendedores" onerror="this.style.display='none';document.getElementById('welcomeFallback').style.display='block';">
+    <img id="welcomeImg" src="" alt="Perfumes L&R Fabricantes — BUENOS LOTES VARIADOS DE PERFUMES CALIDAD 1.1 para revendedores" style="display:none" onerror="this.style.display='none';document.getElementById('welcomeFallback').style.display='block';">
     <div class="welcome-fallback" id="welcomeFallback">
       <h2>PERFUMES L&R</h2>
       <p><strong style="color:#c9a227">SOMOS FABRICANTES, PRECIOS AL MAYOR O DETAL</strong></p>
@@ -1774,27 +1774,40 @@ function deleteProduct(id) {
 }
 
 var pendingBannerData = null;
-var DEFAULT_BANNER = "images/banner_bienvenida.png";
+var DEFAULT_BANNER = ""; /* sin archivo local: usa Firebase o texto de respaldo */
 
 function applyWelcomeBanner() {
   var img = document.getElementById("welcomeImg");
   if (!img) return;
   var src = (config && config.welcomeBanner) ? config.welcomeBanner : DEFAULT_BANNER;
-  img.style.display = "block";
   var fb = document.getElementById("welcomeFallback");
-  if (fb) fb.style.display = "none";
   img.onerror = function() {
     this.style.display = "none";
     if (fb) fb.style.display = "block";
   };
-  img.src = src;
+  if (src) {
+    img.style.display = "block";
+    if (fb) fb.style.display = "none";
+    img.src = src;
+  } else {
+    img.removeAttribute("src");
+    img.style.display = "none";
+    if (fb) fb.style.display = "block";
+  }
   /* Vista previa en admin si está abierto */
   var prev = document.getElementById("bannerPreview");
   var hint = document.getElementById("bannerHint");
   if (prev && !pendingBannerData) {
-    prev.src = src;
-    prev.classList.add("show");
-    if (hint) hint.textContent = (config && config.welcomeBanner) ? "Banner personalizado (guardado en la nube)" : "Banner original del sitio";
+    if (src) {
+      prev.src = src;
+      prev.classList.add("show");
+    } else {
+      prev.classList.remove("show");
+      prev.removeAttribute("src");
+    }
+    if (hint) hint.textContent = (config && config.welcomeBanner)
+      ? "Banner personalizado (guardado en Firebase)"
+      : "Sin banner en la nube — se muestra el texto de respaldo. Súbelo en Admin.";
   }
 }
 
