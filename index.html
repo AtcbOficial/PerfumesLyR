@@ -830,6 +830,17 @@ let config = { wa: "584120000000" };
 let pendingProductId = null;
 let selectedSize = 30;
 
+function showCatalogLoadError(msg) {
+  var grid = document.getElementById("catalogGrid");
+  if (!grid) return;
+  grid.innerHTML = '<div class="empty" style="padding:28px 16px;line-height:1.5">' +
+    '<div style="font-size:28px;margin-bottom:8px">⚠️</div>' +
+    '<strong style="color:var(--gold)">No se pudo cargar el catálogo</strong><br><br>' +
+    '<span style="color:var(--muted);font-size:13px">' + (msg || "Error de conexión con la base de datos.") + '</span><br><br>' +
+    '<button class="btn" style="max-width:220px;margin:0 auto" onclick="location.reload()">Reintentar</button>' +
+    '</div>';
+}
+
 function loadFromFirebase() {
   db.ref("products").on("value", function(snap) {
     var val = snap.val();
@@ -855,6 +866,14 @@ function loadFromFirebase() {
     renderCatalog();
     if (document.getElementById("herramientas") && document.getElementById("herramientas").classList.contains("active")) renderEmpList();
     if (sessionStorage.getItem("lr_admin") === "1") renderAdminProducts();
+  }, function(err) {
+    console.error("Firebase products error:", err);
+    var code = (err && err.code) ? String(err.code) : "";
+    if (code.indexOf("PERMISSION") !== -1 || String(err).indexOf("permission") !== -1) {
+      showCatalogLoadError("Firebase bloqueó la lectura (permission denied). Abre la consola de Firebase → Realtime Database → Rules y permite lectura de products y config.");
+    } else {
+      showCatalogLoadError("Error al conectar con Firebase. Revisa tu internet y vuelve a intentar.");
+    }
   });
   db.ref("config").on("value", function(snap) {
     var val = snap.val();
