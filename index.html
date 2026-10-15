@@ -493,9 +493,174 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
 .social-admin-row .row-actions{display:flex;gap:6px}
 .social-admin-row .row-actions button{flex:1;padding:8px;font-size:12px;border:none;border-radius:6px;cursor:pointer}
 
+
+/* ===== Skins de temporada ===== */
+#skinFx{
+  position:fixed;inset:0;pointer-events:none;z-index:90;overflow:hidden;
+}
+#skinFx .fx-dot{
+  position:absolute;top:-28px;border-radius:50%;opacity:.85;
+  animation:skinFall linear infinite;
+  will-change:transform,opacity;
+  line-height:1;
+}
+@keyframes skinFall{
+  0%{transform:translateY(0) rotate(0deg);opacity:0}
+  8%{opacity:.9}
+  100%{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+/* Botones Pedir y filtros activos: siempre dorado original (no cambian con skin) */
+body[class*="skin-"] .btns button.btn-pedir{
+  background:#c9a227 !important;color:#000 !important;border-color:#c9a227 !important;
+  box-shadow:0 2px 10px rgba(201,162,39,.35) !important;
+}
+body[class*="skin-"] .filters button.active{
+  background:#c9a227 !important;color:#000 !important;border-color:#c9a227 !important;
+}
+
+/* —— Amor y Amistad —— */
+body.skin-valentin{--gold:#e91e63;--card:#1f1218;--bg:#14080e}
+body.skin-valentin header{
+  background:linear-gradient(180deg,#3d1424 0%,#1a0a12 55%,#14080e 100%);
+  border-bottom:2px solid #e91e63;
+  box-shadow:0 4px 20px rgba(233,30,99,.35);
+}
+body.skin-valentin .logo{color:#ff4d8d;text-shadow:0 0 16px rgba(233,30,99,.65),0 0 4px #e91e63}
+body.skin-valentin .tagline{color:#ff80ab}
+body.skin-valentin nav{
+  background:linear-gradient(0deg,#2a1018,#1a0a12);
+  border-top:2px solid #e91e63;
+  box-shadow:0 -4px 18px rgba(233,30,99,.3);
+}
+body.skin-valentin nav button.active{color:#ff4d8d}
+body.skin-valentin .btn{background:#e91e63;color:#fff}
+body.skin-valentin .catalog-sticky{background:#14080e;box-shadow:0 -14px 0 0 #14080e,0 8px 16px rgba(0,0,0,.75)}
+body.skin-valentin .btn-whatsapp{background:#e91e63}
+
+/* —— Madres —— */
+body.skin-madres{--gold:#f48fb1;--card:#1a1216;--bg:#120a10}
+body.skin-madres header{
+  background:linear-gradient(180deg,#3a2030 0%,#1a1018 55%,#120a10 100%);
+  border-bottom:2px solid #f48fb1;
+  box-shadow:0 4px 18px rgba(244,143,177,.3);
+}
+body.skin-madres .logo{color:#f8bbd0;text-shadow:0 0 14px rgba(244,143,177,.55)}
+body.skin-madres .tagline{color:#f48fb1}
+body.skin-madres nav{
+  background:linear-gradient(0deg,#2a1820,#120a10);
+  border-top:2px solid #f48fb1;
+  box-shadow:0 -4px 16px rgba(244,143,177,.28);
+}
+body.skin-madres nav button.active{color:#f8bbd0}
+body.skin-madres .btn{background:#f48fb1;color:#1a0a10}
+body.skin-madres .catalog-sticky{background:#120a10;box-shadow:0 -14px 0 0 #120a10,0 8px 16px rgba(0,0,0,.75)}
+
+/* —— Padres —— */
+body.skin-padres{--gold:#42a5f5;--card:#0f1620;--bg:#080c14}
+body.skin-padres header{
+  background:linear-gradient(180deg,#163048 0%,#0c1828 55%,#080c14 100%);
+  border-bottom:2px solid #42a5f5;
+  box-shadow:0 4px 18px rgba(66,165,245,.3);
+}
+body.skin-padres .logo{color:#64b5f6;text-shadow:0 0 14px rgba(66,165,245,.55)}
+body.skin-padres .tagline{color:#90caf9}
+body.skin-padres nav{
+  background:linear-gradient(0deg,#122030,#080c14);
+  border-top:2px solid #42a5f5;
+  box-shadow:0 -4px 16px rgba(66,165,245,.28);
+}
+body.skin-padres nav button.active{color:#64b5f6}
+body.skin-padres .btn{background:#42a5f5;color:#041018}
+body.skin-padres .catalog-sticky{background:#080c14;box-shadow:0 -14px 0 0 #080c14,0 8px 16px rgba(0,0,0,.75)}
+
+/* —— Halloween —— */
+body.skin-halloween{--gold:#ff6d00;--card:#1a1208;--bg:#0a0604}
+body.skin-halloween header{
+  background:linear-gradient(180deg,#2a1400 0%,#120a04 55%,#0a0604 100%);
+  border-bottom:2px solid #ff6d00;
+  box-shadow:0 4px 22px rgba(255,109,0,.4);
+}
+body.skin-halloween .logo{color:#ff9100;text-shadow:0 0 18px rgba(255,109,0,.7),0 0 6px #ff6d00}
+body.skin-halloween .tagline{color:#ffab40}
+body.skin-halloween nav{
+  background:linear-gradient(0deg,#1a0f05,#0a0604);
+  border-top:2px solid #ff6d00;
+  box-shadow:0 -4px 18px rgba(255,109,0,.35);
+}
+body.skin-halloween nav button.active{color:#ff9100}
+body.skin-halloween .btn{background:#ff6d00;color:#1a0800}
+body.skin-halloween .catalog-sticky{background:#0a0604;box-shadow:0 -14px 0 0 #0a0604,0 8px 16px rgba(0,0,0,.75)}
+body.skin-halloween .card{border-color:#3a2200}
+
+/* —— Black Friday —— */
+body.skin-blackfriday{--gold:#ff1744;--card:#141414;--bg:#000}
+body.skin-blackfriday header{
+  background:linear-gradient(180deg,#1f0508 0%,#0a0a0a 50%,#000 100%);
+  border-bottom:2px solid #ff1744;
+  box-shadow:0 4px 22px rgba(255,23,68,.45);
+}
+body.skin-blackfriday .logo{color:#ff1744;animation:bfBlink 1.4s ease-in-out infinite;text-shadow:0 0 16px rgba(255,23,68,.65)}
+@keyframes bfBlink{0%,100%{opacity:1}50%{opacity:.75}}
+body.skin-blackfriday .tagline{color:#ff5252}
+body.skin-blackfriday nav{
+  background:linear-gradient(0deg,#1a0508,#000);
+  border-top:2px solid #ff1744;
+  box-shadow:0 -4px 18px rgba(255,23,68,.4);
+}
+body.skin-blackfriday nav button.active{color:#ff1744}
+body.skin-blackfriday .btn{background:#ff1744;color:#fff}
+body.skin-blackfriday .catalog-sticky{background:#000;box-shadow:0 -14px 0 0 #000,0 8px 16px rgba(0,0,0,.85)}
+
+/* —— Navidad —— */
+body.skin-navidad{--gold:#e53935;--card:#0f1a12;--bg:#06100a}
+body.skin-navidad header{
+  background:linear-gradient(180deg,#143020 0%,#0a1a10 55%,#06100a 100%);
+  border-bottom:2px solid #c62828;
+  box-shadow:0 4px 20px rgba(46,125,50,.35);
+}
+body.skin-navidad .logo{color:#ffd54f;text-shadow:0 0 16px rgba(255,213,79,.55)}
+body.skin-navidad .logo span{color:#81c784}
+body.skin-navidad .tagline{color:#a5d6a7}
+body.skin-navidad nav{
+  background:linear-gradient(0deg,#0f2a18,#06100a);
+  border-top:2px solid #2e7d32;
+  box-shadow:0 -4px 18px rgba(46,125,50,.3);
+}
+body.skin-navidad nav button.active{color:#ffd54f}
+body.skin-navidad .btn{background:#2e7d32;color:#fff}
+body.skin-navidad .catalog-sticky{background:#06100a;box-shadow:0 -14px 0 0 #06100a,0 8px 16px rgba(0,0,0,.75)}
+body.skin-navidad .card{border-color:#1b5e20}
+
+.skin-pick{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;
+}
+.skin-pick label{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;
+  border:1px solid #333;background:#141414;cursor:pointer;font-size:13px;color:var(--text);
+  margin:0;
+}
+.skin-pick label input{width:auto;margin:0;accent-color:var(--gold)}
+.skin-pick label.active-skin{
+  border-color:var(--gold);background:#1a1810;box-shadow:0 0 0 1px var(--gold);
+}
+.skin-preview-dot{
+  width:14px;height:14px;border-radius:50%;flex-shrink:0;border:1px solid rgba(255,255,255,.25);
+}
+.fly-dot.skin-fly{
+  width:auto;min-width:52px;height:52px;padding:0 8px;font-size:36px;
+  background:transparent;box-shadow:none;color:#fff;border-radius:12px;
+  text-shadow:0 2px 12px rgba(0,0,0,.85),0 0 20px rgba(255,255,255,.25);
+}
+.fly-dot{
+  transition:transform 1.15s cubic-bezier(.2,.7,.2,1),opacity 1.15s ease !important;
+}
+
+
 </style>
 </head>
 <body>
+<div id="skinFx" aria-hidden="true"></div>
+
 <header>
   <div class="header-top">
     <div class="logo" id="logoTap" style="cursor:default;user-select:none">PERFUMES <span>L&R</span></div>
@@ -571,6 +736,30 @@ input,select,textarea{width:100%;background:var(--card);border:1px solid #333;co
     </div>
 
     <!-- 2. Banner -->
+
+    <!-- Apariencia / Skin -->
+    <div class="tool-item" id="admSkin">
+      <button type="button" class="tool-item-head" onclick="toggleAdminTool('admSkin')">
+        <span>🎨 Apariencia / Skin de temporada
+          <small>Colores, fondos y efectos visuales (los mensajes los editas tú)</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+      <div class="tool-item-body">
+        <div class="info-box">Elige el look del catálogo. Se aplica al instante para todos los visitantes.</div>
+        <div class="skin-pick" id="skinPick">
+          <label data-skin="normal"><input type="radio" name="skinSel" value="normal" onchange="previewSkin(this.value)"> <span class="skin-preview-dot" style="background:#c9a227"></span> Normal</label>
+          <label data-skin="valentin"><input type="radio" name="skinSel" value="valentin" onchange="previewSkin(this.value)"> <span class="skin-preview-dot" style="background:#e91e63"></span> Amor y Amistad</label>
+          <label data-skin="madres"><input type="radio" name="skinSel" value="madres" onchange="previewSkin(this.value)"> <span class="skin-preview-dot" style="background:#f48fb1"></span> Día de las Madres</label>
+          <label data-skin="padres"><input type="radio" name="skinSel" value="padres" onchange="previewSkin(this.value)"> <span class="skin-preview-dot" style="background:#42a5f5"></span> Día del Padre</label>
+          <label data-skin="halloween"><input type="radio" name="skinSel" value="halloween" onchange="previewSkin(this.value)"> <span class="skin-preview-dot" style="background:#ff6d00"></span> Halloween</label>
+          <label data-skin="blackfriday"><input type="radio" name="skinSel" value="blackfriday" onchange="previewSkin(this.value)"> <span class="skin-preview-dot" style="background:#ff1744"></span> Black Friday</label>
+          <label data-skin="navidad"><input type="radio" name="skinSel" value="navidad" onchange="previewSkin(this.value)"> <span class="skin-preview-dot" style="background:#e53935"></span> Navidad</label>
+        </div>
+        <button class="btn" onclick="saveSkin()">Guardar apariencia</button>
+      </div>
+    </div>
+
     <div class="tool-item" id="admOptions">
     <button type="button" class="tool-item-head" onclick="toggleAdminTool('admOptions')">
       <span>⚙️ Opciones del catálogo
@@ -841,6 +1030,98 @@ function showCatalogLoadError(msg) {
     '</div>';
 }
 
+
+/* ===== Skins de temporada ===== */
+var SKIN_FX = {
+  normal: { emoji: null, colors: null, count: 0, fly: "+1" },
+  valentin: { emoji: ["❤️","💕","💗","💖","✨","💘"], colors: ["#e91e63","#ff80ab","#f48fb1","#fff"], count: 32, fly: "😍" },
+  madres: { emoji: ["🌸","💐","🌷","🌺","✨","🌹"], colors: ["#f48fb1","#f8bbd0","#ce93d8","#fff"], count: 28, fly: "💐" },
+  padres: { emoji: ["👔","⭐","💙","🏆","✨","🧢"], colors: ["#42a5f5","#90caf9","#64b5f6","#fff"], count: 26, fly: "⭐" },
+  halloween: { emoji: ["🎃","🦇","👻","💀","🧙","✨"], colors: ["#ff6d00","#7b1fa2","#ff9100","#fff"], count: 34, fly: "💀" },
+  blackfriday: { emoji: ["⚡","🔥","💥","✨","💸","🏷️"], colors: ["#ff1744","#ff5252","#fff","#ff8a80"], count: 36, fly: "⚡" },
+  navidad: { emoji: ["❄️","🎄","⭐","🎅","🎁","✨"], colors: ["#e53935","#43a047","#ffd54f","#fff"], count: 38, fly: "🎄" }
+};
+
+function getSkin() {
+  var s = (config && config.skin) ? String(config.skin) : "normal";
+  if (!SKIN_FX.hasOwnProperty(s)) s = "normal";
+  return s;
+}
+
+function applySkin(name) {
+  if (!name) name = getSkin();
+  if (!SKIN_FX.hasOwnProperty(name)) name = "normal";
+  var body = document.body;
+  var classes = body.className.split(/\s+/).filter(function(c) {
+    return c && c.indexOf("skin-") !== 0;
+  });
+  if (name !== "normal") classes.push("skin-" + name);
+  body.className = classes.join(" ");
+  renderSkinFx(name);
+  syncSkinPickUI(name);
+}
+
+function previewSkin(name) {
+  applySkin(name);
+}
+
+function syncSkinPickUI(name) {
+  var box = document.getElementById("skinPick");
+  if (!box) return;
+  box.querySelectorAll("label").forEach(function(lab) {
+    var v = lab.getAttribute("data-skin");
+    lab.classList.toggle("active-skin", v === name);
+    var inp = lab.querySelector("input");
+    if (inp) inp.checked = (v === name);
+  });
+}
+
+function renderSkinFx(name) {
+  var layer = document.getElementById("skinFx");
+  if (!layer) return;
+  layer.innerHTML = "";
+  var conf = SKIN_FX[name];
+  if (!conf) return;
+  var n = conf.count || 12;
+  for (var i = 0; i < n; i++) {
+    var el = document.createElement("div");
+    el.className = "fx-dot";
+    var useEmoji = conf.emoji && conf.emoji.length && (i % 3 !== 1);
+    if (useEmoji) {
+      el.textContent = conf.emoji[i % conf.emoji.length];
+      el.style.fontSize = (18 + Math.random() * 16) + "px";
+      el.style.background = "transparent";
+      el.style.width = "auto";
+      el.style.height = "auto";
+    } else {
+      var c = conf.colors[i % conf.colors.length];
+      var sz = 6 + Math.random() * 10;
+      el.style.width = sz + "px";
+      el.style.height = sz + "px";
+      el.style.background = c;
+      el.style.boxShadow = "0 0 8px " + c;
+    }
+    el.style.left = (Math.random() * 100) + "%";
+    el.style.animationDuration = (6 + Math.random() * 10) + "s";
+    el.style.animationDelay = (-Math.random() * 12) + "s";
+    layer.appendChild(el);
+  }
+}
+
+function saveSkin() {
+  var checked = document.querySelector('input[name="skinSel"]:checked');
+  var name = checked ? checked.value : "normal";
+  if (!SKIN_FX.hasOwnProperty(name)) name = "normal";
+  var data = Object.assign({}, config || {});
+  data.skin = name;
+  data.wa = data.wa || (document.getElementById("waNumber") && document.getElementById("waNumber").value) || data.wa || "";
+  db.ref("config").update({ skin: name });
+  config = data;
+  applySkin(name);
+  toast("Apariencia guardada: " + name);
+}
+
+
 function loadFromFirebase() {
   db.ref("products").on("value", function(snap) {
     var val = snap.val();
@@ -889,6 +1170,7 @@ function loadFromFirebase() {
       }
     }
     applyWelcomeBanner();
+    applySkin(getSkin());
     refreshFlyerUserView();
     renderSocialIcons();
     applyCatalogOptionsUI();
@@ -1376,22 +1658,35 @@ function flyToCart(fromEl) {
   var startY = from.top + from.height / 2;
   var endX = to.left + to.width / 2;
   var endY = to.top + to.height / 2;
+  var skin = getSkin();
+  var conf = SKIN_FX[skin] || {};
+  var label = (conf && conf.fly) ? conf.fly : "+1";
   var dot = document.createElement("div");
-  dot.className = "fly-dot";
-  dot.textContent = "+1";
+  dot.className = "fly-dot" + (skin !== "normal" ? " skin-fly" : "");
+  dot.textContent = label;
+  if (skin !== "normal") {
+    dot.style.fontSize = "42px";
+    dot.style.background = "transparent";
+    dot.style.boxShadow = "0 0 22px rgba(0,0,0,.4)";
+  } else {
+    dot.style.fontSize = "16px";
+  }
   dot.style.left = startX + "px";
   dot.style.top = startY + "px";
+  dot.style.transform = "translate(0,0) scale(1.15)";
   document.body.appendChild(dot);
   requestAnimationFrame(function() {
     requestAnimationFrame(function() {
-      dot.style.transform = "translate(" + (endX - startX) + "px," + (endY - startY) + "px) scale(0.4)";
-      dot.style.opacity = "0.3";
+      var spin = skin === "halloween" ? " rotate(50deg)" : (skin === "navidad" ? " rotate(-25deg)" : "");
+      /* scale final un poco mayor para que se vea hasta el final */
+      dot.style.transform = "translate(" + (endX - startX) + "px," + (endY - startY) + "px) scale(0.7)" + spin;
+      dot.style.opacity = "0.35";
     });
   });
   setTimeout(function() {
     if (dot.parentNode) dot.parentNode.removeChild(dot);
     pulseCart();
-  }, 560);
+  }, 1200);
 }
 
 function pulseCart() {
